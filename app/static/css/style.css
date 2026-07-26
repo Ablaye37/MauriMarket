@@ -1,0 +1,47 @@
+body{
+    background:#f8f9fa;
+}
+
+.hero{
+    background:linear-gradient(135deg,#198754,#2eb872);
+    color:white;
+    padding:90px 0;
+}
+
+.hero h1{
+    font-size:3rem;
+    font-weight:bold;
+}
+
+.hero p{
+    font-size:1.2rem;
+    margin-bottom:35px;
+}
+
+.category-card{
+    border:none;
+    border-radius:18px;
+    transition:.3s;
+    cursor:pointer;
+}
+
+.category-card:hover{
+    transform:translateY(-8px);
+    box-shadow:0 15px 35px rgba(0,0,0,.15);
+}
+.card{
+    border:none;
+    border-radius:18px;
+    overflow:hidden;
+    transition:.3s;
+}
+
+.card:hover{
+    transform:translateY(-6px);
+    box-shadow:0 15px 35px rgba(0,0,0,.15);
+}
+
+.card img{
+    height:220px;
+    object-fit:cover;
+}
