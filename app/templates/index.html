@@ -1,0 +1,320 @@
+{% extends "base.html" %}
+{% block title %}Accueil - MauriMarket{% endblock %}
+
+{% block content %}
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-success shadow">
+    <div class="container">
+
+        <a class="navbar-brand fw-bold fs-4" href="/">
+            🇲🇷 MauriMarket
+        </a>
+
+        <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#menu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="menu">
+
+            <ul class="navbar-nav me-auto">
+
+                <li class="nav-item">
+                    <a class="nav-link active" href="/">
+                        Accueil
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        Catégories
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        Boutiques
+                    </a>
+                </li>
+
+            </ul>
+
+
+            <a href="/publier" class="btn btn-warning me-2">
+                <i class="bi bi-plus-circle"></i>
+                Publier
+             </a>
+              {% if user_name %}
+
+<span class="text-white me-3">
+    Bonjour {{ user_name }}
+</span>
+
+<a href="/logout" class="btn btn-danger">
+    Déconnexion
+</a>
+
+{% else %}
+
+<a href="/login" class="btn btn-light me-2">
+    Connexion
+</a>
+
+<a href="/mes-annonces" class="btn btn-info">
+    Mes annonces
+</a>
+
+<a href="/register" class="btn btn-warning">
+    Inscription
+</a>
+
+{% endif %}
+
+        </div>
+
+    </div>
+</nav>
+
+
+
+<!-- Hero -->
+
+<section class="hero">
+
+<div class="container text-center">
+
+<h1>
+Le marché numérique de la Mauritanie
+</h1>
+
+
+<p>
+Achetez et vendez facilement partout dans le pays.
+</p>
+
+
+<div class="row justify-content-center">
+
+<div class="col-lg-7">
+
+
+<form method="get" action="/">
+
+<div class="input-group input-group-lg">
+
+
+<input 
+name="q"
+class="form-control"
+placeholder="Rechercher un produit...">
+
+
+<button class="btn btn-warning">
+
+<i class="bi bi-search"></i>
+
+</button>
+
+
+</div>
+
+</form>
+
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+
+
+
+<!-- Categories -->
+
+<section class="container py-5">
+
+
+<h2 class="text-center mb-5">
+Nos catégories
+</h2>
+
+
+
+<div class="row g-4">
+
+
+{% for category in categories %}
+
+
+<div class="col-lg-2 col-md-4 col-6">
+
+
+<div class="card category-card text-center p-4">
+
+
+<i class="bi {{ category.icon }} fs-1 text-success"></i>
+
+
+<h6 class="mt-3">
+{{ category.name }}
+</h6>
+
+
+</div>
+
+
+</div>
+
+
+{% endfor %}
+
+
+</div>
+
+
+</section>
+
+
+
+
+
+
+<!-- Produits -->
+
+<section class="container py-5">
+
+
+<h2 class="text-center mb-5">
+Annonces récentes
+</h2>
+
+
+
+<div class="row g-4">
+
+
+{% for product in products %}
+
+
+
+<div class="col-lg-4 col-md-6">
+
+
+<div class="card product-card shadow h-100">
+
+
+
+{% if product.image %}
+
+
+<img src="/static/uploads/{{ product.image }}"
+class="product-image">
+
+
+{% else %}
+
+
+<img src="https://placehold.co/600x400?text=MauriMarket"
+class="product-image">
+
+
+{% endif %}
+
+
+
+
+
+<div class="card-body">
+
+
+<span class="badge bg-success">
+{{ product.condition }}
+</span>
+
+
+
+<h5 class="mt-3 fw-bold">
+{{ product.title }}
+</h5>
+
+
+
+<h4 class="text-success">
+{{ product.price }} MRU
+</h4>
+
+
+
+
+<p class="text-muted">
+{{ product.description[:100] }}
+</p>
+
+
+
+<p>
+
+<i class="bi bi-geo-alt-fill"></i>
+
+{{ product.city }}
+
+</p>
+
+
+
+<a href="/produit/{{ product.id }}"
+class="btn btn-success w-100">
+
+Voir le produit
+
+</a>
+
+
+
+</div>
+
+
+
+</div>
+
+
+</div>
+
+
+
+{% else %}
+
+
+<p class="text-center">
+Aucune annonce disponible.
+</p>
+
+
+{% endfor %}
+
+
+
+</div>
+
+
+</section>
+
+
+
+
+<!-- Footer -->
+
+<footer class="bg-dark text-white text-center py-4">
+
+<p class="mb-0">
+🇲🇷 MauriMarket - Le marché numérique de la Mauritanie
+</p>
+
+</footer>
+
+
+{% endblock %}
+

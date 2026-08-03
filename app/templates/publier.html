@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}
+Publier un produit - MauriMarket
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+    <h2 class="mb-4">Publier un produit</h2>
+
+<form method="POST" action="/publier" enctype="multipart/form-data">
+
+       <div class="mb-3">
+             <label class="form-label">Photo du produit</label>
+             <input type="file" name="image" class="form-control" accept="image/*">
+         </div>
+
+        <div class="mb-3">
+            <label class="form-label">Nom du produit</label>
+            <input type="text" name="title" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Description</label>
+            <textarea name="description" class="form-control" rows="4" required></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Prix</label>
+            <input type="number" name="price" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Ville</label>
+            <input type="text" name="city" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">État du produit</label>
+            <input type="text" name="condition" class="form-control" required>
+        </div>
+
+         <div class="mb-3">
+    <label class="form-label">Catégorie</label>
+
+    <select name="category_id" class="form-select" required>
+
+        <option value="">-- Choisir une catégorie --</option>
+
+        {% for category in categories %}
+            <option value="{{ category.id }}">
+                {{ category.name }}
+            </option>
+        {% endfor %}
+
+          </select>
+       </div>
+        <button type="submit" class="btn btn-success">
+            Publier
+        </button>
+
+    </form>
+
+</div>
+
+{% endblock %}
