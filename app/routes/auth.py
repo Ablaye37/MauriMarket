@@ -4,7 +4,11 @@ from fastapi.templating import Jinja2Templates
 
 from app.database.database import SessionLocal
 from app.models.user import User
+<<<<<<< HEAD
 from fastapi import Request
+=======
+
+>>>>>>> 99097da8588bad065ab8d809dfcaa1575e8a71b5
 
 router = APIRouter()
 
@@ -43,6 +47,7 @@ async def register_user(
         "/login",
         status_code=303
     )
+<<<<<<< HEAD
 @router.get("/login")
 async def login_page(request: Request):
     return templates.TemplateResponse(
@@ -77,3 +82,5 @@ async def logout(request: Request):
     request.session.clear()
 
     return RedirectResponse("/", status_code=303)
+=======
+>>>>>>> 99097da8588bad065ab8d809dfcaa1575e8a71b5

@@ -9,17 +9,23 @@ from app.routes import publish
 from app.routes import products_detail
 from fastapi import FastAPI, Request, Query
 from app.routes import auth
+<<<<<<< HEAD
 from starlette.middleware.sessions import SessionMiddleware
+=======
+>>>>>>> 99097da8588bad065ab8d809dfcaa1575e8a71b5
 
 app = FastAPI(
     title="MauriMarket",
     description="Le marché numérique de la Mauritanie",
     version="1.0.0"
 )
+<<<<<<< HEAD
 app.add_middleware(
     SessionMiddleware,
     secret_key="maurimarket-secret"
 )
+=======
+>>>>>>> 99097da8588bad065ab8d809dfcaa1575e8a71b5
 
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
@@ -43,19 +49,28 @@ async def home(request: Request, q: str = Query(default="")):
 
     db.close()
 
+<<<<<<< HEAD
     user_name = request.session.get("user_name")
 
+=======
+>>>>>>> 99097da8588bad065ab8d809dfcaa1575e8a71b5
     return templates.TemplateResponse(
         request=request,
         name="index.html",
         context={
             "categories": categories,
             "products": products,
+<<<<<<< HEAD
             "q": q,
             "user_name": user_name
         }
     )
     
+=======
+            "q": q
+        }
+    )
+>>>>>>> 99097da8588bad065ab8d809dfcaa1575e8a71b5
 app.include_router(products_router)
 app.include_router(publish.router)
 app.include_router(products_detail.router)
