@@ -9,6 +9,7 @@ from app.routes import products_detail
 from fastapi import FastAPI, Request, Query
 from app.routes import auth
 from starlette.middleware.sessions import SessionMiddleware
+from startup import init_database
 
 app = FastAPI(
     title="MauriMarket",
@@ -16,30 +17,12 @@ app = FastAPI(
     version="1.0.0"
 )
 
-Base.metadata.create_all(bind=engine)
+init_database()
 
-db = SessionLocal()
-
-if db.query(Category).count() == 0:
-    categories = [
-        Category(name="Téléphones"),
-        Category(name="Informatique"),
-        Category(name="Véhicules"),
-        Category(name="Mode"),
-        Category(name="Maison"),
-        Category(name="Services")
-    ]
-
-    db.add_all(categories)
-    db.commit()
-
-db.close()
 app.add_middleware(
     SessionMiddleware,
     secret_key="maurimarket-secret"
 )
-
-
 
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
