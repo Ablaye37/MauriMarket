@@ -2,8 +2,8 @@ from app.database.database import SessionLocal, engine, Base
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from app.models.category import Category
-from app.routes.products import router as products_router
 from app.models.product import Product
+from app.routes.products import router as products_router
 from app.routes import publish
 from app.routes import products_detail
 from fastapi import FastAPI, Request, Query
@@ -15,19 +15,22 @@ app = FastAPI(
     description="Le marché numérique de la Mauritanie",
     version="1.0.0"
 )
+
 Base.metadata.create_all(bind=engine)
 
 db = SessionLocal()
 
 if db.query(Category).count() == 0:
-    db.add_all([
+    categories = [
         Category(name="Téléphones"),
         Category(name="Informatique"),
         Category(name="Véhicules"),
         Category(name="Mode"),
         Category(name="Maison"),
         Category(name="Services")
-    ])
+    ]
+
+    db.add_all(categories)
     db.commit()
 
 db.close()
