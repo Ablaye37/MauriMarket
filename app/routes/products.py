@@ -7,10 +7,6 @@ import os
 from app.database.database import SessionLocal
 from app.models.product import Product
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 99097da8588bad065ab8d809dfcaa1575e8a71b5
 router = APIRouter()
 
 templates = Jinja2Templates(directory="app/templates")
@@ -18,15 +14,12 @@ templates = Jinja2Templates(directory="app/templates")
 
 @router.get("/publish")
 def publish_page(request: Request):
-<<<<<<< HEAD
 
     user_id = request.session.get("user_id")
 
     if not user_id:
         return RedirectResponse("/login", status_code=303)
 
-=======
->>>>>>> 99097da8588bad065ab8d809dfcaa1575e8a71b5
     return templates.TemplateResponse(
         request=request,
         name="publish.html"
@@ -35,20 +28,17 @@ def publish_page(request: Request):
 
 @router.post("/publish")
 def create_product(
-<<<<<<< HEAD
     request: Request,
-=======
->>>>>>> 99097da8588bad065ab8d809dfcaa1575e8a71b5
+
     title: str = Form(...),
     description: str = Form(...),
     price: float = Form(...),
     city: str = Form(...),
     condition: str = Form(...),
-<<<<<<< HEAD
+
     photo: UploadFile = File(None)
 ):
 
-    # Vérifier utilisateur connecté
     user_id = request.session.get("user_id")
 
     if not user_id:
@@ -58,7 +48,6 @@ def create_product(
     filename = None
 
 
-    # Upload image
     if photo and photo.filename:
 
         filename = photo.filename
@@ -84,22 +73,6 @@ def create_product(
 
     db = SessionLocal()
 
-=======
-    photo: UploadFile = File(...)
-):
-    filename = None
-
-    if photo and photo.filename:
-        filename = photo.filename
-
-        upload_dir = "app/static/uploads"
-        os.makedirs(upload_dir, exist_ok=True)
-
-        photo_path = os.path.join(upload_dir, filename)
-
-        with open(photo_path, "wb") as buffer:
-            shutil.copyfileobj(photo.file, buffer)
->>>>>>> 99097da8588bad065ab8d809dfcaa1575e8a71b5
 
     product = Product(
         title=title,
@@ -107,7 +80,6 @@ def create_product(
         price=price,
         city=city,
         condition=condition,
-<<<<<<< HEAD
         image=filename,
         user_id=user_id
     )
@@ -124,6 +96,9 @@ def create_product(
         "/",
         status_code=303
     )
+
+
+
 @router.get("/mes-annonces")
 def mes_annonces(request: Request):
 
@@ -150,6 +125,9 @@ def mes_annonces(request: Request):
             "products": products
         }
     )
+
+
+
 @router.get("/modifier-produit/{product_id}")
 def modifier_page(request: Request, product_id: int):
 
@@ -183,10 +161,12 @@ def modifier_page(request: Request, product_id: int):
     )
 
 
+
 @router.post("/modifier-produit/{product_id}")
 def modifier_produit(
     request: Request,
     product_id: int,
+
     title: str = Form(...),
     description: str = Form(...),
     price: float = Form(...),
@@ -222,6 +202,7 @@ def modifier_produit(
 
 
     db.commit()
+
     db.close()
 
 
@@ -229,6 +210,9 @@ def modifier_produit(
         "/mes-annonces",
         status_code=303
     )
+
+
+
 @router.get("/supprimer-produit/{product_id}")
 def supprimer_produit(request: Request, product_id: int):
 
@@ -259,14 +243,3 @@ def supprimer_produit(request: Request, product_id: int):
         "/mes-annonces",
         status_code=303
     )
-=======
-        image=filename
-    )
-
-    db = SessionLocal()
-    db.add(product)
-    db.commit()
-    db.close()
-
-    return RedirectResponse("/", status_code=303)
->>>>>>> 99097da8588bad065ab8d809dfcaa1575e8a71b5

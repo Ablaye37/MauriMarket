@@ -7,9 +7,16 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-success shadow">
     <div class="container">
 
-        <a class="navbar-brand fw-bold fs-4" href="/">
-            🇲🇷 MauriMarket
-        </a>
+        <a class="navbar-brand d-flex align-items-center" href="/">
+    <img src="/static/images/logo.png"
+         alt="MauriMarket"
+         width="45"
+         class="me-2">
+
+    <span class="fw-bold fs-4">
+        MauriMarket
+    </span>
+</a>
 
         <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#menu">
             <span class="navbar-toggler-icon"></span>
@@ -43,13 +50,17 @@
             <a href="/publier" class="btn btn-warning me-2">
                 <i class="bi bi-plus-circle"></i>
                 Publier
-<<<<<<< HEAD
              </a>
-              {% if user_name %}
+
+  {% if user_name %}
 
 <span class="text-white me-3">
     Bonjour {{ user_name }}
 </span>
+
+<a href="/mes-annonces" class="btn btn-info me-2">
+    Mes annonces
+</a>
 
 <a href="/logout" class="btn btn-danger">
     Déconnexion
@@ -61,24 +72,17 @@
     Connexion
 </a>
 
-<a href="/mes-annonces" class="btn btn-info">
-    Mes annonces
-</a>
-
 <a href="/register" class="btn btn-warning">
     Inscription
 </a>
 
 {% endif %}
-=======
+
             </a>
 
 
-            <a href="#" class="btn btn-light">
-                Connexion
-            </a>
 
->>>>>>> 99097da8588bad065ab8d809dfcaa1575e8a71b5
+
 
         </div>
 
@@ -140,175 +144,114 @@ placeholder="Rechercher un produit...">
 </section>
 
 
-
-
 <!-- Categories -->
 
 <section class="container py-5">
 
+    <h2 class="text-center mb-5">
+        Nos catégories
+    </h2>
 
-<h2 class="text-center mb-5">
-Nos catégories
-</h2>
+    <div class="row g-4">
 
+        {% for category in categories %}
 
+        <div class="col-6 col-md-4 col-lg-2">
 
-<div class="row g-4">
+            <div class="card category-card text-center p-4 h-100">
 
+                <i class="bi {{ category.icon }} fs-1 text-success"></i>
 
-{% for category in categories %}
+                <h6 class="mt-3 mb-0">
+                    {{ category.name }}
+                </h6>
 
+            </div>
 
-<div class="col-lg-2 col-md-4 col-6">
+        </div>
 
+        {% endfor %}
 
-<div class="card category-card text-center p-4">
-
-
-<i class="bi {{ category.icon }} fs-1 text-success"></i>
-
-
-<h6 class="mt-3">
-{{ category.name }}
-</h6>
-
-
-</div>
-
-
-</div>
-
-
-{% endfor %}
-
-
-</div>
-
+    </div>
 
 </section>
-
-
-
-
 
 
 <!-- Produits -->
 
 <section class="container py-5">
 
+    <h2 class="text-center mb-5">
+        Annonces récentes
+    </h2>
 
-<h2 class="text-center mb-5">
-Annonces récentes
-</h2>
+    <div class="row g-4">
 
+        {% for product in products %}
 
+        <div class="col-12 col-md-6 col-lg-4">
 
-<div class="row g-4">
+            <div class="card product-card shadow h-100">
 
+                {% if product.image %}
 
-{% for product in products %}
+                <img src="/static/uploads/{{ product.image }}"
+                     class="product-image"
+                     alt="{{ product.title }}">
 
+                {% else %}
 
+                <img src="https://placehold.co/600x400?text=MauriMarket"
+                     class="product-image"
+                     alt="Image indisponible">
 
-<div class="col-lg-4 col-md-6">
+                {% endif %}
 
+                <div class="card-body d-flex flex-column">
 
-<div class="card product-card shadow h-100">
+                    <span class="badge bg-success align-self-start">
+                        {{ product.condition }}
+                    </span>
 
+                    <h5 class="mt-3 fw-bold">
+                        {{ product.title }}
+                    </h5>
 
+                    <h4 class="text-success fw-bold">
+                        {{ product.price }} MRU
+                    </h4>
 
-{% if product.image %}
+                    <p class="text-muted flex-grow-1">
+                        {{ product.description[:100] }}
+                    </p>
 
+                    <p class="mb-3">
+                        <i class="bi bi-geo-alt-fill"></i>
+                        {{ product.city }}
+                    </p>
 
-<img src="/static/uploads/{{ product.image }}"
-class="product-image">
+                    <a href="/produit/{{ product.id }}"
+                       class="btn btn-success w-100">
+                        Voir le produit
+                    </a>
 
+                </div>
 
-{% else %}
+            </div>
 
+        </div>
 
-<img src="https://placehold.co/600x400?text=MauriMarket"
-class="product-image">
+        {% else %}
 
+        <div class="col-12">
+            <p class="text-center">
+                Aucune annonce disponible.
+            </p>
+        </div>
 
-{% endif %}
+        {% endfor %}
 
-
-
-
-
-<div class="card-body">
-
-
-<span class="badge bg-success">
-{{ product.condition }}
-</span>
-
-
-
-<h5 class="mt-3 fw-bold">
-{{ product.title }}
-</h5>
-
-
-
-<h4 class="text-success">
-{{ product.price }} MRU
-</h4>
-
-
-
-
-<p class="text-muted">
-{{ product.description[:100] }}
-</p>
-
-
-
-<p>
-
-<i class="bi bi-geo-alt-fill"></i>
-
-{{ product.city }}
-
-</p>
-
-
-
-<a href="/produit/{{ product.id }}"
-class="btn btn-success w-100">
-
-Voir le produit
-
-</a>
-
-
-
-</div>
-
-
-
-</div>
-
-
-</div>
-
-
-
-{% else %}
-
-
-<p class="text-center">
-Aucune annonce disponible.
-</p>
-
-
-{% endfor %}
-
-
-
-</div>
-
+    </div>
 
 </section>
 
