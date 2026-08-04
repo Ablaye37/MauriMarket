@@ -1,7 +1,6 @@
-
+from app.database.database import SessionLocal, engine, Base
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from app.database.database import SessionLocal
 from app.models.category import Category
 from app.routes.products import router as products_router
 from app.models.product import Product
@@ -16,11 +15,27 @@ app = FastAPI(
     description="Le marché numérique de la Mauritanie",
     version="1.0.0"
 )
+Base.metadata.create_all(bind=engine)
 
+db = SessionLocal()
+
+if db.query(Category).count() == 0:
+    db.add_all([
+        Category(name="Téléphones"),
+        Category(name="Informatique"),
+        Category(name="Véhicules"),
+        Category(name="Mode"),
+        Category(name="Maison"),
+        Category(name="Services")
+    ])
+    db.commit()
+
+db.close()
 app.add_middleware(
     SessionMiddleware,
     secret_key="maurimarket-secret"
 )
+
 
 
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
