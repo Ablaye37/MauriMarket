@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}
+Connexion - MauriMarket
+{% endblock %}
+
+{% block content %}
+
+<div class="container py-5">
+
+    <div class="row justify-content-center">
+
+        <div class="col-md-6">
+
+            <div class="card shadow p-4">
+
+                <h2 class="text-center mb-4">
+                    Connexion
+                </h2>
+
+                <form method="POST" action="/login">
+
+                    <div class="mb-3">
+                        <label class="form-label">
+                            Téléphone
+                        </label>
+
+                        <input 
+                        type="text"
+                        name="phone"
+                        class="form-control"
+                        required>
+                    </div>
+
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Mot de passe
+                        </label>
+
+                        <input 
+                        type="password"
+                        name="password"
+                        class="form-control"
+                        required>
+
+                    </div>
+
+
+                    <button class="btn btn-success w-100">
+                        Se connecter
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

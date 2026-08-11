@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block title %}
+{{ category.name }} - MauriMarket
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div>
+            <h2>{{ category.name }}</h2>
+            <p class="text-muted">
+                Découvrez les produits de cette catégorie
+            </p>
+        </div>
+
+        <a href="/" class="btn btn-outline-secondary">
+            ← Retour
+        </a>
+    </div>
+
+
+    <!-- SOUS-CATÉGORIES -->
+
+    <div class="card mb-4">
+        <div class="card-body">
+
+            <h5 class="mb-3">
+                Sous-catégories
+            </h5>
+
+            <div class="row">
+
+                {% for subcategory in subcategories %}
+
+                <div class="col-md-4 col-lg-3 mb-3">
+
+                    <a
+                        href="/sous-categorie/{{ subcategory.id }}"
+                        class="text-decoration-none"
+                    >
+
+                        <div class="border rounded p-3 h-100">
+
+                            <strong>
+                                {{ subcategory.name }}
+                            </strong>
+
+                            <div class="text-muted small mt-1">
+                                Voir les produits →
+                            </div>
+
+                        </div>
+
+                    </a>
+
+                </div>
+
+                {% else %}
+
+                <div class="col-12">
+                    <p class="text-muted">
+                        Aucune sous-catégorie disponible.
+                    </p>
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- PRODUITS -->
+
+    <div>
+
+        <h4 class="mb-3">
+            Produits
+        </h4>
+
+        <p class="text-muted">
+            Les produits de cette catégorie apparaîtront ici.
+        </p>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,249 @@
+{% extends "base.html" %}
+
+{% block title %}MauriMarket - Accueil{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid marketplace-content">
+
+    <div class="row g-3">
+
+        <!-- =========================
+             SIDEBAR CATÉGORIES
+        ========================== -->
+
+        <aside class="col-lg-3 col-xl-2">
+
+            <div class="category-sidebar">
+
+                <div class="sidebar-title">
+                    <i class="bi bi-list"></i>
+                    Catégories
+                </div>
+
+                <div class="sidebar-list">
+
+                    {% for category in categories %}
+
+                    <a
+                        href="/categorie/{{ category.id }}?lang={{ lang }}"
+                        class="sidebar-category">
+
+                        {% if category.name == "Téléphones" %}
+                            <span>📱</span>
+
+                        {% elif category.name == "Informatique" %}
+                            <span>💻</span>
+
+                        {% elif category.name == "Véhicules" %}
+                            <span>🚗</span>
+
+                        {% elif category.name == "Mode" %}
+                            <span>👕</span>
+
+                        {% elif category.name == "Maison" %}
+                            <span>🏠</span>
+
+                        {% elif category.name == "Services" %}
+                            <span>🔧</span>
+
+                        {% else %}
+                            <span>📦</span>
+                        {% endif %}
+
+                        <span>
+                            {{ category.name }}
+                        </span>
+
+                        <i class="bi bi-chevron-right"></i>
+
+                    </a>
+
+                    {% endfor %}
+
+                </div>
+
+                <div class="sidebar-divider"></div>
+
+                <a
+                    href="/boutiques?lang={{ lang }}"
+                    class="sidebar-shop">
+
+                    <span>🏪</span>
+
+                    <span>
+                        Découvrir les boutiques
+                    </span>
+
+                    <i class="bi bi-arrow-right"></i>
+
+                </a>
+
+            </div>
+
+        </aside>
+
+
+        <!-- =========================
+             PRODUITS
+        ========================== -->
+
+        <section class="col-lg-9 col-xl-10">
+
+            <div class="products-header">
+
+                <div>
+                    <h1>
+                        Produits populaires
+                    </h1>
+
+                </div>
+
+                <a href="#" class="view-all">
+
+                    Voir tout
+
+                    <i class="bi bi-arrow-right"></i>
+
+                </a>
+
+            </div>
+
+
+            <!-- =========================
+                 GRILLE PRODUITS
+            ========================== -->
+
+            <div class="row products-grid">
+
+                {% for product in products %}
+
+                <div class="product-column">
+
+                    <article class="product-card">
+
+                        <!-- IMAGE -->
+
+                        <div class="product-image-wrapper">
+
+                            {% if product.image %}
+
+                            <img
+                                src="/static/uploads/{{ product.image }}"
+                                alt="{{ product.title }}"
+                                class="product-image">
+
+                            {% else %}
+
+                            <div class="product-no-image">
+
+                                <i class="bi bi-image"></i>
+
+                            </div>
+
+                            {% endif %}
+
+
+                            <button
+                                class="favorite-button"
+                                type="button">
+
+                                <i class="bi bi-heart"></i>
+
+                            </button>
+
+
+                            {% if product.condition %}
+
+                            <span class="condition-badge">
+
+                                {{ product.condition }}
+
+                            </span>
+
+                            {% endif %}
+
+                        </div>
+
+
+                        <!-- INFORMATIONS -->
+
+                        <div class="product-info">
+
+                            <h3 class="product-title">
+                                {{ product.title }}
+                            </h3>
+
+                            <div class="product-price">
+                                {{ product.price }} MRU
+                            </div>
+
+                            <div class="product-location">
+
+                                <i class="bi bi-geo-alt"></i>
+
+                                {{ product.city }}
+
+                            </div>
+
+                            <a
+                                href="/produit/{{ product.id }}?lang={{ lang }}"
+                                class="product-link">
+
+                                Voir le produit
+
+                                <i class="bi bi-arrow-right"></i>
+
+                            </a>
+
+                        </div>
+
+                    </article>
+
+                </div>
+
+                {% else %}
+
+                <!-- =========================
+                     AUCUNE ANNONCE
+                ========================== -->
+
+                <div class="col-12">
+
+                    <div class="empty-products">
+
+                        <div class="empty-icon">
+                            📦
+                        </div>
+
+                        <h3>
+                            Aucune annonce pour le moment
+                        </h3>
+
+                        <p>
+                            Soyez le premier à publier une annonce.
+                        </p>
+
+                        <a
+                            href="/publier?lang={{ lang }}"
+                            class="btn btn-success">
+
+                            Publier une annonce
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+        </section>
+
+    </div>
+
+</div>
+
+{% endblock %}
