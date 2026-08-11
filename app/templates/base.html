@@ -184,75 +184,77 @@
     <!-- =================================================
          LIGNE 2 : CATÉGORIES
     ================================================== -->
+<nav class="category-navbar">
+<div class="category-navbar-inner">
 
-    <nav class="category-navbar">
+   
+    <!-- ACCUEIL -->
+    <a
+        href="/?lang={{ lang }}"
+        class="category-nav-link">
 
-        <div class="category-navbar-inner">
+        <i class="bi bi-house-door"></i>
+        <span>Accueil</span>
 
-            <a
-                href="/?lang={{ lang }}"
-                class="all-categories">
+    </a>
 
-                <i class="bi bi-list"></i>
-                Toutes les catégories
+ 
 
-            </a>
+    <!-- BOUTIQUES -->
+    <a
+        href="/boutiques?lang={{ lang }}"
+        class="category-nav-link">
 
-            <a href="/?lang={{ lang }}" class="category-nav-link">
-                <i class="bi bi-house-door"></i>
-               Accueil
-            </a>
+        <i class="bi bi-shop"></i>
+        <span>Boutiques</span>
 
-            <a href="#" class="category-nav-link">
-                <i class="bi bi-phone"></i>
-                Téléphones
-            </a>
+    </a>
 
-            <a href="#" class="category-nav-link">
-                <i class="bi bi-laptop"></i>
-                Informatique
-            </a>
+    <!-- LIVRAISON -->
+    <a
+        href="/livraison?lang={{ lang }}"
+        class="category-nav-link">
 
-            <a href="#" class="category-nav-link">
-                <i class="bi bi-car-front"></i>
-                Véhicules
-            </a>
+        <i class="bi bi-truck"></i>
+        <span>Livraison</span>
 
-            <a href="#" class="category-nav-link">
-                <i class="bi bi-bag"></i>
-                Mode
-            </a>
+    </a>
 
-            <a href="#" class="category-nav-link">
-                <i class="bi bi-house"></i>
-                Maison
-            </a>
+    <!-- AIDE -->
+    <a
+        href="/aide?lang={{ lang }}"
+        class="category-nav-link">
 
-            <a href="#" class="category-nav-link">
-                <i class="bi bi-tools"></i>
-                Services
-            </a>
+        <i class="bi bi-question-circle"></i>
+        <span>Aide</span>
 
-            <a
-                href="/boutiques?lang={{ lang }}"
-                class="category-nav-link">
+    </a>
 
-                <i class="bi bi-shop"></i>
-                Boutiques
+    <!-- CONTACT -->
+    <a
+        href="/contact?lang={{ lang }}"
+        class="category-nav-link">
 
-            </a>
+        <i class="bi bi-headset"></i>
+        <span>Contact</span>
 
-            <a
-                href="/publier?lang={{ lang }}"
-                class="publish-button">
+    </a>
 
-                <i class="bi bi-plus-circle"></i>
-                Publier une annonce
-            </a>
+    <!-- PUBLIER -->
+    <a
+        href="/publier?lang={{ lang }}"
+        class="publish-button">
 
-        </div>
+        <i class="bi bi-plus-circle"></i>
+        <span>Publier une annonce</span>
 
-    </nav>
+    </a>
+
+</div>
+
+
+</nav>
+
 
 </header>
 

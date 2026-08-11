@@ -35,15 +35,13 @@ input {
 
 .main-header {
     width: 100%;
-    height: auto;
     background: #ffffff;
     border-bottom: 1px solid #e5e7eb;
 }
 
 
 /* =========================================================
-   PREMIÈRE LIGNE
-   LOGO + RECHERCHE + PANIER + FAVORIS + COMPTE
+   LIGNE PRINCIPALE
 ========================================================= */
 
 .header-container {
@@ -55,7 +53,7 @@ input {
 
     gap: 25px;
 
-    padding: 0 24px;
+    padding: 0 20px;
 
     background: #ffffff;
 }
@@ -303,21 +301,20 @@ input {
 
 
 /* =========================================================
-   DEUXIÈME LIGNE
-   CATÉGORIES
+   NAVBAR
 ========================================================= */
 
 .category-navbar {
     width: 100%;
-
     height: 58px;
 
     background: #ffffff;
 
-    border-top: 1px solid #f0f1f2;
-    border-bottom: 1px solid #e5e7eb;
+    border-top: 1px solid #f1f3f5;
+    border-bottom: 1px solid #e1e5e9;
 
-    overflow: hidden;
+    position: relative;
+    z-index: 100;
 }
 
 .category-navbar-inner {
@@ -327,83 +324,65 @@ input {
     display: flex;
     align-items: center;
 
-    flex-wrap: nowrap;
+    gap: 10px;
 
-    gap: 4px;
-
-    padding: 0 24px;
+    padding: 0 28px;
 
     overflow: hidden;
 }
 
 
 /* =========================================================
-   TOUTES LES CATÉGORIES
-========================================================= */
-
-.all-categories {
-    flex: 0 0 auto;
-
-    height: 40px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    gap: 8px;
-
-    padding: 0 17px;
-
-    background: #198754;
-    color: #ffffff;
-
-    border-radius: 7px;
-
-    font-size: 13px;
-    font-weight: 700;
-
-    white-space: nowrap;
-}
-
-.all-categories:hover {
-    background: #157347;
-    color: #ffffff;
-}
-
-
-/* =========================================================
-   LIENS CATÉGORIES
+   LIENS NAVBAR
 ========================================================= */
 
 .category-nav-link {
     flex: 0 0 auto;
 
-    height: 40px;
+    height: 42px;
 
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
 
-    gap: 6px;
+    gap: 8px;
 
-    padding: 0 10px;
+    padding: 0 15px;
 
-    color: #172033;
+    color: #344054;
 
-    border-radius: 7px;
+    border-radius: 8px;
 
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 600;
 
     white-space: nowrap;
+
+    transition: 0.2s ease;
 }
 
 .category-nav-link i {
-    font-size: 16px;
+    font-size: 17px;
+    color: #667085;
 }
 
 .category-nav-link:hover {
     background: #f0f8f4;
+    color: #198754;
+
+    transform: translateY(-1px);
+}
+
+.category-nav-link:hover i {
+    color: #198754;
+}
+
+.category-nav-link.active {
+    background: #f0f8f4;
+    color: #198754;
+}
+
+.category-nav-link.active i {
     color: #198754;
 }
 
@@ -415,32 +394,47 @@ input {
 .publish-button {
     flex: 0 0 auto;
 
+    height: 42px;
+
     margin-left: auto;
 
-    height: 40px;
-
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
 
-    gap: 7px;
+    gap: 8px;
 
-    padding: 0 14px;
+    padding: 0 18px;
 
     background: #e8f5ef;
+
     color: #198754;
 
-    border-radius: 7px;
+    border: 1px solid #d5ecdf;
 
-    font-size: 12px;
+    border-radius: 8px;
+
+    font-size: 13px;
     font-weight: 700;
 
     white-space: nowrap;
+
+    transition: 0.2s ease;
+}
+
+.publish-button i {
+    font-size: 16px;
 }
 
 .publish-button:hover {
-    background: #d9eee3;
-    color: #157347;
+    background: #198754;
+    color: #ffffff;
+
+    border-color: #198754;
+
+    transform: translateY(-1px);
+
+    box-shadow: 0 4px 10px rgba(25, 135, 84, 0.18);
 }
 
 
@@ -449,7 +443,24 @@ input {
 ========================================================= */
 
 .marketplace-content {
-    padding: 25px 24px 40px;
+    width: 100%;
+
+    padding: 0 24px 40px;
+
+    margin: 0;
+}
+
+
+/* =========================================================
+   SIDEBAR + PRODUITS
+   ESPACE MINIMUM ENTRE LES DEUX
+========================================================= */
+
+.marketplace-content > .row {
+    --bs-gutter-x: 8px;
+    --bs-gutter-y: 0;
+
+    margin-top: 0;
 }
 
 
@@ -465,6 +476,8 @@ input {
     border-radius: 10px;
 
     overflow: hidden;
+
+    margin: 0;
 }
 
 .sidebar-title {
@@ -481,9 +494,133 @@ input {
     border-bottom: 1px solid #eeeeee;
 }
 
+
+/* =========================================================
+   BOUTON TOUTES LES CATÉGORIES
+========================================================= */
+
+.all-categories-toggle {
+    width: 100%;
+
+    border: 0;
+
+    background: #ffffff;
+
+    color: #172033;
+
+    cursor: pointer;
+
+    text-align: left;
+
+    transition: 0.2s ease;
+}
+
+.all-categories-toggle:hover {
+    background: #f0f8f4;
+    color: #198754;
+}
+
+.all-categories-toggle > i:first-child {
+    width: 20px;
+
+    font-size: 18px;
+
+    color: #198754;
+}
+
+.all-categories-toggle #categories-arrow {
+    margin-left: auto;
+
+    font-size: 12px;
+
+    color: #7b8492;
+}
+
+
+/* =========================================================
+   LISTE CATÉGORIES
+========================================================= */
+
 .sidebar-list {
     padding: 5px 0;
 }
+
+.category-item {
+    border-bottom: 1px solid #f1f2f4;
+}
+
+.category-item:last-child {
+    border-bottom: none;
+}
+
+
+/* =========================================================
+   CATÉGORIE
+========================================================= */
+
+.category-toggle {
+    width: 100%;
+
+    border: 0;
+
+    background: transparent;
+
+    color: #172033;
+
+    cursor: pointer;
+
+    text-align: left;
+
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 11px 15px;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    transition: 0.2s ease;
+}
+
+.category-toggle:hover {
+    background: #f6faf8;
+
+    color: #198754;
+}
+
+.category-toggle > span:first-child {
+    width: 24px;
+    min-width: 24px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 17px;
+}
+
+.category-toggle > span:nth-child(2) {
+    flex: 1;
+}
+
+.category-toggle > i {
+    font-size: 11px;
+
+    color: #9aa1ad;
+
+    transition: 0.2s ease;
+}
+
+.category-toggle:hover > i {
+    color: #198754;
+}
+
+
+/* =========================================================
+   ANCIENS LIENS CATÉGORIES
+========================================================= */
 
 .sidebar-category {
     display: flex;
@@ -495,7 +632,7 @@ input {
 
     font-size: 13px;
 
-    transition: 0.2s;
+    transition: 0.2s ease;
 }
 
 .sidebar-category i {
@@ -508,8 +645,73 @@ input {
 
 .sidebar-category:hover {
     background: #f0f8f4;
+
     color: #198754;
 }
+
+
+/* =========================================================
+   SOUS-CATÉGORIES
+========================================================= */
+
+.subcategories-list {
+    position: relative;
+
+    margin: 0 12px 8px 38px;
+
+    padding: 3px 0 5px 15px;
+
+    border-left: 2px solid #e7f3ed;
+
+    animation: subcategoryOpen 0.2s ease;
+}
+
+.subcategory-link {
+    display: flex;
+    align-items: center;
+
+    gap: 8px;
+
+    padding: 7px 8px;
+
+    color: #687181;
+
+    font-size: 12px;
+    font-weight: 500;
+
+    border-radius: 5px;
+
+    transition: 0.2s ease;
+}
+
+.subcategory-link > span:first-child {
+    color: #198754;
+
+    font-size: 12px;
+}
+
+.subcategory-link:hover {
+    background: #f0f8f4;
+
+    color: #198754;
+
+    padding-left: 12px;
+}
+
+.no-subcategory {
+    padding: 7px 8px;
+
+    color: #9aa1ad;
+
+    font-size: 11px;
+
+    font-style: italic;
+}
+
+
+/* =========================================================
+   BOUTIQUES
+========================================================= */
 
 .sidebar-divider {
     height: 1px;
@@ -530,6 +732,7 @@ input {
     color: #198754;
 
     font-size: 12px;
+
     font-weight: 700;
 }
 
@@ -543,26 +746,24 @@ input {
 ========================================================= */
 
 .products-header {
+    width: 100%;
+
     display: flex;
-    align-items: flex-end;
+
+    align-items: center;
+
     justify-content: space-between;
 
-    margin-bottom: 15px;
-}
+    margin: 0 0 10px 0;
 
-.section-small-title {
-    color: #7b8492;
-
-    font-size: 11px;
-
-    text-transform: uppercase;
-
-    letter-spacing: 0.4px;
+    padding: 0;
 }
 
 .products-header h1,
 .products-header h2 {
-    margin: 3px 0 0;
+    margin: 0;
+
+    padding: 0;
 
     font-size: 22px;
 
@@ -575,7 +776,10 @@ input {
     color: #198754;
 
     font-size: 12px;
+
     font-weight: 700;
+
+    margin-right: 0;
 }
 
 .view-all:hover {
@@ -585,7 +789,6 @@ input {
 
 /* =========================================================
    GRILLE PRODUITS
-   5 CARTES SUR PC
 ========================================================= */
 
 .products-grid {
@@ -596,7 +799,7 @@ input {
     margin-left: -5px;
     margin-right: -5px;
 
-    row-gap: 12px;
+    row-gap: 10px;
 }
 
 .product-column {
@@ -624,8 +827,9 @@ input {
 
     overflow: hidden;
 
-    transition: transform 0.2s ease,
-                box-shadow 0.2s ease;
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
 }
 
 .product-card:hover {
@@ -636,7 +840,7 @@ input {
 
 
 /* =========================================================
-   IMAGE PRODUIT
+   IMAGE
 ========================================================= */
 
 .product-image-wrapper {
@@ -675,7 +879,7 @@ input {
 
 
 /* =========================================================
-   FAVORI
+   FAVORIS
 ========================================================= */
 
 .favorite-button {
@@ -720,11 +924,13 @@ input {
     padding: 4px 7px;
 
     background: #198754;
+
     color: #ffffff;
 
     border-radius: 4px;
 
     font-size: 9px;
+
     font-weight: 700;
 }
 
@@ -743,12 +949,15 @@ input {
     color: #172033;
 
     font-size: 13px;
+
     font-weight: 700;
 
     line-height: 1.2;
 
     display: -webkit-box;
+
     -webkit-line-clamp: 2;
+
     -webkit-box-orient: vertical;
 
     overflow: hidden;
@@ -760,6 +969,7 @@ input {
     color: #198754;
 
     font-size: 14px;
+
     font-weight: 800;
 
     line-height: 1.2;
@@ -792,6 +1002,7 @@ input {
     color: #198754;
 
     font-size: 10px;
+
     font-weight: 700;
 
     line-height: 1.2;
@@ -828,6 +1039,7 @@ input {
     margin: 0;
 
     font-size: 19px;
+
     font-weight: 700;
 }
 
@@ -854,7 +1066,9 @@ input {
 
 .footer-content {
     display: flex;
+
     align-items: center;
+
     justify-content: center;
 
     gap: 25px;
@@ -872,6 +1086,106 @@ input {
 
 
 /* =========================================================
+   MESSAGE CENTRAL
+========================================================= */
+
+#message-overlay {
+    position: fixed;
+
+    inset: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background: rgba(0, 0, 0, 0.35);
+
+    z-index: 9999;
+
+    animation: overlayFadeIn 0.3s ease;
+}
+
+.message-box {
+    width: 360px;
+
+    min-height: 180px;
+
+    background: #ffffff;
+
+    border-radius: 16px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    text-align: center;
+
+    padding: 30px;
+
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+
+    animation: messageAppear 0.35s ease;
+}
+
+.message-icon {
+    font-size: 45px;
+
+    margin-bottom: 15px;
+}
+
+.message-text {
+    font-size: 18px;
+
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   ANIMATIONS
+========================================================= */
+
+@keyframes messageAppear {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes overlayFadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes subcategoryOpen {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* =========================================================
    TABLETTE
 ========================================================= */
 
@@ -879,11 +1193,13 @@ input {
 
     .header-container {
         gap: 15px;
+
         padding: 0 16px;
     }
 
     .brand {
         min-width: 180px;
+
         font-size: 21px;
     }
 
@@ -896,22 +1212,20 @@ input {
     }
 
     .category-navbar-inner {
-        padding: 0 14px;
-        gap: 2px;
+        padding: 0 16px;
+
+        gap: 5px;
     }
 
     .category-nav-link {
-        padding: 0 7px;
-        font-size: 12px;
-    }
+        padding: 0 9px;
 
-    .all-categories {
-        padding: 0 12px;
         font-size: 12px;
     }
 
     .publish-button {
-        padding: 0 10px;
+        padding: 0 12px;
+
         font-size: 11px;
     }
 
@@ -922,7 +1236,7 @@ input {
 
 
 /* =========================================================
-   TABLETTE / PETIT ÉCRAN
+   PETIT ÉCRAN
 ========================================================= */
 
 @media (max-width: 992px) {
@@ -935,6 +1249,7 @@ input {
         flex-wrap: wrap;
 
         padding-top: 12px;
+
         padding-bottom: 12px;
     }
 
@@ -952,6 +1267,7 @@ input {
         flex-basis: 100%;
 
         width: 100%;
+
         max-width: none;
 
         margin-top: 5px;
@@ -959,7 +1275,14 @@ input {
 
     .category-navbar {
         overflow-x: auto;
+
         overflow-y: hidden;
+
+        scrollbar-width: none;
+    }
+
+    .category-navbar::-webkit-scrollbar {
+        display: none;
     }
 
     .category-navbar-inner {
@@ -968,6 +1291,12 @@ input {
         min-width: 100%;
 
         overflow: visible;
+
+        padding: 0 12px;
+    }
+
+    .publish-button {
+        margin-left: 5px;
     }
 
     .product-column {
@@ -992,6 +1321,7 @@ input {
 
     .brand img {
         width: 38px;
+
         height: 38px;
 
         margin-right: 7px;
@@ -1009,12 +1339,47 @@ input {
         font-size: 21px;
     }
 
+    .category-navbar {
+        height: 52px;
+    }
+
     .category-navbar-inner {
+        height: 52px;
+
+        gap: 4px;
+
         padding: 0 10px;
     }
 
+    .category-nav-link,
+    .publish-button {
+        height: 36px;
+    }
+
+    .category-nav-link {
+        padding: 0 10px;
+
+        font-size: 11px;
+    }
+
+    .category-nav-link i {
+        font-size: 14px;
+    }
+
+    .publish-button {
+        padding: 0 11px;
+
+        font-size: 10px;
+    }
+
     .marketplace-content {
-        padding: 18px 12px 35px;
+        padding: 0 12px 35px;
+    }
+
+    .products-header {
+        margin: 0 0 8px 0;
+
+        padding: 0;
     }
 
     .products-header h1,
@@ -1034,6 +1399,18 @@ input {
         flex-direction: column;
 
         gap: 7px;
+    }
+
+    .all-categories-toggle {
+        padding: 14px;
+    }
+
+    .category-toggle {
+        padding: 12px 14px;
+    }
+
+    .subcategories-list {
+        margin-left: 35px;
     }
 }
 
@@ -1070,74 +1447,3 @@ input {
     }
 }
 
-/* =========================
-   MESSAGE CENTRAL
-========================= */
-
-#message-overlay {
-    position: fixed;
-    inset: 0;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    background: rgba(0, 0, 0, 0.35);
-
-    z-index: 9999;
-
-    animation: overlayFadeIn 0.3s ease;
-}
-
-.message-box {
-    width: 360px;
-    min-height: 180px;
-
-    background: white;
-    border-radius: 16px;
-
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-
-    text-align: center;
-
-    padding: 30px;
-
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
-
-    animation: messageAppear 0.35s ease;
-}
-
-.message-icon {
-    font-size: 45px;
-    margin-bottom: 15px;
-}
-
-.message-text {
-    font-size: 18px;
-    font-weight: 600;
-}
-
-@keyframes messageAppear {
-    from {
-        opacity: 0;
-        transform: scale(0.8);
-    }
-
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
-}
-
-@keyframes overlayFadeIn {
-    from {
-        opacity: 0;
-    }
-
-    to {
-        opacity: 1;
-    }
-}

@@ -6,8 +6,7 @@
 
 <div class="container-fluid marketplace-content">
 
-    <div class="row g-3">
-
+  <div class="row g-3">
         <!-- =========================
              SIDEBAR CATÉGORIES
         ========================== -->
@@ -16,52 +15,135 @@
 
             <div class="category-sidebar">
 
-                <div class="sidebar-title">
+                <!-- TOUTES LES CATÉGORIES -->
+
+                <button
+                    type="button"
+                    class="sidebar-title all-categories-toggle"
+                    onclick="toggleCategories()">
+
                     <i class="bi bi-list"></i>
-                    Catégories
-                </div>
 
-                <div class="sidebar-list">
+                    <span>Toutes les catégories</span>
 
-                    {% for category in categories %}
+                    <i
+                        id="categories-arrow"
+                        class="bi bi-chevron-down ms-auto">
+                    </i>
 
-                    <a
-                        href="/categorie/{{ category.id }}?lang={{ lang }}"
-                        class="sidebar-category">
+                </button>
 
-                        {% if category.name == "Téléphones" %}
-                            <span>📱</span>
+                <!-- LISTE DES CATÉGORIES -->
 
-                        {% elif category.name == "Informatique" %}
-                            <span>💻</span>
+                <div
+                    id="categories-list"
+                    class="sidebar-list"
+                    style="display: none;">
 
-                        {% elif category.name == "Véhicules" %}
-                            <span>🚗</span>
+                    {% for item in categories_data %}
 
-                        {% elif category.name == "Mode" %}
-                            <span>👕</span>
+                        {% set category = item.category %}
 
-                        {% elif category.name == "Maison" %}
-                            <span>🏠</span>
+                        <div class="category-item">
 
-                        {% elif category.name == "Services" %}
-                            <span>🔧</span>
+                            <button
+                                type="button"
+                                class="sidebar-category category-toggle"
+                                data-category-id="{{ category.id }}"
+                                onclick="toggleSubcategories(this.dataset.categoryId)">
 
-                        {% else %}
-                            <span>📦</span>
-                        {% endif %}
+                                {% if "Téléphone" in category.name %}
 
-                        <span>
-                            {{ category.name }}
-                        </span>
+                                    <span>📱</span>
 
-                        <i class="bi bi-chevron-right"></i>
+                                {% elif "Informatique" in category.name %}
 
-                    </a>
+                                    <span>💻</span>
+
+                                {% elif "Véhicule" in category.name %}
+
+                                    <span>🚗</span>
+
+                                {% elif "Mode" in category.name %}
+
+                                    <span>👕</span>
+
+                                {% elif "Maison" in category.name %}
+
+                                    <span>🏠</span>
+
+                                {% elif "Gaming" in category.name %}
+
+                                    <span>🎮</span>
+
+                                {% elif "Enfants" in category.name %}
+
+                                    <span>👶</span>
+
+                                {% elif "Services" in category.name %}
+
+                                    <span>🔧</span>
+
+                                {% elif "Immobilier" in category.name %}
+
+                                    <span>🏠</span>
+
+                                {% else %}
+
+                                    <span>📦</span>
+
+                                {% endif %}
+
+                                <span>
+                                    {{ category.name }}
+                                </span>
+
+                                <i class="bi bi-chevron-right ms-auto"></i>
+
+                            </button>
+
+                            <!-- SOUS-CATÉGORIES -->
+
+                            <div
+                                id="subcategories-{{ category.id }}"
+                                class="subcategories-list"
+                                style="display: none;">
+
+                                {% if item.subcategories %}
+
+                                    {% for subcategory in item.subcategories %}
+
+                                        <a
+                                            href="/sous-categorie/{{ subcategory.id }}?lang={{ lang }}"
+                                            class="subcategory-link">
+
+                                            <span>•</span>
+
+                                            <span>
+                                                {{ subcategory.name }}
+                                            </span>
+
+                                        </a>
+
+                                    {% endfor %}
+
+                                {% else %}
+
+                                    <div class="no-subcategory">
+                                        Aucune sous-catégorie
+                                    </div>
+
+                                {% endif %}
+
+                            </div>
+
+                        </div>
 
                     {% endfor %}
 
                 </div>
+
+                <!-- BOUTIQUES -->
 
                 <div class="sidebar-divider"></div>
 
@@ -92,14 +174,13 @@
 
             <div class="products-header">
 
-                <div>
-                    <h1>
-                        Produits populaires
-                    </h1>
+                <h1>
+                    Produits populaires
+                </h1>
 
-                </div>
-
-                <a href="#" class="view-all">
+                <a
+                    href="/?lang={{ lang }}"
+                    class="view-all">
 
                     Voir tout
 
@@ -110,131 +191,124 @@
             </div>
 
 
-            <!-- =========================
-                 GRILLE PRODUITS
-            ========================== -->
+            <!-- GRILLE PRODUITS -->
 
             <div class="row products-grid">
 
                 {% for product in products %}
 
-                <div class="product-column">
+                    <div class="product-column">
 
-                    <article class="product-card">
+                        <article class="product-card">
 
-                        <!-- IMAGE -->
-
-                        <div class="product-image-wrapper">
-
-                            {% if product.image %}
-
-                            <img
-                                src="/static/uploads/{{ product.image }}"
-                                alt="{{ product.title }}"
-                                class="product-image">
-
-                            {% else %}
-
-                            <div class="product-no-image">
-
-                                <i class="bi bi-image"></i>
-
-                            </div>
-
-                            {% endif %}
-
-
-                            <button
-                                class="favorite-button"
-                                type="button">
-
-                                <i class="bi bi-heart"></i>
-
-                            </button>
-
-
-                            {% if product.condition %}
-
-                            <span class="condition-badge">
-
-                                {{ product.condition }}
-
-                            </span>
-
-                            {% endif %}
-
-                        </div>
-
-
-                        <!-- INFORMATIONS -->
-
-                        <div class="product-info">
-
-                            <h3 class="product-title">
-                                {{ product.title }}
-                            </h3>
-
-                            <div class="product-price">
-                                {{ product.price }} MRU
-                            </div>
-
-                            <div class="product-location">
-
-                                <i class="bi bi-geo-alt"></i>
-
-                                {{ product.city }}
-
-                            </div>
+                            <!-- IMAGE -->
 
                             <a
                                 href="/produit/{{ product.id }}?lang={{ lang }}"
-                                class="product-link">
+                                class="product-image-link">
 
-                                Voir le produit
+                                <div class="product-image-wrapper">
 
-                                <i class="bi bi-arrow-right"></i>
+                                    {% if product.image %}
+
+                                        <img
+                                            src="/static/uploads/{{ product.image }}"
+                                            alt="{{ product.title }}"
+                                            class="product-image">
+
+                                    {% else %}
+
+                                        <div class="product-no-image">
+
+                                            <i class="bi bi-image"></i>
+
+                                        </div>
+
+                                    {% endif %}
+
+
+                                    <!-- FAVORIS -->
+
+                                    <button
+                                        class="favorite-button"
+                                        type="button"
+                                        onclick="event.preventDefault();">
+
+                                        <i class="bi bi-heart"></i>
+
+                                    </button>
+
+
+                                    <!-- ÉTAT -->
+
+                                    {% if product.condition %}
+
+                                        <span class="condition-badge">
+                                            {{ product.condition }}
+                                        </span>
+
+                                    {% endif %}
+
+                                </div>
+
+                            </a>
+
+
+                            <!-- INFORMATIONS -->
+
+                            <div class="product-info">
+
+                                <h3 class="product-title">
+                                    {{ product.title }}
+                                </h3>
+
+                                <div class="product-price">
+                                    {{ product.price }} MRU
+                                </div>
+
+                                <div class="product-location">
+
+                                    <i class="bi bi-geo-alt"></i>
+
+                                    {{ product.city }}
+
+                                </div>
+
+                            </div>
+
+                        </article>
+
+                    </div>
+
+                {% else %}
+
+                    <div class="col-12">
+
+                        <div class="empty-products">
+
+                            <div class="empty-icon">
+                                📦
+                            </div>
+
+                            <h3>
+                                Aucune annonce pour le moment
+                            </h3>
+
+                            <p>
+                                Soyez le premier à publier une annonce.
+                            </p>
+
+                            <a
+                                href="/publier?lang={{ lang }}"
+                                class="btn btn-success">
+
+                                Publier une annonce
 
                             </a>
 
                         </div>
 
-                    </article>
-
-                </div>
-
-                {% else %}
-
-                <!-- =========================
-                     AUCUNE ANNONCE
-                ========================== -->
-
-                <div class="col-12">
-
-                    <div class="empty-products">
-
-                        <div class="empty-icon">
-                            📦
-                        </div>
-
-                        <h3>
-                            Aucune annonce pour le moment
-                        </h3>
-
-                        <p>
-                            Soyez le premier à publier une annonce.
-                        </p>
-
-                        <a
-                            href="/publier?lang={{ lang }}"
-                            class="btn btn-success">
-
-                            Publier une annonce
-
-                        </a>
-
                     </div>
-
-                </div>
 
                 {% endfor %}
 
@@ -245,5 +319,60 @@
     </div>
 
 </div>
+
+
+<!-- =========================
+     JAVASCRIPT
+========================== -->
+
+<script>
+
+function toggleCategories() {
+
+    const list = document.getElementById("categories-list");
+    const arrow = document.getElementById("categories-arrow");
+
+    if (list.style.display === "none") {
+
+        list.style.display = "block";
+
+        arrow.classList.remove("bi-chevron-down");
+        arrow.classList.add("bi-chevron-up");
+
+    } else {
+
+        list.style.display = "none";
+
+        arrow.classList.remove("bi-chevron-up");
+        arrow.classList.add("bi-chevron-down");
+
+    }
+
+}
+
+
+function toggleSubcategories(categoryId) {
+
+    const list = document.getElementById(
+        "subcategories-" + categoryId
+    );
+
+    if (!list) {
+        return;
+    }
+
+    if (list.style.display === "none") {
+
+        list.style.display = "block";
+
+    } else {
+
+        list.style.display = "none";
+
+    }
+
+}
+
+</script>
 
 {% endblock %}
