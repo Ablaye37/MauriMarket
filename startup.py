@@ -6,7 +6,7 @@ from app.models.subcategory import SubCategory
 from app.models.product import Product
 from app.models.user import User
 
-from sqlalchemy import text
+
 
 
 def init_database():
@@ -25,26 +25,8 @@ def init_database():
     # AJOUT DU RÔLE AUX UTILISATEURS
     # =====================================================
 
-    try:
-        db.execute(
-            text(
-                "ALTER TABLE users "
-                "ADD COLUMN role VARCHAR(20) "
-                "DEFAULT 'user'"
-            )
-        )
 
-        db.commit()
 
-        print("Colonne role ajoutée.")
-
-    except Exception as e:
-        db.rollback()
-
-        if "duplicate column name" in str(e).lower():
-            print("La colonne role existe déjà.")
-        else:
-            print("Migration role :", e)
 
     # =====================================================
     # CATALOGUE MAURIMARKET
