@@ -116,7 +116,6 @@ async def supprimer_utilisateur(
                 status_code=303
             )
 
-        # Empêcher l'admin de se supprimer lui-même
         if user_id == admin.id:
 
             request.session["message"] = (
@@ -145,10 +144,6 @@ async def supprimer_utilisateur(
                 status_code=303
             )
 
-        # -------------------------------------------------
-        # Supprimer les annonces de l'utilisateur
-        # -------------------------------------------------
-
         products = (
             db.query(Product)
             .filter(Product.user_id == user.id)
@@ -157,10 +152,6 @@ async def supprimer_utilisateur(
 
         for product in products:
             db.delete(product)
-
-        # -------------------------------------------------
-        # Supprimer l'utilisateur
-        # -------------------------------------------------
 
         user_name = user.full_name
 
@@ -217,7 +208,6 @@ async def changer_role(
                 status_code=303
             )
 
-        # Empêcher l'admin de modifier son propre rôle
         if user_id == admin.id:
 
             request.session["message"] = (
@@ -245,10 +235,6 @@ async def changer_role(
                 "/admin",
                 status_code=303
             )
-
-        # -------------------------------------------------
-        # Changer le rôle
-        # -------------------------------------------------
 
         if user.role == "admin":
 
@@ -364,4 +350,3 @@ async def supprimer_annonce(
 
     finally:
         db.close()
-        

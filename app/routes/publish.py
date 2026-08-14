@@ -102,7 +102,6 @@ async def creer_produit(
             status_code=303
         )
 
-
     # =================================================
     # IMAGE SUPABASE STORAGE
     # =================================================
@@ -111,20 +110,16 @@ async def creer_produit(
 
     if image and image.filename:
 
-        # Extension du fichier
         extension = os.path.splitext(
             image.filename
         )[1].lower()
 
-        # Nom unique
         file_name = (
             f"{uuid.uuid4()}{extension}"
         )
 
-        # Lire l'image
         file_data = await image.read()
 
-        # Envoyer vers Supabase Storage
         supabase.storage.from_(
             BUCKET_NAME
         ).upload(
@@ -135,13 +130,11 @@ async def creer_produit(
             }
         )
 
-        # URL publique
         image_url = supabase.storage.from_(
             BUCKET_NAME
         ).get_public_url(
             file_name
         )
-
 
     # =================================================
     # BASE DE DONNÉES
@@ -168,7 +161,6 @@ async def creer_produit(
     db.commit()
 
     db.close()
-
 
     # =================================================
     # RETOUR ACCUEIL

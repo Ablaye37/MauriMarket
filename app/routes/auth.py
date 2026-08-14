@@ -107,7 +107,6 @@ async def login_user(
             status_code=303
         )
 
-    # Vérification du mot de passe
     if user.password != password:
 
         print("❌ MOT DE PASSE INCORRECT")
@@ -125,11 +124,9 @@ async def login_user(
 
     print("✅ CONNEXION RÉUSSIE")
 
-    # Créer la session
     request.session["user_id"] = user.id
     request.session["user_name"] = user.full_name
 
-    # Message de connexion
     request.session["message"] = (
         "✅ Vous êtes maintenant connecté !"
     )
