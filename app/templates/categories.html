@@ -1,0 +1,154 @@
+<!-- =========================
+     SIDEBAR CATÉGORIES
+========================== -->
+
+<aside class="col-lg-3 col-xl-2">
+
+    <div class="category-sidebar">
+
+        <!-- BOUTON TOUTES LES CATÉGORIES -->
+
+        <button
+            type="button"
+            class="sidebar-title all-categories-toggle"
+            onclick="toggleCategories()">
+
+            <i class="bi bi-list"></i>
+
+            <span>Toutes les catégories</span>
+
+            <i
+                id="categories-arrow"
+                class="bi bi-chevron-down ms-auto">
+            </i>
+
+        </button>
+
+
+        <!-- LISTE DES CATÉGORIES -->
+
+        <div
+            id="categories-list"
+            class="sidebar-list"
+            style="display: none;">
+
+            {% for category in categories %}
+
+            <!-- CATÉGORIE -->
+
+            <button
+                type="button"
+                class="sidebar-category category-toggle"
+                data-category-id="{{ category.id }}"
+                onclick="toggleSubcategories(this.dataset.categoryId)">
+
+                {% if category.name == "Téléphones" or "Téléphones" in category.name %}
+
+                    <span>📱</span>
+
+                {% elif category.name == "Informatique" %}
+
+                    <span>💻</span>
+
+                {% elif category.name == "Véhicules" %}
+
+                    <span>🚗</span>
+
+                {% elif category.name == "Mode" %}
+
+                    <span>👕</span>
+
+                {% elif category.name == "Maison" or "Maison" in category.name %}
+
+                    <span>🏠</span>
+
+                {% elif category.name == "Gaming & Divertissement" %}
+
+                    <span>🎮</span>
+
+                {% elif category.name == "Enfants & Bébés" %}
+
+                    <span>👶</span>
+
+                {% elif category.name == "Services" %}
+
+                    <span>🔧</span>
+
+                {% elif category.name == "Immobilier" %}
+
+                    <span>🏠</span>
+
+                {% else %}
+
+                    <span>📦</span>
+
+                {% endif %}
+
+
+                <span class="category-name">
+                    {{ category.name }}
+                </span>
+
+
+                <i
+                    id="arrow-{{ category.id }}"
+                    class="bi bi-chevron-right ms-auto">
+                </i>
+
+            </button>
+
+
+            <!-- SOUS-CATÉGORIES -->
+
+            <div
+                id="subcategories-{{ category.id }}"
+                class="subcategories-list"
+                style="display: none;">
+
+                {% for subcategory in category.subcategories %}
+
+                <a
+                    href="/sous-categorie/{{ subcategory.id }}?lang={{ lang }}"
+                    class="subcategory-link">
+
+                    <i class="bi bi-chevron-right"></i>
+
+                    <span>
+                        {{ subcategory.name }}
+                    </span>
+
+                </a>
+
+                {% endfor %}
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+
+        <!-- SÉPARATION -->
+
+        <div class="sidebar-divider"></div>
+
+
+        <!-- BOUTIQUES -->
+
+        <a
+            href="/boutiques?lang={{ lang }}"
+            class="sidebar-shop">
+
+            <span>🏪</span>
+
+            <span>
+                Découvrir les boutiques
+            </span>
+
+            <i class="bi bi-arrow-right"></i>
+
+        </a>
+
+    </div>
+
+</aside>

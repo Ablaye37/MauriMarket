@@ -1,0 +1,253 @@
+```html
+{% extends "base.html" %}
+
+{% block title %}
+Publier un produit - MauriMarket
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4 mb-5">
+
+    <h2 class="mb-4">
+        Publier un produit
+    </h2>
+
+    <form
+        action="/publier"
+        method="post"
+        enctype="multipart/form-data">
+
+        <!-- PHOTO -->
+        <div class="mb-3">
+            <label class="form-label">
+                Photo du produit
+            </label>
+
+            <input
+                type="file"
+                name="image"
+                class="form-control"
+                accept="image/*">
+        </div>
+
+
+        <!-- NOM -->
+        <div class="mb-3">
+            <label class="form-label">
+                Nom du produit
+            </label>
+
+            <input
+                type="text"
+                name="title"
+                class="form-control"
+                required>
+        </div>
+
+
+        <!-- DESCRIPTION -->
+        <div class="mb-3">
+            <label class="form-label">
+                Description
+            </label>
+
+            <textarea
+                name="description"
+                class="form-control"
+                rows="4"
+                required></textarea>
+        </div>
+
+
+        <!-- PRIX -->
+        <div class="mb-3">
+            <label class="form-label">
+                Prix
+            </label>
+
+            <input
+                type="number"
+                name="price"
+                class="form-control"
+                required>
+        </div>
+
+
+        <!-- VILLE -->
+        <div class="mb-3">
+            <label class="form-label">
+                Ville
+            </label>
+
+            <input
+                type="text"
+                name="city"
+                class="form-control"
+                required>
+        </div>
+
+
+        <!-- ÉTAT -->
+        <div class="mb-3">
+            <label class="form-label">
+                État du produit
+            </label>
+
+            <input
+                type="text"
+                name="condition"
+                class="form-control"
+                required>
+        </div>
+
+
+        <!-- CATÉGORIE -->
+        <div class="mb-3">
+
+            <label class="form-label">
+                Catégorie
+            </label>
+
+            <select
+                name="category_id"
+                id="category_id"
+                class="form-select"
+                required>
+
+                <option value="">
+                    -- Choisir une catégorie --
+                </option>
+
+                {% for category in categories %}
+
+                    <option value="{{ category.id }}">
+                        {{ category.name }}
+                    </option>
+
+                {% endfor %}
+
+            </select>
+            <div class="mb-3">
+    <label class="form-label">Sous-catégorie</label>
+
+    <select
+        name="subcategory_id"
+        id="subcategory_id"
+        class="form-select"
+        required>
+
+        <option value="">
+            -- Choisir une sous-catégorie --
+        </option>
+
+        {% for subcategory in subcategories %}
+            <option
+                value="{{ subcategory.id }}"
+                data-category="{{ subcategory.category_id }}">
+
+                {{ subcategory.name }}
+
+            </option>
+            <script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const categorySelect = document.getElementById("category_id");
+    const subcategorySelect = document.getElementById("subcategory_id");
+
+    if (!categorySelect || !subcategorySelect) {
+        return;
+    }
+
+    const options = Array.from(
+        subcategorySelect.options
+    );
+
+    function filtrerSousCategories() {
+
+        const categoryId = categorySelect.value;
+
+        subcategorySelect.value = "";
+
+        options.forEach(function (option) {
+
+            if (!option.value) {
+                option.style.display = "";
+                return;
+            }
+
+            if (option.dataset.category === categoryId) {
+                option.style.display = "";
+            } else {
+                option.style.display = "none";
+            }
+
+        });
+    }
+
+    categorySelect.addEventListener(
+        "change",
+        filtrerSousCategories
+    );
+
+    filtrerSousCategories();
+
+});
+</script>
+        {% endfor %}
+
+    </select>
+</div>
+
+        </div>
+
+
+        <!-- SOUS-CATÉGORIE -->
+        <div class="mb-3">
+
+            <label class="form-label">
+                Sous-catégorie
+            </label>
+
+            <select
+                name="subcategory_id"
+                id="subcategory_id"
+                class="form-select"
+                required>
+
+                <option value="">
+                    -- Choisir une sous-catégorie --
+                </option>
+
+                {% for subcategory in subcategories %}
+
+                    <option
+                        value="{{ subcategory.id }}"
+                        data-category="{{ subcategory.category_id }}">
+
+                        {{ subcategory.name }}
+
+                    </option>
+
+                {% endfor %}
+
+            </select>
+
+        </div>
+
+
+        <!-- BOUTON -->
+        <button
+            type="submit"
+            class="btn btn-success">
+
+            Publier
+
+        </button>
+
+    </form>
+
+</div>
+
+{% endblock %}
+```

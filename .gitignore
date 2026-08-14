@@ -1,0 +1,24 @@
+# Environnement virtuel
+venv/
+
+# Cache Python
+__pycache__/
+*.pyc
+
+# Base de données SQLite
+*.db
+
+# Sauvegardes
+*.save
+
+# Images uploadées
+app/static/uploads/
+
+# Anciennes sauvegardes
+anciens_fichiers/
+
+# Fichiers système
+.DS_Store
+
+# Variables d'environnement
+.env

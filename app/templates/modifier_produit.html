@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}
+Modifier annonce
+{% endblock %}
+
+
+{% block content %}
+
+<div class="container py-5">
+
+<h2>Modifier l'annonce</h2>
+
+
+<form method="POST">
+
+<div class="mb-3">
+<label>Titre</label>
+<input class="form-control"
+name="title"
+value="{{ product.title }}">
+</div>
+
+
+<div class="mb-3">
+<label>Description</label>
+<textarea class="form-control"
+name="description">{{ product.description }}</textarea>
+</div>
+
+
+<div class="mb-3">
+<label>Prix</label>
+<input class="form-control"
+name="price"
+value="{{ product.price }}">
+</div>
+
+
+<div class="mb-3">
+<label>Ville</label>
+<input class="form-control"
+name="city"
+value="{{ product.city }}">
+</div>
+
+
+<div class="mb-3">
+<label>État</label>
+<input class="form-control"
+name="condition"
+value="{{ product.condition }}">
+</div>
+
+
+<button class="btn btn-success">
+Enregistrer
+</button>
+
+
+</form>
+
+</div>
+
+{% endblock %}

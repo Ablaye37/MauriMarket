@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% block title %}Détail produit - MauriMarket{% endblock %}
+
+{% block content %}
+
+<div class="container py-5">
+
+    <div class="row">
+
+        <!-- Image -->
+        <div class="col-lg-6">
+
+            {% if product.image %}
+                <img src="{{ product.image }}"
+                     class="img-fluid rounded shadow"
+                     alt="{{ product.title }}">
+            {% else %}
+                <img src="https://placehold.co/800x600?text=MauriMarket"
+                     class="img-fluid rounded shadow"
+                     alt="Produit">
+            {% endif %}
+
+        </div>
+
+        <!-- Informations -->
+        <div class="col-lg-6">
+
+            <h2 class="fw-bold mb-3">
+                {{ product.title }}
+            </h2>
+
+            <h3 class="text-success mb-4">
+                {{ product.price }} MRU
+            </h3>
+
+            <p>
+                <strong>Description :</strong>
+            </p>
+
+            <p class="text-muted">
+                {{ product.description }}
+            </p>
+
+            <hr>
+
+            <p>
+                <i class="bi bi-geo-alt-fill text-success"></i>
+                <strong>Ville :</strong>
+                {{ product.city }}
+            </p>
+
+            <p>
+                <i class="bi bi-box-seam text-success"></i>
+                <strong>État :</strong>
+                {{ product.condition }}
+            </p>
+
+            <p>
+                <i class="bi bi-tag-fill text-success"></i>
+                <strong>Catégorie :</strong>
+
+                {% if product.category %}
+                    {{ product.category.name }}
+                {% else %}
+                    Non renseignée
+                {% endif %}
+            </p>
+
+            <hr>
+
+<h5 class="fw-bold">
+    <i class="bi bi-person-fill text-success"></i>
+    Vendeur
+</h5>
+
+{% if product.user %}
+
+<p>
+    <strong>Nom :</strong>
+    {{ product.user.full_name }}
+</p>
+
+<p>
+    <strong>Téléphone :</strong>
+    {{ product.user.phone }}
+</p>
+
+{% else %}
+
+<p class="text-muted">
+    Informations vendeur indisponibles
+</p>
+
+{% endif %}
+
+            <div class="mt-4">
+
+                <a href="/" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i>
+                    Retour
+                </a>
+                <form action="/panier/ajouter/{{ product.id }}" method="post" class="d-inline">
+    <button type="submit" class="btn btn-warning">
+        <i class="bi bi-cart-plus"></i>
+        Ajouter au panier
+    </button>
+</form>
+
+                {% if product.user %}
+
+<a href="https://wa.me/{{ product.user.phone }}"
+   target="_blank"
+   class="btn btn-success">
+
+    <i class="bi bi-whatsapp"></i>
+    Contacter le vendeur
+
+</a>
+
+{% endif %}
+
+              
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

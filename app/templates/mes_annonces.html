@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}
+Mes annonces - MauriMarket
+{% endblock %}
+
+
+{% block content %}
+
+<div class="container py-5">
+
+    <h2 class="mb-4">
+        Mes annonces
+    </h2>
+
+
+    <div class="row">
+
+        {% for product in products %}
+
+        <div class="col-md-4 mb-4">
+
+            <div class="card shadow">
+
+                {% if product.image %}
+                <img src="{{ product.image }}"
+                     class="card-img-top"
+                     height="200">
+                {% endif %}
+
+
+                <div class="card-body">
+
+                    <h5>
+                        {{ product.title }}
+                    </h5>
+
+                    <p>
+                        {{ product.description }}
+                    </p>
+
+                    <strong>
+                        {{ product.price }} MRU
+                    </strong>
+
+                    <p>
+                        {{ product.city }}
+                    </p>
+
+                    <a href="/modifier-produit/{{ product.id }}" 
+                    class="btn btn-primary">
+                        Modifier
+                    </a>
+
+                <a href="/supprimer-produit/{{ product.id }}"
+                 class="btn btn-danger"
+                  onclick="return confirm('Supprimer cette annonce ?');">
+                        Supprimer
+                </a>
+                
+                </div>
+
+            </div>
+
+        </div>
+
+        {% else %}
+
+        <p>
+            Vous n'avez aucune annonce.
+        </p>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
+{% endblock %}
