@@ -19,8 +19,13 @@ Inscription - MauriMarket
                     Créer un compte
                 </h2>
 
+                {% if error %}
+            <div class="alert alert-danger">
+               {{ error }}
+                    </div>
+                {% endif %}
 
-                <form method="POST" action="/register">
+                <form method="post" action="/register">
 
 
                     <div class="mb-3">

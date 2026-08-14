@@ -23,9 +23,9 @@ async def register_page(request: Request):
         name="register.html"
     )
 
-
 @router.post("/register")
 async def register_user(
+    request: Request,
     full_name: str = Form(...),
     phone: str = Form(...),
     password: str = Form(...)
@@ -33,6 +33,26 @@ async def register_user(
 
     db = SessionLocal()
 
+    # Vérifier si le numéro existe déjà
+    existing_user = (
+        db.query(User)
+        .filter(User.phone == phone)
+        .first()
+    )
+
+    if existing_user:
+
+        db.close()
+
+        return templates.TemplateResponse(
+            request=request,
+            name="register.html",
+            context={
+                "error": "❌ Ce numéro est déjà associé à un compte."
+            }
+        )
+
+    # Créer le compte
     user = User(
         full_name=full_name,
         phone=phone,
@@ -47,7 +67,6 @@ async def register_user(
         "/login",
         status_code=303
     )
-
 
 # =====================================================
 # CONNEXION - PAGE
