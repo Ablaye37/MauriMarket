@@ -210,87 +210,11 @@ async def liste_boutiques(
 
         db.close()
 
-# =====================================================
-# VOIR UNE BOUTIQUE PUBLIQUEMENT
-# =====================================================
-
-@router.get("/boutique/{boutique_id}")
-async def voir_boutique(
-    request: Request,
-    boutique_id: int
-):
-
-    db = SessionLocal()
-
-    try:
-
-        # -------------------------------------------------
-        # RÉCUPÉRER LA BOUTIQUE
-        # -------------------------------------------------
-
-        boutique = (
-            db.query(Boutique)
-            .filter(
-                Boutique.id == boutique_id
-            )
-            .first()
-        )
-
-        # -------------------------------------------------
-        # BOUTIQUE INTROUVABLE
-        # -------------------------------------------------
-
-        if not boutique:
-
-            return RedirectResponse(
-                "/boutiques",
-                status_code=303
-            )
-
-        # -------------------------------------------------
-        # PRODUITS DE LA BOUTIQUE
-        # -------------------------------------------------
-
-        produits = (
-            db.query(Product)
-            .filter(
-                Product.boutique_id == boutique.id
-            )
-            .order_by(
-                Product.id.desc()
-            )
-            .all()
-        )
-
-        # -------------------------------------------------
-        # CONTEXTE GLOBAL
-        # -------------------------------------------------
-
-        global_context = contexte_global(
-            request,
-            db
-        )
-
-        # -------------------------------------------------
-        # PAGE PUBLIQUE
-        # -------------------------------------------------
-
-        return templates.TemplateResponse(
-            request=request,
-            name="boutique_detail.html",
-            context={
-                "boutique": boutique,
-                "produits": produits,
-                **global_context
-            }
-        )
-
-    finally:
-
-        db.close()
 
 # =====================================================
 # PAGE CRÉER UNE BOUTIQUE
+# IMPORTANT :
+# Cette route doit être AVANT /boutique/{boutique_id}
 # =====================================================
 
 @router.get("/boutique/creer")
@@ -400,6 +324,10 @@ async def creer_boutique(
 
     try:
 
+        # -------------------------------------------------
+        # Vérifier si l'utilisateur possède déjà une boutique
+        # -------------------------------------------------
+
         boutique = (
             db.query(Boutique)
             .filter(
@@ -414,6 +342,10 @@ async def creer_boutique(
                 "/ma-boutique",
                 status_code=303
             )
+
+        # -------------------------------------------------
+        # Vérifier s'il existe déjà une demande en attente
+        # -------------------------------------------------
 
         demande_en_attente = (
             db.query(BoutiqueRequest)
@@ -430,6 +362,10 @@ async def creer_boutique(
                 "/boutique/demande",
                 status_code=303
             )
+
+        # -------------------------------------------------
+        # Créer la demande
+        # -------------------------------------------------
 
         demande = BoutiqueRequest(
             name=name,
@@ -460,7 +396,7 @@ async def creer_boutique(
 
         print(
             "ERREUR DEMANDE BOUTIQUE :",
-            e
+            repr(e)
         )
 
         request.session["message"] = (
@@ -501,6 +437,10 @@ async def statut_demande(
 
     try:
 
+        # -------------------------------------------------
+        # Vérifier si une boutique existe déjà
+        # -------------------------------------------------
+
         boutique = (
             db.query(Boutique)
             .filter(
@@ -515,6 +455,10 @@ async def statut_demande(
                 "/ma-boutique",
                 status_code=303
             )
+
+        # -------------------------------------------------
+        # Récupérer la dernière demande
+        # -------------------------------------------------
 
         demande = (
             db.query(BoutiqueRequest)
@@ -543,6 +487,94 @@ async def statut_demande(
             context={
                 "demande": demande,
                 "message": message,
+                **global_context
+            }
+        )
+
+    finally:
+
+        db.close()
+
+
+# =====================================================
+# VOIR UNE BOUTIQUE PUBLIQUEMENT
+#
+# IMPORTANT :
+# Cette route dynamique est placée APRÈS :
+# /boutique/creer
+# /boutique/demande
+#
+# Cela évite que "creer" soit interprété comme boutique_id.
+# =====================================================
+
+@router.get("/boutique/{boutique_id}")
+async def voir_boutique(
+    request: Request,
+    boutique_id: int
+):
+
+    db = SessionLocal()
+
+    try:
+
+        # -------------------------------------------------
+        # Vérifier que l'ID est valide
+        # -------------------------------------------------
+
+        boutique = (
+            db.query(Boutique)
+            .filter(
+                Boutique.id == boutique_id
+            )
+            .first()
+        )
+
+        # -------------------------------------------------
+        # Boutique introuvable
+        # -------------------------------------------------
+
+        if not boutique:
+
+            return RedirectResponse(
+                "/boutiques",
+                status_code=303
+            )
+
+        # -------------------------------------------------
+        # Récupérer les produits de la boutique
+        # -------------------------------------------------
+
+        produits = (
+            db.query(Product)
+            .filter(
+                Product.boutique_id == boutique.id
+            )
+            .order_by(
+                Product.id.desc()
+            )
+            .all()
+        )
+
+        # -------------------------------------------------
+        # Contexte global
+        # -------------------------------------------------
+
+        global_context = contexte_global(
+            request,
+            db
+        )
+
+        # -------------------------------------------------
+        # Afficher la boutique
+        # -------------------------------------------------
+
+        return templates.TemplateResponse(
+            request=request,
+            name="boutique_detail.html",
+            context={
+                "boutique": boutique,
+                "produits": produits,
+                "products": produits,
                 **global_context
             }
         )
@@ -727,6 +759,10 @@ async def modifier_boutique(
                 status_code=303
             )
 
+        # -------------------------------------------------
+        # Nettoyer les données
+        # -------------------------------------------------
+
         name = name.strip()
         sale_type = sale_type.strip()
         description = description.strip()
@@ -739,14 +775,18 @@ async def modifier_boutique(
                 status_code=303
             )
 
+        # -------------------------------------------------
+        # Modifier les informations
+        # -------------------------------------------------
+
         boutique.name = name
         boutique.sale_type = sale_type
         boutique.description = description or None
         boutique.city = city or None
 
-        # =================================================
+        # -------------------------------------------------
         # LOGO
-        # =================================================
+        # -------------------------------------------------
 
         if logo and logo.filename:
 
@@ -760,9 +800,9 @@ async def modifier_boutique(
 
                 boutique.logo = nouveau_logo
 
-        # =================================================
+        # -------------------------------------------------
         # COVER
-        # =================================================
+        # -------------------------------------------------
 
         if cover_image and cover_image.filename:
 
@@ -776,9 +816,9 @@ async def modifier_boutique(
 
                 boutique.cover_image = nouvelle_cover
 
-        # =================================================
-        # ENREGISTRER EN BASE
-        # =================================================
+        # -------------------------------------------------
+        # Sauvegarder
+        # -------------------------------------------------
 
         db.commit()
 
