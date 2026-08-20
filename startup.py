@@ -1,12 +1,14 @@
 
 from app.database.database import engine, Base, SessionLocal
+from sqlalchemy import text
 
 from app.models.category import Category
 from app.models.subcategory import SubCategory
 from app.models.product import Product
 from app.models.user import User
-
-
+from app.models.boutique import Boutique
+from app.models.boutique_request import BoutiqueRequest
+from app.models.contact_message import ContactMessage
 
 
 def init_database():
@@ -18,6 +20,27 @@ def init_database():
     # =====================================================
 
     Base.metadata.create_all(bind=engine)
+
+    # =====================================================
+    # MIGRATION BOUTIQUES
+    # =====================================================
+
+    with engine.begin() as connection:
+
+        connection.execute(text("""
+            ALTER TABLE products
+            ADD COLUMN IF NOT EXISTS boutique_id INTEGER
+        """))
+
+        connection.execute(text("""
+            CREATE TABLE IF NOT EXISTS boutiques (
+                id SERIAL PRIMARY KEY,
+                name VARCHAR(150) NOT NULL,
+                sale_type VARCHAR(100) NOT NULL,
+                user_id INTEGER NOT NULL REFERENCES users(id)
+            )
+        """))
+
 
     db = SessionLocal()
 

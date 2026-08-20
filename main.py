@@ -4,9 +4,11 @@ from fastapi.templating import Jinja2Templates
 from starlette.middleware.sessions import SessionMiddleware
 
 from app.database.database import SessionLocal
+
 from app.models.category import Category
 from app.models.subcategory import SubCategory
 from app.models.product import Product
+from app.models.boutique import Boutique
 
 from app.routes.products import router as products_router
 from app.routes import publish
@@ -15,6 +17,9 @@ from app.routes import auth
 from app.routes import categories
 from app.routes import cart
 from app.routes import admin
+from app.routes import boutiques
+from app.routes import contact
+from app.models.contact_message import ContactMessage
 
 from startup import init_database
 
@@ -68,6 +73,91 @@ templates = Jinja2Templates(
 
 
 # =====================================================
+# CONTEXTE GLOBAL
+#
+# Ces informations seront disponibles sur toutes
+# les pages qui utilisent ce contexte.
+# =====================================================
+
+def contexte_global(request: Request):
+
+    # -------------------------------------------------
+    # UTILISATEUR CONNECTÉ
+    # -------------------------------------------------
+
+    user_id = request.session.get(
+        "user_id"
+    )
+
+    user_name = request.session.get(
+        "user_name"
+    )
+
+
+    # -------------------------------------------------
+    # VÉRIFIER SI L'UTILISATEUR POSSÈDE UNE BOUTIQUE
+    # -------------------------------------------------
+
+    has_boutique = False
+
+    if user_id:
+
+        db = SessionLocal()
+
+        try:
+
+            boutique = (
+                db.query(Boutique)
+                .filter(
+                    Boutique.user_id == user_id
+                )
+                .first()
+            )
+
+            if boutique:
+
+                has_boutique = True
+
+        finally:
+
+            db.close()
+
+
+    # -------------------------------------------------
+    # PANIER
+    # -------------------------------------------------
+
+    panier = request.session.get(
+        "panier",
+        []
+    )
+
+    panier_count = len(panier)
+
+
+    # -------------------------------------------------
+    # LANGUE
+    # -------------------------------------------------
+
+    lang = request.query_params.get(
+        "lang",
+        "fr"
+    )
+
+
+    # -------------------------------------------------
+    # RETOUR
+    # -------------------------------------------------
+
+    return {
+        "user_name": user_name,
+        "has_boutique": has_boutique,
+        "panier_count": panier_count,
+        "lang": lang
+    }
+
+
+# =====================================================
 # ACCUEIL
 # =====================================================
 
@@ -82,7 +172,7 @@ async def home(
     try:
 
         # -------------------------------------------------
-        # RÉCUPÉRER LES CATÉGORIES
+        # CATÉGORIES
         # -------------------------------------------------
 
         categories = (
@@ -93,7 +183,7 @@ async def home(
 
 
         # -------------------------------------------------
-        # RÉCUPÉRER LES SOUS-CATÉGORIES
+        # SOUS-CATÉGORIES
         # -------------------------------------------------
 
         categories_data = []
@@ -116,38 +206,53 @@ async def home(
 
 
         # -------------------------------------------------
-        # RECHERCHE DES PRODUITS
+        # ANNONCES DE L'ACCUEIL
+        #
+        # IMPORTANT :
+        #
+        # boutique_id = NULL
+        # → annonce publiée dans l'accueil
+        #
+        # boutique_id != NULL
+        # → produit appartenant à une boutique
+        # -------------------------------------------------
+
+        query_products = (
+            db.query(Product)
+            .filter(
+                Product.boutique_id.is_(None)
+            )
+        )
+
+
+        # -------------------------------------------------
+        # RECHERCHE
         # -------------------------------------------------
 
         if q:
 
             products = (
-                db.query(Product)
+                query_products
                 .filter(
                     (Product.title.ilike(f"%{q}%")) |
                     (Product.description.ilike(f"%{q}%")) |
                     (Product.city.ilike(f"%{q}%"))
                 )
-                .order_by(Product.id.desc())
+                .order_by(
+                    Product.id.desc()
+                )
                 .all()
             )
 
         else:
 
             products = (
-                db.query(Product)
-                .order_by(Product.id.desc())
+                query_products
+                .order_by(
+                    Product.id.desc()
+                )
                 .all()
             )
-
-
-        # -------------------------------------------------
-        # UTILISATEUR CONNECTÉ
-        # -------------------------------------------------
-
-        user_name = request.session.get(
-            "user_name"
-        )
 
 
         # -------------------------------------------------
@@ -161,43 +266,31 @@ async def home(
 
 
         # -------------------------------------------------
-        # PANIER
+        # CONTEXTE GLOBAL
         # -------------------------------------------------
 
-        panier = request.session.get(
-            "panier",
-            []
-        )
-
-        panier_count = len(panier)
-
-
-        # -------------------------------------------------
-        # LANGUE
-        # -------------------------------------------------
-
-        lang = request.query_params.get(
-            "lang",
-            "fr"
+        global_context = contexte_global(
+            request
         )
 
 
         # -------------------------------------------------
-        # AFFICHER LA PAGE D'ACCUEIL
+        # PAGE ACCUEIL
         # -------------------------------------------------
 
         return templates.TemplateResponse(
             request=request,
             name="index.html",
             context={
+                # Données accueil
                 "categories": categories,
                 "categories_data": categories_data,
                 "products": products,
                 "q": q,
-                "user_name": user_name,
                 "message": message,
-                "panier_count": panier_count,
-                "lang": lang
+
+                # Données globales
+                **global_context
             }
         )
 
@@ -236,4 +329,14 @@ app.include_router(
 
 app.include_router(
     admin.router
+)
+
+app.include_router(
+    boutiques.router
+)
+app.include_router(
+    contact.router
+)
+app.include_router(
+    contact.router
 )

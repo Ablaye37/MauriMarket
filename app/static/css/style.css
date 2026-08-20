@@ -1,5 +1,11 @@
+﻿/* =========================================================
+   MAURIMARKET
+   STYLE PRINCIPAL
+========================================================= */
+
+
 /* =========================================================
-   MAURIMARKET - STYLE COMPLET
+   RESET
 ========================================================= */
 
 * {
@@ -24,7 +30,9 @@ a {
 }
 
 button,
-input {
+input,
+select,
+textarea {
     font-family: inherit;
 }
 
@@ -41,19 +49,19 @@ input {
 
 
 /* =========================================================
-   LIGNE PRINCIPALE
+   LIGNE PRINCIPALE DU HEADER
 ========================================================= */
 
 .header-container {
     width: 100%;
-    height: 76px;
+    min-height: 76px;
 
     display: flex;
     align-items: center;
 
     gap: 25px;
 
-    padding: 0 20px;
+    padding: 0 2px;
 
     background: #ffffff;
 }
@@ -132,7 +140,6 @@ input {
     padding: 0 16px;
 
     font-size: 14px;
-
     color: #333333;
 }
 
@@ -154,6 +161,8 @@ input {
     font-weight: 700;
 
     cursor: pointer;
+
+    transition: background 0.2s ease;
 }
 
 .main-search button:hover {
@@ -162,7 +171,7 @@ input {
 
 
 /* =========================================================
-   ACTIONS HEADER
+   ACTIONS DU HEADER
 ========================================================= */
 
 .header-actions {
@@ -188,6 +197,8 @@ input {
     font-weight: 600;
 
     white-space: nowrap;
+
+    transition: color 0.2s ease;
 }
 
 .header-action i {
@@ -231,6 +242,7 @@ input {
 .account-button {
     border: 0;
     background: transparent;
+
     cursor: pointer;
 }
 
@@ -247,12 +259,11 @@ input {
 
     width: 190px;
 
-    padding: 7px;
+    padding: 2px;
 
     background: #ffffff;
 
     border: 1px solid #e5e7eb;
-
     border-radius: 9px;
 
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
@@ -272,7 +283,7 @@ input {
 
     gap: 9px;
 
-    padding: 10px 11px;
+    padding: 1px 11px;
 
     border-radius: 6px;
 
@@ -301,7 +312,7 @@ input {
 
 
 /* =========================================================
-   NAVBAR
+   NAVBAR DES CATÉGORIES
 ========================================================= */
 
 .category-navbar {
@@ -326,7 +337,7 @@ input {
 
     gap: 10px;
 
-    padding: 0 28px;
+    padding: 0 2px;
 
     overflow: hidden;
 }
@@ -388,7 +399,7 @@ input {
 
 
 /* =========================================================
-   PUBLIER
+   BOUTON PUBLIER
 ========================================================= */
 
 .publish-button {
@@ -407,11 +418,9 @@ input {
     padding: 0 18px;
 
     background: #e8f5ef;
-
     color: #198754;
 
     border: 1px solid #d5ecdf;
-
     border-radius: 8px;
 
     font-size: 13px;
@@ -450,12 +459,6 @@ input {
     margin: 0;
 }
 
-
-/* =========================================================
-   SIDEBAR + PRODUITS
-   ESPACE MINIMUM ENTRE LES DEUX
-========================================================= */
-
 .marketplace-content > .row {
     --bs-gutter-x: 8px;
     --bs-gutter-y: 0;
@@ -465,14 +468,13 @@ input {
 
 
 /* =========================================================
-   SIDEBAR
+   SIDEBAR CATÉGORIES
 ========================================================= */
 
-.category-sidebar {
+ .category-sidebar {
     background: #ffffff;
 
     border: 1px solid #e5e7eb;
-
     border-radius: 10px;
 
     overflow: hidden;
@@ -496,7 +498,7 @@ input {
 
 
 /* =========================================================
-   BOUTON TOUTES LES CATÉGORIES
+   TOUTES LES CATÉGORIES
 ========================================================= */
 
 .all-categories-toggle {
@@ -505,7 +507,6 @@ input {
     border: 0;
 
     background: #ffffff;
-
     color: #172033;
 
     cursor: pointer;
@@ -521,7 +522,7 @@ input {
 }
 
 .all-categories-toggle > i:first-child {
-    width: 20px;
+    width: 2Opx;
 
     font-size: 18px;
 
@@ -564,7 +565,6 @@ input {
     border: 0;
 
     background: transparent;
-
     color: #172033;
 
     cursor: pointer;
@@ -586,7 +586,6 @@ input {
 
 .category-toggle:hover {
     background: #f6faf8;
-
     color: #198754;
 }
 
@@ -710,7 +709,7 @@ input {
 
 
 /* =========================================================
-   BOUTIQUES
+   BOUTIQUES DANS LA SIDEBAR
 ========================================================= */
 
 .sidebar-divider {
@@ -732,7 +731,6 @@ input {
     color: #198754;
 
     font-size: 12px;
-
     font-weight: 700;
 }
 
@@ -749,24 +747,19 @@ input {
     width: 100%;
 
     display: flex;
-
     align-items: center;
-
     justify-content: space-between;
 
-    margin: 0 0 10px 0;
-
+    margin: 0 0 10px;
     padding: 0;
 }
 
 .products-header h1,
 .products-header h2 {
     margin: 0;
-
     padding: 0;
 
     font-size: 22px;
-
     font-weight: 800;
 
     color: #172033;
@@ -776,10 +769,7 @@ input {
     color: #198754;
 
     font-size: 12px;
-
     font-weight: 700;
-
-    margin-right: 0;
 }
 
 .view-all:hover {
@@ -788,12 +778,11 @@ input {
 
 
 /* =========================================================
-   GRILLE PRODUITS
+   GRILLE PRODUITS PRINCIPALE
 ========================================================= */
 
 .products-grid {
     display: flex;
-
     flex-wrap: wrap;
 
     margin-left: -5px;
@@ -822,7 +811,6 @@ input {
     background: #ffffff;
 
     border: 1px solid #e6e8eb;
-
     border-radius: 8px;
 
     overflow: hidden;
@@ -840,14 +828,13 @@ input {
 
 
 /* =========================================================
-   IMAGE
+   IMAGE PRODUIT
 ========================================================= */
 
 .product-image-wrapper {
     position: relative;
 
     width: 100%;
-
     height: 135px;
 
     background: #f1f2f4;
@@ -896,7 +883,6 @@ input {
     justify-content: center;
 
     border: 0;
-
     border-radius: 50%;
 
     background: rgba(255, 255, 255, 0.95);
@@ -924,13 +910,11 @@ input {
     padding: 4px 7px;
 
     background: #198754;
-
     color: #ffffff;
 
     border-radius: 4px;
 
     font-size: 9px;
-
     font-weight: 700;
 }
 
@@ -949,15 +933,12 @@ input {
     color: #172033;
 
     font-size: 13px;
-
     font-weight: 700;
-
     line-height: 1.2;
 
     display: -webkit-box;
 
     -webkit-line-clamp: 2;
-
     -webkit-box-orient: vertical;
 
     overflow: hidden;
@@ -969,7 +950,6 @@ input {
     color: #198754;
 
     font-size: 14px;
-
     font-weight: 800;
 
     line-height: 1.2;
@@ -1002,7 +982,6 @@ input {
     color: #198754;
 
     font-size: 10px;
-
     font-weight: 700;
 
     line-height: 1.2;
@@ -1025,7 +1004,6 @@ input {
     background: #ffffff;
 
     border: 1px solid #e5e7eb;
-
     border-radius: 10px;
 }
 
@@ -1039,7 +1017,6 @@ input {
     margin: 0;
 
     font-size: 19px;
-
     font-weight: 700;
 }
 
@@ -1066,9 +1043,7 @@ input {
 
 .footer-content {
     display: flex;
-
     align-items: center;
-
     justify-content: center;
 
     gap: 25px;
@@ -1095,9 +1070,7 @@ input {
     inset: 0;
 
     display: flex;
-
     align-items: center;
-
     justify-content: center;
 
     background: rgba(0, 0, 0, 0.35);
@@ -1109,7 +1082,6 @@ input {
 
 .message-box {
     width: 360px;
-
     min-height: 180px;
 
     background: #ffffff;
@@ -1117,11 +1089,8 @@ input {
     border-radius: 16px;
 
     display: flex;
-
     flex-direction: column;
-
     align-items: center;
-
     justify-content: center;
 
     text-align: center;
@@ -1143,6 +1112,691 @@ input {
     font-size: 18px;
 
     font-weight: 600;
+}
+
+
+/* =========================================================
+   PAGES BOUTIQUES
+========================================================= */
+
+.boutiques-page {
+    width: 100%;
+
+    padding: 12px 24px 33px;
+
+    margin: 0;
+}
+
+.boutiques-page .page-title {
+    margin: 0 0 14px;
+
+    padding: 0;
+
+    font-size: 24px;
+    font-weight: 800;
+
+    color: #172033;
+}
+
+.boutiques-page .page-subtitle {
+    margin: -7px 0 18px;
+
+    color: #697180;
+
+    font-size: 13px;
+}
+
+.boutiques-header {
+    margin-bottom: 14px;
+}
+
+.boutiques-page .card {
+    margin: 0;
+}
+
+.boutiques-page .card-body {
+    padding: 18px !important;
+}
+
+
+/* =========================================================
+   GRILLE DES BOUTIQUES
+========================================================= */
+
+.boutiques-grid {
+    display: grid;
+
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+
+    gap: 14px;
+
+    margin: 0;
+    padding: 0;
+}
+
+
+/* =========================================================
+   CARTE BOUTIQUE
+========================================================= */
+
+.boutique-card {
+    display: flex;
+    flex-direction: column;
+
+    min-height: 150px;
+
+    padding: 18px;
+
+    background: #ffffff;
+
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+
+    transition: 0.2s ease;
+}
+
+.boutique-card:hover {
+    transform: translateY(-2px);
+
+    border-color: #cfe8dc;
+
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.07);
+}
+
+
+/* =========================================================
+   ICÔNE BOUTIQUE
+========================================================= */
+
+.boutique-icon {
+    width: 42px;
+    height: 42px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin-bottom: 11px;
+
+    border-radius: 9px;
+
+    background: #e8f5ef;
+    color: #198754;
+
+    font-size: 20px;
+}
+
+
+/* =========================================================
+   NOM BOUTIQUE
+========================================================= */
+
+.boutique-card h3 {
+    margin: 0;
+
+    font-size: 16px;
+    font-weight: 800;
+
+    color: #172033;
+}
+
+
+/* =========================================================
+   TYPE BOUTIQUE
+========================================================= */
+
+.boutique-card p {
+    margin: 5px 0 14px;
+
+    color: #697180;
+
+    font-size: 12px;
+}
+
+
+/* =========================================================
+   BOUTON BOUTIQUE
+========================================================= */
+
+.boutique-card .boutique-button {
+    margin-top: auto;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    height: 34px;
+
+    padding: 0 12px;
+
+    border-radius: 7px;
+
+    background: #198754;
+    color: #ffffff;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    transition: background 0.2s ease;
+}
+
+.boutique-card .boutique-button:hover {
+    background: #157347;
+}
+
+
+/* =========================================================
+   MA BOUTIQUE
+========================================================= */
+
+.ma-boutique-page {
+    width: 100%;
+
+    padding: 8px 18px 25px;
+
+    margin: 0;
+}
+
+
+/* =========================================================
+   EN-TÊTE MA BOUTIQUE
+========================================================= */
+
+.ma-boutique-header {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin: 0 0 12px;
+
+    padding: 10px 14px;
+
+    background: #ffffff;
+
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+}
+
+.ma-boutique-header h1 {
+    margin: 0;
+
+    font-size: 18px;
+    line-height: 1.2;
+
+    font-weight: 800;
+
+    color: #172033;
+}
+
+.ma-boutique-header p {
+    margin: 3px 0 0;
+
+    color: #697180;
+
+    font-size: 11px;
+}
+
+
+/* =========================================================
+   HEADER PRODUITS DE MA BOUTIQUE
+========================================================= */
+
+.boutique-products-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin: 0 0 8px;
+}
+
+.boutique-products-header h2 {
+    margin: 0;
+
+    font-size: 18px;
+    font-weight: 800;
+
+    color: #172033;
+}
+
+.boutique-products-header p {
+    margin: 2px 0 0;
+
+    color: #697180;
+
+    font-size: 10px;
+}
+
+
+/* =========================================================
+   GRILLE PRODUITS DE MA BOUTIQUE
+========================================================= */
+
+.boutique-products-grid {
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+
+    gap: 8px;
+}
+
+
+/* =========================================================
+   CARTE PRODUIT DE MA BOUTIQUE
+========================================================= */
+
+.boutique-product-card {
+    min-width: 0;
+
+    background: #ffffff;
+
+    border: 1px solid #e5e7eb;
+
+    border-radius: 7px;
+
+    overflow: hidden;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.boutique-product-card:hover {
+    transform: translateY(-2px);
+
+    box-shadow: 0 5px 14px rgba(0, 0, 0, 0.08);
+}
+
+
+/* =========================================================
+   IMAGE PRODUIT BOUTIQUE
+========================================================= */
+
+.boutique-product-image {
+    width: 100%;
+    height: 135px;
+
+    background: #f1f2f4;
+
+    overflow: hidden;
+}
+
+.boutique-product-image img {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+}
+
+.boutique-no-image {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #a4aab4;
+
+    font-size: 38px;
+}
+
+
+/* =========================================================
+   INFORMATIONS PRODUIT BOUTIQUE
+========================================================= */
+
+.boutique-product-info {
+    padding: 8px;
+}
+
+.boutique-product-info h3 {
+    margin: 0;
+
+    color: #172033;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    line-height: 1.25;
+
+    display: -webkit-box;
+
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+
+    overflow: hidden;
+}
+
+.boutique-product-price {
+    margin-top: 4px;
+
+    color: #198754;
+
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.boutique-product-location {
+    display: flex;
+    align-items: center;
+
+    gap: 4px;
+
+    margin-top: 4px;
+
+    color: #697180;
+
+    font-size: 9px;
+}
+
+.boutique-product-location i {
+    font-size: 10px;
+}
+
+.boutique-product-link {
+    display: block;
+
+    margin-top: 5px;
+
+    color: #198754;
+
+    font-size: 9px;
+    font-weight: 700;
+}
+
+.boutique-product-link:hover {
+    text-decoration: underline;
+}
+
+
+/* =========================================================
+   BOUTIQUE VIDE
+========================================================= */
+
+.boutique-empty {
+    width: 100%;
+
+    padding: 45px 20px;
+
+    text-align: center;
+
+    background: #ffffff;
+
+    border: 1px solid #e5e7eb;
+
+    border-radius: 8px;
+}
+
+.boutique-empty > i {
+    font-size: 45px;
+
+    color: #9aa1ad;
+}
+
+.boutique-empty h3 {
+    margin: 10px 0 5px;
+
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.boutique-empty p {
+    margin: 0 0 12px;
+
+    color: #697180;
+
+    font-size: 11px;
+}
+
+
+/* =========================================================
+   PAGE DÉTAIL BOUTIQUE
+========================================================= */
+
+.boutique-detail-page {
+    width: 100%;
+
+    padding: 6px 24px 15px;
+
+    margin: 0;
+}
+
+.boutique-detail-header {
+    margin: 0 0 8px;
+
+    padding: 18px;
+
+    background: #ffffff;
+
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+}
+
+.boutique-detail-header h1 {
+    margin: 0;
+
+    font-size: 24px;
+    font-weight: 800;
+}
+
+.boutique-detail-header p {
+    margin: 5px 0 0;
+
+    color: #697180;
+
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   CRÉER UNE BOUTIQUE
+========================================================= */
+
+.creer-boutique-page {
+    width: 100%;
+
+    padding: 8px 12px 12px;
+
+    margin: 0;
+
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.creer-boutique-card {
+    width: 100%;
+    max-width: 380px;
+
+    margin: 0;
+    padding: 14px;
+
+    background: #ffffff;
+
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+
+    box-shadow: none;
+}
+
+
+/* =========================================================
+   HEADER CRÉATION BOUTIQUE
+========================================================= */
+
+.creer-boutique-header {
+    margin: 0 0 9px;
+
+    padding: 0;
+
+    text-align: center;
+}
+
+.creer-boutique-icon {
+    width: 34px;
+    height: 34px;
+
+    margin: 0 auto 4px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #e8f5ee;
+    color: #198754;
+}
+
+.creer-boutique-icon i {
+    font-size: 16px;
+}
+
+.creer-boutique-header h1 {
+    margin: 0;
+
+    padding: 0;
+
+    font-size: 17px;
+    line-height: 1.15;
+
+    font-weight: 700;
+
+    color: #172033;
+}
+
+.creer-boutique-header p {
+    margin: 3px 0 0;
+
+    padding: 0;
+
+    font-size: 9px;
+    line-height: 1.2;
+
+    color: #7b8492;
+}
+
+
+/* =========================================================
+   CHAMPS CRÉATION BOUTIQUE
+========================================================= */
+
+.creer-boutique-field {
+    margin: 0 0 7px;
+
+    padding: 0;
+}
+
+.creer-boutique-field label {
+    display: block;
+
+    margin: 0 0 3px;
+
+    padding: 0;
+
+    font-size: 10px;
+    line-height: 1.15;
+
+    font-weight: 700;
+
+    color: #344054;
+}
+
+.creer-boutique-field input,
+.creer-boutique-field select,
+.creer-boutique-field textarea {
+    display: block;
+
+    width: 100%;
+
+    margin: 0;
+
+    box-sizing: border-box;
+
+    border: 1px solid #dfe3e8;
+    border-radius: 5px;
+
+    outline: none;
+
+    font-size: 10px;
+}
+
+.creer-boutique-field input,
+.creer-boutique-field select {
+    height: 32px;
+
+    padding: 0 8px;
+}
+
+.creer-boutique-field textarea {
+    min-height: 65px;
+
+    padding: 7px 8px;
+
+    resize: vertical;
+}
+
+.creer-boutique-field input:focus,
+.creer-boutique-field select:focus,
+.creer-boutique-field textarea:focus {
+    border-color: #198754;
+
+    box-shadow:
+        0 0 0 2px rgba(25, 135, 84, 0.08);
+}
+
+.creer-boutique-field small {
+    display: block;
+
+    margin: 2px 0 0;
+
+    padding: 0;
+
+    font-size: 8px;
+    line-height: 1.15;
+
+    color: #8a929e;
+}
+
+
+/* =========================================================
+   BOUTON CRÉER
+========================================================= */
+
+.creer-boutique-card button {
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 4px;
+
+    width: 100%;
+    height: 32px;
+
+    margin: 2px 0 0;
+
+    padding: 0;
+
+    border: 0;
+    border-radius: 5px;
+
+    background: #198754;
+    color: #ffffff;
+
+    font-size: 10px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition: background 0.2s ease;
+}
+
+.creer-boutique-card button:hover {
+    background: #157347;
 }
 
 
@@ -1186,7 +1840,7 @@ input {
 
 
 /* =========================================================
-   TABLETTE
+   TABLETTE LARGE
 ========================================================= */
 
 @media (max-width: 1200px) {
@@ -1232,11 +1886,19 @@ input {
     .product-column {
         width: 25%;
     }
+
+    .boutiques-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .boutique-products-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
 }
 
 
 /* =========================================================
-   PETIT ÉCRAN
+   TABLETTE
 ========================================================= */
 
 @media (max-width: 992px) {
@@ -1249,7 +1911,6 @@ input {
         flex-wrap: wrap;
 
         padding-top: 12px;
-
         padding-bottom: 12px;
     }
 
@@ -1267,7 +1928,6 @@ input {
         flex-basis: 100%;
 
         width: 100%;
-
         max-width: none;
 
         margin-top: 5px;
@@ -1275,7 +1935,6 @@ input {
 
     .category-navbar {
         overflow-x: auto;
-
         overflow-y: hidden;
 
         scrollbar-width: none;
@@ -1302,6 +1961,14 @@ input {
     .product-column {
         width: 33.333333%;
     }
+
+    .boutiques-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .boutique-products-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
 }
 
 
@@ -1321,7 +1988,6 @@ input {
 
     .brand img {
         width: 38px;
-
         height: 38px;
 
         margin-right: 7px;
@@ -1377,9 +2043,7 @@ input {
     }
 
     .products-header {
-        margin: 0 0 8px 0;
-
-        padding: 0;
+        margin-bottom: 8px;
     }
 
     .products-header h1,
@@ -1411,6 +2075,88 @@ input {
 
     .subcategories-list {
         margin-left: 35px;
+    }
+
+    .boutiques-page {
+        padding: 10px 12px 25px;
+    }
+
+    .boutiques-page .page-title {
+        font-size: 20px;
+    }
+
+    .boutiques-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+
+        gap: 8px;
+    }
+
+    .boutique-card {
+        min-height: 140px;
+
+        padding: 12px;
+    }
+
+    .boutique-card h3 {
+        font-size: 14px;
+    }
+
+    .boutique-card p {
+        font-size: 11px;
+    }
+
+    .boutique-detail-page {
+        padding: 5px 10px 12px;
+    }
+
+    .boutique-detail-header {
+        padding: 10px;
+
+        margin-bottom: 6px;
+    }
+
+    .boutique-detail-header h1 {
+        font-size: 19px;
+    }
+
+    .boutique-products-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+
+        gap: 6px;
+    }
+
+    .boutique-product-image {
+        height: 120px;
+    }
+
+    .ma-boutique-page {
+        padding: 6px 10px 20px;
+    }
+
+    .ma-boutique-header {
+        padding: 8px 10px;
+    }
+
+    .ma-boutique-header h1 {
+        font-size: 16px;
+    }
+
+    .boutique-products-header h2 {
+        font-size: 16px;
+    }
+
+    .boutique-products-header p {
+        font-size: 9px;
+    }
+
+    .creer-boutique-page {
+        padding: 6px 8px 10px;
+    }
+
+    .creer-boutique-card {
+        max-width: 360px;
+
+        padding: 12px;
     }
 }
 
@@ -1444,6 +2190,83 @@ input {
     .product-location,
     .product-link {
         font-size: 9px;
+    }
+
+    .boutiques-grid {
+        grid-template-columns: 1fr 1fr;
+
+        gap: 6px;
+    }
+
+    .boutique-card {
+        min-height: 130px;
+
+        padding: 10px;
+    }
+
+    .boutique-icon {
+        width: 36px;
+        height: 36px;
+
+        margin-bottom: 7px;
+
+        font-size: 17px;
+    }
+
+    .boutique-card h3 {
+        font-size: 13px;
+    }
+
+    .boutique-card p {
+        font-size: 10px;
+
+        margin-bottom: 9px;
+    }
+
+    .boutique-card .boutique-button {
+        height: 30px;
+
+        padding: 0 8px;
+
+        font-size: 10px;
+    }
+
+    .boutique-product-image {
+        height: 110px;
+    }
+
+    .boutique-product-info {
+        padding: 7px;
+    }
+
+    .boutique-product-info h3 {
+        font-size: 11px;
+    }
+
+    .boutique-product-price {
+        font-size: 12px;
+    }
+
+    .ma-boutique-header {
+        align-items: flex-start;
+    }
+
+    .ma-boutique-header h1 {
+        font-size: 15px;
+    }
+
+    .ma-boutique-header p {
+        font-size: 9px;
+    }
+
+    .ma-boutique-header .btn {
+        font-size: 9px;
+
+        padding: 5px 7px;
+    }
+
+    .creer-boutique-header h1 {
+        font-size: 16px;
     }
 }
 

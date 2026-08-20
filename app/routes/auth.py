@@ -4,15 +4,18 @@ from fastapi.templating import Jinja2Templates
 
 from app.database.database import SessionLocal
 from app.models.user import User
+from app.models.boutique import Boutique
 
 
 router = APIRouter()
 
-templates = Jinja2Templates(directory="app/templates")
+templates = Jinja2Templates(
+    directory="app/templates"
+)
 
 
 # =====================================================
-# INSCRIPTION
+# INSCRIPTION - PAGE
 # =====================================================
 
 @router.get("/register")
@@ -22,6 +25,11 @@ async def register_page(request: Request):
         request=request,
         name="register.html"
     )
+
+
+# =====================================================
+# INSCRIPTION - TRAITEMENT
+# =====================================================
 
 @router.post("/register")
 async def register_user(
@@ -33,40 +41,68 @@ async def register_user(
 
     db = SessionLocal()
 
-    # Vérifier si le numéro existe déjà
-    existing_user = (
-        db.query(User)
-        .filter(User.phone == phone)
-        .first()
-    )
+    try:
 
-    if existing_user:
+        # -------------------------------------------------
+        # Vérifier si le numéro existe déjà
+        # -------------------------------------------------
+
+        existing_user = (
+            db.query(User)
+            .filter(User.phone == phone)
+            .first()
+        )
+
+        if existing_user:
+
+            return templates.TemplateResponse(
+                request=request,
+                name="register.html",
+                context={
+                    "error": "Ce numéro est déjà utilisé."
+                }
+            )
+
+        # -------------------------------------------------
+        # Créer l'utilisateur
+        # -------------------------------------------------
+
+        user = User(
+            full_name=full_name,
+            phone=phone,
+            password=password
+        )
+
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+
+        # -------------------------------------------------
+        # Créer la session
+        # -------------------------------------------------
+
+        request.session["user_id"] = user.id
+        request.session["user_name"] = user.full_name
+
+        # Un nouvel utilisateur n'a pas encore de boutique
+        request.session["has_boutique"] = False
+
+        print("================================")
+        print("INSCRIPTION RÉUSSIE")
+        print("USER ID :", user.id)
+        print("USER NAME :", user.full_name)
+        print("HAS BOUTIQUE :", False)
+        print("================================")
+
+        return RedirectResponse(
+            "/",
+            status_code=303
+        )
+
+    finally:
 
         db.close()
 
-        return templates.TemplateResponse(
-            request=request,
-            name="register.html",
-            context={
-                "error": "❌ Ce numéro est déjà associé à un compte."
-            }
-        )
-
-    # Créer le compte
-    user = User(
-        full_name=full_name,
-        phone=phone,
-        password=password
-    )
-
-    db.add(user)
-    db.commit()
-    db.close()
-
-    return RedirectResponse(
-        "/login",
-        status_code=303
-    )
 
 # =====================================================
 # CONNEXION - PAGE
@@ -75,14 +111,17 @@ async def register_user(
 @router.get("/login")
 async def login_page(request: Request):
 
-    message = request.session.pop("message", None)
+    # Si déjà connecté
+    if request.session.get("user_id"):
+
+        return RedirectResponse(
+            "/",
+            status_code=303
+        )
 
     return templates.TemplateResponse(
         request=request,
-        name="login.html",
-        context={
-            "message": message
-        }
+        name="login.html"
     )
 
 
@@ -99,61 +138,83 @@ async def login_user(
 
     db = SessionLocal()
 
-    user = db.query(User).filter(
-        User.phone == phone
-    ).first()
+    try:
 
-    print("================================")
-    print("PHONE REÇU :", repr(phone))
-    print("PASSWORD REÇU :", repr(password))
+        # -------------------------------------------------
+        # Rechercher l'utilisateur
+        # -------------------------------------------------
 
-    if user:
-        print("USER TROUVÉ :", user.id)
-        print("PHONE DB :", repr(user.phone))
-        print("PASSWORD DB :", repr(user.password))
-    else:
-        print("❌ AUCUN UTILISATEUR TROUVÉ")
-
-    db.close()
-
-    if not user:
-        request.session["message"] = (
-            "❌ Téléphone ou mot de passe incorrect."
+        user = (
+            db.query(User)
+            .filter(User.phone == phone)
+            .first()
         )
 
+        print("================================")
+        print("PHONE REÇU :", repr(phone))
+        print("PASSWORD REÇU :", repr(password))
+
+        if user:
+
+            print("USER TROUVÉ :", user.id)
+            print("PHONE DB :", repr(user.phone))
+            print("PASSWORD DB :", repr(user.password))
+
+        else:
+
+            print("USER NON TROUVÉ")
+
+        # -------------------------------------------------
+        # Vérifier utilisateur + mot de passe
+        # -------------------------------------------------
+
+        if not user or user.password != password:
+
+            return templates.TemplateResponse(
+                request=request,
+                name="login.html",
+                context={
+                    "error": "Numéro ou mot de passe incorrect."
+                }
+            )
+
+        # -------------------------------------------------
+        # Créer la session
+        # -------------------------------------------------
+
+        request.session["user_id"] = user.id
+        request.session["user_name"] = user.full_name
+
+        # -------------------------------------------------
+        # Vérifier si l'utilisateur possède une boutique
+        # -------------------------------------------------
+
+        boutique = (
+            db.query(Boutique)
+            .filter(Boutique.user_id == user.id)
+            .first()
+        )
+
+        request.session["has_boutique"] = boutique is not None
+
+        # -------------------------------------------------
+        # Affichage debug
+        # -------------------------------------------------
+
+        print("SESSION CRÉÉE")
+        print("USER ID :", request.session.get("user_id"))
+        print("USER NAME :", request.session.get("user_name"))
+        print("HAS BOUTIQUE :", request.session.get("has_boutique"))
+        print("================================")
+
         return RedirectResponse(
-            "/login",
+            "/",
             status_code=303
         )
 
-    if user.password != password:
+    finally:
 
-        print("❌ MOT DE PASSE INCORRECT")
-        print("SAISI :", repr(password))
-        print("DB   :", repr(user.password))
-
-        request.session["message"] = (
-            "❌ Téléphone ou mot de passe incorrect."
-        )
-
-        return RedirectResponse(
-            "/login",
-            status_code=303
-        )
-
-    print("✅ CONNEXION RÉUSSIE")
-
-    request.session["user_id"] = user.id
-    request.session["user_name"] = user.full_name
-
-    request.session["message"] = (
-        "✅ Vous êtes maintenant connecté !"
-    )
-
-    return RedirectResponse(
-        "/",
-        status_code=303
-    )
+        db.close()
 
 
 # =====================================================
@@ -163,11 +224,8 @@ async def login_user(
 @router.get("/logout")
 async def logout(request: Request):
 
+    # Supprimer complètement la session
     request.session.clear()
-
-    request.session["message"] = (
-        "✅ Vous êtes maintenant déconnecté."
-    )
 
     return RedirectResponse(
         "/",

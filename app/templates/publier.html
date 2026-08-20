@@ -1,4 +1,3 @@
-
 {% extends "base.html" %}
 
 {% block title %}
@@ -9,103 +8,257 @@ Publier un produit - MauriMarket
 
 <div class="container mt-4 mb-5">
 
-    <h2 class="mb-4">
-        Publier un produit
-    </h2>
+    <!-- =========================
+         EN-TÊTE
+    ========================== -->
+
+    <div class="mb-4">
+
+        <h2 class="fw-bold">
+            <i class="bi bi-plus-circle"></i>
+            Publier un produit
+        </h2>
+
+        {% if boutique %}
+
+        <p class="text-muted mb-0">
+            Votre produit sera publié dans :
+            <strong>{{ boutique.name }}</strong>
+        </p>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- =========================
+         FORMULAIRE
+    ========================== -->
 
     <form
         action="/publier"
         method="post"
-        enctype="multipart/form-data">
+        enctype="multipart/form-data"
+    >
 
-        <!-- PHOTO -->
+        <!-- =========================
+             PHOTO
+        ========================== -->
+
         <div class="mb-3">
-            <label class="form-label">
+
+            <label
+                for="image"
+                class="form-label fw-semibold"
+            >
                 Photo du produit
             </label>
 
             <input
                 type="file"
                 name="image"
+                id="image"
                 class="form-control"
-                accept="image/*">
+                accept="image/*"
+            >
+
         </div>
 
 
-        <!-- NOM -->
+        <!-- =========================
+             NOM
+        ========================== -->
+
         <div class="mb-3">
-            <label class="form-label">
+
+            <label
+                for="title"
+                class="form-label fw-semibold"
+            >
                 Nom du produit
             </label>
 
             <input
                 type="text"
                 name="title"
+                id="title"
                 class="form-control"
-                required>
+                placeholder="Ex : iPhone 15 Pro"
+                required
+            >
+
         </div>
 
 
-        <!-- DESCRIPTION -->
+        <!-- =========================
+             DESCRIPTION
+        ========================== -->
+
         <div class="mb-3">
-            <label class="form-label">
+
+            <label
+                for="description"
+                class="form-label fw-semibold"
+            >
                 Description
             </label>
 
             <textarea
                 name="description"
+                id="description"
                 class="form-control"
                 rows="4"
-                required></textarea>
+                placeholder="Décrivez votre produit..."
+                required
+            ></textarea>
+
         </div>
 
 
-        <!-- PRIX -->
+        <!-- =========================
+             PRIX
+        ========================== -->
+
         <div class="mb-3">
-            <label class="form-label">
+
+            <label
+                for="price"
+                class="form-label fw-semibold"
+            >
                 Prix
             </label>
 
             <input
                 type="number"
                 name="price"
+                id="price"
                 class="form-control"
-                required>
+                min="0"
+                step="0.01"
+                placeholder="Ex : 25000"
+                required
+            >
+
         </div>
 
 
-        <!-- VILLE -->
+        <!-- =========================
+             VILLE
+        ========================== -->
+
         <div class="mb-3">
-            <label class="form-label">
+
+            <label
+                for="city"
+                class="form-label fw-semibold"
+            >
                 Ville
             </label>
 
             <input
                 type="text"
                 name="city"
+                id="city"
                 class="form-control"
-                required>
+                placeholder="Ex : Nouakchott"
+                required
+            >
+
         </div>
 
 
-        <!-- ÉTAT -->
+        <!-- =========================
+             ÉTAT
+        ========================== -->
+
         <div class="mb-3">
-            <label class="form-label">
+
+            <label
+                for="condition"
+                class="form-label fw-semibold"
+            >
                 État du produit
             </label>
 
-            <input
-                type="text"
+            <select
                 name="condition"
-                class="form-control"
-                required>
+                id="condition"
+                class="form-select"
+                required
+            >
+
+                <option value="">
+                    -- Choisir l'état --
+                </option>
+
+                <option value="Neuf">
+                    Neuf
+                </option>
+
+                <option value="Très bon état">
+                    Très bon état
+                </option>
+
+                <option value="Bon état">
+                    Bon état
+                </option>
+
+                <option value="Occasion">
+                    Occasion
+                </option>
+
+            </select>
+
         </div>
 
 
-        <!-- CATÉGORIE -->
+        <!-- =========================
+             TYPE DE PUBLICATION
+        ========================== -->
+
         <div class="mb-3">
 
-            <label class="form-label">
+            <label
+                for="publication_type"
+                class="form-label fw-semibold"
+            >
+                Type de publication
+            </label>
+
+            <select
+                name="publication_type"
+                id="publication_type"
+                class="form-select"
+                required
+            >
+
+                <option value="">
+                    -- Choisir le type --
+                </option>
+
+                <option value="vente">
+                    Vente
+                </option>
+
+                <option value="annonce">
+                    Annonce
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <!-- =========================
+             CATÉGORIE
+        ========================== -->
+
+        <div class="mb-3">
+
+            <label
+                for="category_id"
+                class="form-label fw-semibold"
+            >
                 Catégorie
             </label>
 
@@ -113,7 +266,8 @@ Publier un produit - MauriMarket
                 name="category_id"
                 id="category_id"
                 class="form-select"
-                required>
+                required
+            >
 
                 <option value="">
                     -- Choisir une catégorie --
@@ -121,91 +275,27 @@ Publier un produit - MauriMarket
 
                 {% for category in categories %}
 
-                    <option value="{{ category.id }}">
-                        {{ category.name }}
-                    </option>
+                <option value="{{ category.id }}">
+                    {{ category.name }}
+                </option>
 
                 {% endfor %}
 
             </select>
-            <div class="mb-3">
-    <label class="form-label">Sous-catégorie</label>
-
-    <select
-        name="subcategory_id"
-        id="subcategory_id"
-        class="form-select"
-        required>
-
-        <option value="">
-            -- Choisir une sous-catégorie --
-        </option>
-
-        {% for subcategory in subcategories %}
-            <option
-                value="{{ subcategory.id }}"
-                data-category="{{ subcategory.category_id }}">
-
-                {{ subcategory.name }}
-
-            </option>
-            <script>
-document.addEventListener("DOMContentLoaded", function () {
-
-    const categorySelect = document.getElementById("category_id");
-    const subcategorySelect = document.getElementById("subcategory_id");
-
-    if (!categorySelect || !subcategorySelect) {
-        return;
-    }
-
-    const options = Array.from(
-        subcategorySelect.options
-    );
-
-    function filtrerSousCategories() {
-
-        const categoryId = categorySelect.value;
-
-        subcategorySelect.value = "";
-
-        options.forEach(function (option) {
-
-            if (!option.value) {
-                option.style.display = "";
-                return;
-            }
-
-            if (option.dataset.category === categoryId) {
-                option.style.display = "";
-            } else {
-                option.style.display = "none";
-            }
-
-        });
-    }
-
-    categorySelect.addEventListener(
-        "change",
-        filtrerSousCategories
-    );
-
-    filtrerSousCategories();
-
-});
-</script>
-        {% endfor %}
-
-    </select>
-</div>
 
         </div>
 
 
-        <!-- SOUS-CATÉGORIE -->
-        <div class="mb-3">
+        <!-- =========================
+             SOUS-CATÉGORIE
+        ========================== -->
 
-            <label class="form-label">
+        <div class="mb-4">
+
+            <label
+                for="subcategory_id"
+                class="form-label fw-semibold"
+            >
                 Sous-catégorie
             </label>
 
@@ -213,7 +303,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 name="subcategory_id"
                 id="subcategory_id"
                 class="form-select"
-                required>
+                required
+            >
 
                 <option value="">
                     -- Choisir une sous-catégorie --
@@ -221,13 +312,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 {% for subcategory in subcategories %}
 
-                    <option
-                        value="{{ subcategory.id }}"
-                        data-category="{{ subcategory.category_id }}">
-
-                        {{ subcategory.name }}
-
-                    </option>
+                <option
+                    value="{{ subcategory.id }}"
+                    data-category="{{ subcategory.category_id }}"
+                >
+                    {{ subcategory.name }}
+                </option>
 
                 {% endfor %}
 
@@ -236,12 +326,18 @@ document.addEventListener("DOMContentLoaded", function () {
         </div>
 
 
-        <!-- BOUTON -->
+        <!-- =========================
+             BOUTON
+        ========================== -->
+
         <button
             type="submit"
-            class="btn btn-success">
+            class="btn btn-success"
+        >
 
-            Publier
+            <i class="bi bi-check-circle"></i>
+
+            Publier le produit
 
         </button>
 
@@ -249,5 +345,89 @@ document.addEventListener("DOMContentLoaded", function () {
 
 </div>
 
-{% endblock %}
 
+<!-- =========================
+     FILTRE DES SOUS-CATÉGORIES
+========================== -->
+
+<script>
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        const categorySelect =
+            document.getElementById("category_id");
+
+        const subcategorySelect =
+            document.getElementById("subcategory_id");
+
+
+        if (
+            !categorySelect ||
+            !subcategorySelect
+        ) {
+            return;
+        }
+
+
+        const options =
+            Array.from(
+                subcategorySelect.options
+            );
+
+
+        function filtrerSousCategories() {
+
+            const categoryId =
+                categorySelect.value;
+
+
+            subcategorySelect.value = "";
+
+
+            options.forEach(
+                function (option) {
+
+                    if (!option.value) {
+
+                        option.hidden = false;
+
+                        return;
+
+                    }
+
+
+                    if (
+                        option.dataset.category ===
+                        categoryId
+                    ) {
+
+                        option.hidden = false;
+
+                    } else {
+
+                        option.hidden = true;
+
+                    }
+
+                }
+            );
+
+        }
+
+
+        categorySelect.addEventListener(
+            "change",
+            filtrerSousCategories
+        );
+
+
+        filtrerSousCategories();
+
+    }
+);
+
+</script>
+
+{% endblock %}

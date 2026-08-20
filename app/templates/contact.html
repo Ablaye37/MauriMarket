@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Contact - MauriMarket</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f5f7fa;
+            color: #222;
+        }
+
+        .contact-page {
+            width: 100%;
+            min-height: 100vh;
+            padding: 5px 20px;
+        }
+
+        .contact-container {
+            width: 100%;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        /* ==============================
+           HEADER
+        ============================== */
+
+        .contact-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .contact-header h1 {
+            margin: 0 0 12px;
+            font-size: 36px;
+            font-weight: 700;
+            color: #111827;
+        }
+
+        .contact-header p {
+            margin: 0;
+            color: #6b7280;
+            font-size: 16px;
+        }
+
+
+        /* ==============================
+           GRID
+        ============================== */
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 30px;
+            align-items: start;
+        }
+
+
+        /* ==============================
+           INFORMATIONS
+        ============================== */
+
+        .contact-info {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .contact-info h2 {
+            margin: 0 0 12px;
+            font-size: 24px;
+            color: #111827;
+        }
+
+        .contact-info-description {
+            color: #6b7280;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .contact-icon {
+            width: 50px;
+            height: 50px;
+            min-width: 50px;
+            border-radius: 12px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background: #ecfdf5;
+            font-size: 23px;
+        }
+
+        .contact-item strong {
+            display: block;
+            margin-bottom: 5px;
+            color: #111827;
+        }
+
+        .contact-item span {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+
+        /* ==============================
+           FORMULAIRE
+        ============================== */
+
+        .contact-form {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .contact-form h2 {
+            margin: 0 0 25px;
+            font-size: 24px;
+            color: #111827;
+        }
+
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 7px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            display: block;
+
+            width: 100%;
+
+            padding: 13px 14px;
+
+            border: 1px solid #d1d5db;
+            border-radius: 10px;
+
+            background: #fff;
+
+            color: #111827;
+
+            font-size: 15px;
+
+            font-family: Arial, Helvetica, sans-serif;
+
+            outline: none;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            border-color: #16a34a;
+
+            box-shadow:
+                0 0 0 3px
+                rgba(22, 163, 74, 0.12);
+        }
+
+        .form-group textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+
+        /* ==============================
+           BOUTON
+        ============================== */
+
+        .contact-button {
+            width: 100%;
+
+            border: none;
+            border-radius: 10px;
+
+            padding: 14px 20px;
+
+            background: #16a34a;
+            color: white;
+
+            font-size: 16px;
+            font-weight: 700;
+
+            cursor: pointer;
+
+            transition: 0.2s;
+        }
+
+        .contact-button:hover {
+            background: #15803d;
+        }
+
+
+        /* ==============================
+           MESSAGE
+        ============================== */
+
+        .success-message {
+            margin-bottom: 20px;
+
+            padding: 14px 16px;
+
+            border-radius: 10px;
+
+            background: #dcfce7;
+            color: #166534;
+
+            font-size: 14px;
+        }
+
+
+        /* ==============================
+           MOBILE
+        ============================== */
+
+        @media (max-width: 800px) {
+
+            .contact-page {
+                padding: 30px 15px;
+            }
+
+            .contact-header h1 {
+                font-size: 28px;
+            }
+
+            .contact-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .contact-info,
+            .contact-form {
+                padding: 22px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+    <div class="contact-page">
+
+        <div class="contact-container">
+
+
+            <!-- ==========================
+                 TITRE
+            =========================== -->
+
+            <div class="contact-header">
+
+                <h1>
+                    📩 Contactez-nous
+                </h1>
+
+                <p>
+                    Une question, une suggestion ou un problème ?
+                    Nous sommes à votre écoute.
+                </p>
+
+            </div>
+
+
+            <!-- ==========================
+                 CONTENU
+            =========================== -->
+
+            <div class="contact-grid">
+
+
+                <!-- ======================
+                     INFORMATIONS
+                ======================= -->
+
+                <div class="contact-info">
+
+                    <h2>
+                        Nous contacter
+                    </h2>
+
+                    <p class="contact-info-description">
+                        L'équipe MauriMarket est disponible pour
+                        répondre à vos questions et vous aider.
+                    </p>
+
+
+                    <div class="contact-item">
+
+                        <div class="contact-icon">
+                            📱
+                        </div>
+
+                        <div>
+
+                            <strong>
+                                Téléphone
+                            </strong>
+
+                            <span>
+                                +222 XX XX XX XX
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="contact-item">
+
+                        <div class="contact-icon">
+                            ✉️
+                        </div>
+
+                        <div>
+
+                            <strong>
+                                Email
+                            </strong>
+
+                            <span>
+                                contact@maurimarket.com
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="contact-item">
+
+                        <div class="contact-icon">
+                            📍
+                        </div>
+
+                        <div>
+
+                            <strong>
+                                Localisation
+                            </strong>
+
+                            <span>
+                                Mauritanie
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ======================
+                     FORMULAIRE
+                ======================= -->
+
+                <div class="contact-form">
+
+                    <h2>
+                        Envoyer un message
+                    </h2>
+
+
+                    {% if message %}
+
+                    <div class="success-message">
+
+                        {{ message }}
+
+                    </div>
+
+                    {% endif %}
+
+
+                    <form
+                        method="POST"
+                        action="/contact?lang={{ lang }}"
+                    >
+
+
+                        <!-- NOM -->
+
+                        <div class="form-group">
+
+                            <label for="name">
+                                Nom complet
+                            </label>
+
+                            <input
+                                type="text"
+                                id="name"
+                                name="name"
+                                placeholder="Votre nom complet"
+                                required
+                            >
+
+                        </div>
+
+
+                        <!-- TELEPHONE -->
+
+                        <div class="form-group">
+
+                            <label for="phone">
+                                Téléphone
+                            </label>
+
+                            <input
+                                type="tel"
+                                id="phone"
+                                name="phone"
+                                placeholder="+222 XX XX XX XX"
+                                required
+                            >
+
+                        </div>
+
+
+                        <!-- EMAIL -->
+
+                        <div class="form-group">
+
+                            <label for="email">
+                                Email
+                            </label>
+
+                            <input
+                                type="email"
+                                id="email"
+                                name="email"
+                                placeholder="Votre adresse email"
+                            >
+
+                        </div>
+
+
+                        <!-- SUJET -->
+
+                        <div class="form-group">
+
+                            <label for="subject">
+                                Sujet
+                            </label>
+
+                            <input
+                                type="text"
+                                id="subject"
+                                name="subject"
+                                placeholder="Sujet de votre message"
+                                required
+                            >
+
+                        </div>
+
+
+                        <!-- MESSAGE -->
+
+                        <div class="form-group">
+
+                            <label for="message">
+                                Message
+                            </label>
+
+                            <textarea
+                                id="message"
+                                name="message"
+                                placeholder="Écrivez votre message ici..."
+                                required
+                            ></textarea>
+
+                        </div>
+
+
+                        <!-- BOUTON -->
+
+                        <button
+                            type="submit"
+                            class="contact-button"
+                        >
+
+                            📤 Envoyer le message
+
+                        </button>
+
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</body>
+
+</html>

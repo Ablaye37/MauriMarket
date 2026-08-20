@@ -1,0 +1,965 @@
+{% extends "base.html" %}
+
+{% block title %}
+Boutiques - MauriMarket
+{% endblock %}
+
+{% block content %}
+
+<div class="boutiques-page">
+
+    <!-- =====================================================
+         EN-TÊTE UNIQUE
+    ====================================================== -->
+
+    <div class="boutiques-header">
+
+        <!-- GAUCHE : TITRE -->
+
+        <div class="boutiques-title">
+
+            <h1>
+                <i class="bi bi-shop"></i>
+                Boutiques
+            </h1>
+
+            <p>
+                Découvrez les boutiques disponibles sur MauriMarket.
+            </p>
+
+        </div>
+
+
+        <!-- DROITE : RECHERCHE + CRÉER -->
+
+        <div class="boutiques-header-right">
+
+            <!-- RECHERCHE -->
+
+            <form
+                action="/boutiques"
+                method="get"
+                class="boutiques-search"
+            >
+
+                <i class="bi bi-search search-icon"></i>
+
+                <input
+                    type="text"
+                    name="q"
+                    value="{{ search_query or '' }}"
+                    placeholder="Rechercher..."
+                    autocomplete="off"
+                >
+
+                {% if search_query %}
+
+                <a
+                    href="/boutiques"
+                    class="search-clear"
+                    title="Effacer"
+                >
+                    <i class="bi bi-x"></i>
+                </a>
+
+                {% endif %}
+
+                <button
+                    type="submit"
+                    class="boutiques-search-button"
+                    title="Rechercher"
+                >
+
+                    <i class="bi bi-search"></i>
+
+                </button>
+
+            </form>
+
+
+            <!-- CRÉER UNE BOUTIQUE -->
+
+            {% if request.session.get("user_id") %}
+
+            <a
+                href="/boutique/creer"
+                class="create-boutique-btn"
+            >
+
+                <i class="bi bi-plus-circle"></i>
+
+                <span>Créer ma boutique</span>
+
+            </a>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         RÉSULTAT DE RECHERCHE
+    ====================================================== -->
+
+    {% if search_query %}
+
+    <div class="search-result-info">
+
+        <span>
+            Résultats pour
+            <strong>"{{ search_query }}"</strong>
+        </span>
+
+        <span>
+            {{ boutiques|length }}
+            boutique{% if boutiques|length != 1 %}s{% endif %}
+        </span>
+
+    </div>
+
+    {% endif %}
+
+
+    <!-- =====================================================
+         LISTE DES BOUTIQUES
+    ====================================================== -->
+
+    {% if boutiques %}
+
+    <div class="boutiques-grid">
+
+        {% for boutique in boutiques %}
+
+        <div class="boutique-card">
+
+            <!-- =================================================
+                 LOGO
+            ================================================== -->
+
+            <div class="boutique-icon">
+
+                {% if boutique.logo %}
+
+                <img
+                    src="{{ boutique.logo }}"
+                    alt="{{ boutique.name }}"
+                >
+
+                {% else %}
+
+                <i class="bi bi-shop"></i>
+
+                {% endif %}
+
+            </div>
+
+
+            <!-- =================================================
+                 INFORMATIONS
+            ================================================== -->
+
+            <div class="boutique-info">
+
+                <h2>
+                    {{ boutique.name }}
+                </h2>
+
+
+                {% if boutique.sale_type %}
+
+                <p>
+
+                    <i class="bi bi-tag"></i>
+
+                    {{ boutique.sale_type }}
+
+                </p>
+
+                {% endif %}
+
+
+                {% if boutique.city %}
+
+                <p class="boutique-city">
+
+                    <i class="bi bi-geo-alt"></i>
+
+                    {{ boutique.city }}
+
+                </p>
+
+                {% endif %}
+
+            </div>
+
+
+            <!-- =================================================
+                 VOIR LA BOUTIQUE
+            ================================================== -->
+
+            <a
+                href="/boutique/{{ boutique.id }}"
+                class="view-boutique-btn"
+            >
+
+                Voir la boutique
+
+                <i class="bi bi-arrow-right"></i>
+
+            </a>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+
+    <!-- =====================================================
+         AUCUN RÉSULTAT
+    ====================================================== -->
+
+    {% else %}
+
+    <div class="empty-boutiques">
+
+        {% if search_query %}
+
+            <i class="bi bi-search"></i>
+
+            <h2>
+                Aucune boutique trouvée
+            </h2>
+
+            <p>
+                Aucune boutique ne correspond à
+                <strong>"{{ search_query }}"</strong>.
+            </p>
+
+            <a
+                href="/boutiques"
+                class="empty-reset-btn"
+            >
+
+                <i class="bi bi-arrow-left"></i>
+
+                Voir toutes les boutiques
+
+            </a>
+
+        {% else %}
+
+            <i class="bi bi-shop"></i>
+
+            <h2>
+                Aucune boutique pour le moment
+            </h2>
+
+            <p>
+                Soyez le premier à créer votre boutique
+                sur MauriMarket.
+            </p>
+
+            {% if request.session.get("user_id") %}
+
+            <a
+                href="/boutique/creer"
+                class="create-boutique-btn"
+            >
+
+                <i class="bi bi-plus-circle"></i>
+
+                Créer ma boutique
+
+            </a>
+
+            {% else %}
+
+            <a
+                href="/login"
+                class="create-boutique-btn"
+            >
+
+                Se connecter
+
+            </a>
+
+            {% endif %}
+
+        {% endif %}
+
+    </div>
+
+    {% endif %}
+
+</div>
+
+
+<!-- =========================================================
+     STYLE
+========================================================= -->
+<style>
+
+/* =========================================================
+   PAGE
+========================================================= */
+
+.boutiques-page {
+    width: 100%;
+    padding: 5px 20px 35px;
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.boutiques-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 15px;
+}
+
+.boutiques-title {
+    min-width: 0;
+}
+
+.boutiques-title h1 {
+    margin: 0;
+    color: #172033;
+    font-size: 22px;
+    font-weight: 800;
+}
+
+.boutiques-title h1 i {
+    color: #198754;
+    font-size: 21px;
+}
+
+.boutiques-title p {
+    margin: 3px 0 0;
+    color: #7b8492;
+    font-size: 11px;
+}
+
+
+/* =========================================================
+   PARTIE DROITE
+========================================================= */
+
+.boutiques-header-right {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+
+/* =========================================================
+   RECHERCHE
+========================================================= */
+
+.boutiques-search {
+    position: relative;
+    width: 210px;
+    height: 34px;
+    flex-shrink: 0;
+}
+
+.boutiques-search .search-icon {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #198754;
+    font-size: 12px;
+    pointer-events: none;
+    z-index: 2;
+}
+
+.boutiques-search input {
+    width: 100%;
+    height: 34px;
+    box-sizing: border-box;
+    padding: 0 38px 0 30px;
+
+    background: #ffffff;
+    border: 1px solid #dfe4e8;
+    border-radius: 7px;
+
+    outline: none;
+    color: #263238;
+    font-size: 10px;
+}
+
+.boutiques-search input::placeholder {
+    color: #a5adb5;
+}
+
+.boutiques-search input:focus {
+    border-color: #198754;
+    box-shadow: 0 0 0 2px rgba(25,135,84,0.08);
+}
+
+
+/* =========================================================
+   BOUTON RECHERCHER
+========================================================= */
+
+.boutiques-search-button {
+    position: absolute;
+    right: 4px;
+    top: 4px;
+
+    width: 26px;
+    height: 26px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+    border: 0;
+    border-radius: 5px;
+
+    background: #198754;
+    color: #ffffff;
+
+    cursor: pointer;
+    z-index: 3;
+}
+
+.boutiques-search-button:hover {
+    background: #157347;
+}
+
+.boutiques-search-button i {
+    font-size: 11px;
+}
+
+
+/* =========================================================
+   BOUTON CRÉER
+========================================================= */
+
+.create-boutique-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 6px;
+    padding: 8px 12px;
+
+    background: #198754;
+    color: #ffffff;
+
+    border-radius: 7px;
+    text-decoration: none;
+
+    font-size: 10px;
+    font-weight: 700;
+    white-space: nowrap;
+
+    transition: 0.2s ease;
+}
+
+.create-boutique-btn:hover {
+    background: #157347;
+    color: #ffffff;
+}
+
+
+/* =========================================================
+   INFO RECHERCHE
+========================================================= */
+
+.search-result-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 10px;
+    margin-bottom: 10px;
+
+    color: #7b8492;
+    font-size: 10px;
+}
+
+.search-result-info strong {
+    color: #172033;
+}
+
+
+/* =========================================================
+   GRILLE
+========================================================= */
+
+.boutiques-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+
+    gap: 12px;
+
+    width: 100%;
+}
+
+
+/* =========================================================
+   CARTE BOUTIQUE
+========================================================= */
+
+.boutique-card {
+    min-width: 0;
+    min-height: 100px;
+
+    padding: 12px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    box-sizing: border-box;
+
+    background: #ffffff;
+
+    border: 1px solid #e5e7eb;
+    border-radius: 9px;
+
+    transition: 0.2s ease;
+}
+
+.boutique-card:hover {
+    transform: translateY(-2px);
+
+    border-color: #cfe8da;
+
+    box-shadow:
+        0 5px 15px rgba(0,0,0,0.06);
+}
+
+
+/* =========================================================
+   LOGO
+========================================================= */
+
+.boutique-icon {
+    width: 48px;
+    height: 48px;
+
+    min-width: 48px;
+    max-width: 48px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    overflow: hidden;
+
+    background: #eaf6f0;
+    color: #198754;
+
+    border-radius: 50%;
+}
+
+.boutique-icon img {
+    display: block;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+}
+
+.boutique-icon i {
+    font-size: 20px;
+}
+
+
+/* =========================================================
+   INFORMATIONS
+========================================================= */
+
+.boutique-info {
+    flex: 1;
+
+    min-width: 0;
+
+    overflow: hidden;
+}
+
+.boutique-info h2 {
+    margin: 0 0 4px;
+
+    color: #172033;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.boutique-info p {
+    margin: 0;
+
+    color: #7b8492;
+
+    font-size: 10px;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.boutique-info p i {
+    margin-right: 3px;
+    color: #198754;
+}
+
+.boutique-city {
+    margin-top: 3px !important;
+}
+
+
+/* =========================================================
+   BOUTON VOIR
+========================================================= */
+
+.view-boutique-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 4px;
+
+    padding: 6px 8px;
+
+    flex-shrink: 0;
+
+    border: 1px solid #198754;
+    border-radius: 6px;
+
+    color: #198754;
+    background: #ffffff;
+
+    text-decoration: none;
+
+    font-size: 9px;
+    font-weight: 700;
+
+    white-space: nowrap;
+
+    transition: 0.2s ease;
+}
+
+.view-boutique-btn:hover {
+    background: #198754;
+    color: #ffffff;
+}
+
+
+/* =========================================================
+   AUCUNE BOUTIQUE
+========================================================= */
+
+.empty-boutiques {
+    padding: 45px 20px;
+
+    text-align: center;
+
+    background: #ffffff;
+
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+}
+
+.empty-boutiques > i {
+    display: block;
+
+    margin-bottom: 10px;
+
+    color: #adb5bd;
+
+    font-size: 40px;
+}
+
+.empty-boutiques h2 {
+    margin: 0 0 6px;
+
+    color: #172033;
+
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.empty-boutiques p {
+    margin: 0 0 15px;
+
+    color: #7b8492;
+
+    font-size: 11px;
+}
+
+.empty-reset-btn {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 6px;
+
+    padding: 8px 12px;
+
+    color: #198754;
+    background: #eaf6f0;
+
+    border-radius: 7px;
+
+    text-decoration: none;
+
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.empty-reset-btn:hover {
+    background: #198754;
+    color: #ffffff;
+}
+
+
+/* =========================================================
+   TABLETTE
+========================================================= */
+
+@media (max-width: 1100px) {
+
+    .boutiques-grid {
+        grid-template-columns:
+            repeat(3, minmax(0, 1fr));
+    }
+
+}
+
+
+/* =========================================================
+   PETIT ÉCRAN
+   → 2 BOUTIQUES PAR LIGNE
+========================================================= */
+
+@media (max-width: 800px) {
+
+    .boutiques-page {
+        padding: 12px 10px 30px;
+    }
+
+    .boutiques-header {
+        gap: 10px;
+    }
+
+    .boutiques-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+        gap: 8px;
+    }
+
+    .boutique-card {
+        min-height: 90px;
+
+        padding: 8px;
+
+        gap: 7px;
+    }
+
+    .boutique-icon {
+        width: 38px;
+        height: 38px;
+
+        min-width: 38px;
+        max-width: 38px;
+    }
+
+    .boutique-icon i {
+        font-size: 16px;
+    }
+
+    .boutique-info h2 {
+        font-size: 11px;
+    }
+
+    .boutique-info p {
+        font-size: 9px;
+    }
+
+    .view-boutique-btn {
+        padding: 5px 6px;
+        font-size: 8px;
+    }
+
+}
+
+
+/* =========================================================
+   MOBILE
+   → TOUJOURS 2 BOUTIQUES PAR LIGNE
+========================================================= */
+
+@media (max-width: 600px) {
+
+    .boutiques-page {
+        padding: 10px 8px 25px;
+    }
+
+    .boutiques-header {
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .boutiques-title h1 {
+        font-size: 18px;
+    }
+
+    .boutiques-title h1 i {
+        font-size: 17px;
+    }
+
+    .boutiques-title p {
+        font-size: 10px;
+    }
+
+    .boutiques-header-right {
+        gap: 5px;
+    }
+
+    .boutiques-search {
+        width: 150px;
+    }
+
+    .create-boutique-btn {
+        padding: 7px 8px;
+        font-size: 9px;
+    }
+
+    .create-boutique-btn span {
+        display: none;
+    }
+
+    /*
+       IMPORTANT :
+       On garde 2 colonnes sur téléphone
+    */
+
+    .boutiques-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+        gap: 7px;
+    }
+
+    .boutique-card {
+        min-height: 78px;
+
+        padding: 7px;
+
+        gap: 6px;
+    }
+
+    .boutique-icon {
+        width: 34px;
+        height: 34px;
+
+        min-width: 34px;
+        max-width: 34px;
+    }
+
+    .boutique-icon i {
+        font-size: 15px;
+    }
+
+    .boutique-info h2 {
+        font-size: 10px;
+    }
+
+    .boutique-info p {
+        font-size: 8px;
+    }
+
+    .view-boutique-btn {
+        padding: 4px 5px;
+        font-size: 7px;
+    }
+
+}
+
+
+/* =========================================================
+   TRÈS PETIT MOBILE
+   → TOUJOURS 2 COLONNES
+========================================================= */
+
+@media (max-width: 400px) {
+
+    .boutiques-title p {
+        display: none;
+    }
+
+    .boutiques-header {
+        gap: 6px;
+    }
+
+    .boutiques-search {
+        width: 135px;
+    }
+
+    .boutiques-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+        gap: 6px;
+    }
+
+    .boutique-card {
+        min-height: 72px;
+
+        padding: 6px;
+
+        gap: 5px;
+    }
+
+    .boutique-icon {
+        width: 32px;
+        height: 32px;
+
+        min-width: 32px;
+        max-width: 32px;
+    }
+
+    .boutique-info h2 {
+        font-size: 9px;
+    }
+
+    .boutique-info p {
+        font-size: 7px;
+    }
+
+    .view-boutique-btn {
+        padding: 4px;
+        font-size: 7px;
+    }
+
+}
+
+</style>
+{% endblock %}

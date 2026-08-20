@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, String
+from sqlalchemy.orm import relationship
 
 from app.database.database import Base
 
@@ -36,3 +37,13 @@ class User(Base):
         default="user"
     )
 
+    boutique = relationship(
+        "Boutique",
+        back_populates="user",
+        uselist=False
+    )
+
+    boutique_requests = relationship(
+        "BoutiqueRequest",
+        back_populates="user"
+    )

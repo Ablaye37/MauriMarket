@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+
+{% block title %}Demande de boutique - MauriMarket{% endblock %}
+
+{% block content %}
+
+<div class="container py-5">
+
+    <div class="row justify-content-center">
+
+        <div class="col-md-7 col-lg-6">
+
+            <div class="card shadow-sm border-0">
+
+                <div class="card-body p-4 p-md-5 text-center">
+
+                    <div class="mb-4">
+
+                        {% if demande and demande.status == "pending" %}
+
+                            <i class="bi bi-hourglass-split text-warning"
+                               style="font-size: 60px;"></i>
+
+                        {% elif demande and demande.status == "rejected" %}
+
+                            <i class="bi bi-x-circle text-danger"
+                               style="font-size: 60px;"></i>
+
+                        {% else %}
+
+                            <i class="bi bi-shop text-success"
+                               style="font-size: 60px;"></i>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    {% if message %}
+
+                        <div class="alert alert-success">
+                            {{ message }}
+                        </div>
+
+                    {% endif %}
+
+
+                    {% if demande %}
+
+                        {% if demande.status == "pending" %}
+
+                            <h2 class="fw-bold">
+                                Demande en attente
+                            </h2>
+
+                            <p class="text-muted">
+                                Votre demande de boutique a bien été
+                                envoyée à l'administrateur.
+                            </p>
+
+                            <div class="alert alert-warning mt-4">
+
+                                <strong>
+                                    {{ demande.name }}
+                                </strong>
+
+                                <br>
+
+                                Type :
+                                {{ demande.sale_type }}
+
+                            </div>
+
+                            <p class="small text-muted mb-0">
+                                Vous pourrez accéder à votre boutique
+                                dès que votre demande sera acceptée.
+                            </p>
+
+
+                        {% elif demande.status == "rejected" %}
+
+                            <h2 class="fw-bold text-danger">
+                                Demande refusée
+                            </h2>
+
+                            <p class="text-muted">
+                                Votre demande précédente a été refusée.
+                                Vous pouvez envoyer une nouvelle demande.
+                            </p>
+
+                            <a
+                                href="/boutique/creer"
+                                class="btn btn-success mt-3"
+                            >
+                                <i class="bi bi-shop"></i>
+                                Nouvelle demande
+                            </a>
+
+
+                        {% elif demande.status == "approved" %}
+
+                            <h2 class="fw-bold text-success">
+                                Demande acceptée
+                            </h2>
+
+                            <p class="text-muted">
+                                Votre boutique est maintenant active.
+                            </p>
+
+                            <a
+                                href="/ma-boutique"
+                                class="btn btn-success"
+                            >
+                                <i class="bi bi-shop"></i>
+                                Ma boutique
+                            </a>
+
+                        {% endif %}
+
+                    {% else %}
+
+                        <h2 class="fw-bold">
+                            Aucune demande
+                        </h2>
+
+                        <p class="text-muted">
+                            Vous n'avez pas encore demandé de boutique.
+                        </p>
+
+                        <a
+                            href="/boutique/creer"
+                            class="btn btn-success"
+                        >
+                            <i class="bi bi-shop"></i>
+                            Demander une boutique
+                        </a>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,427 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="contact-page">
+
+    <div class="contact-container">
+
+        <!-- =====================================================
+             EN-TÊTE
+        ====================================================== -->
+
+        <div class="contact-header">
+
+            <h1>
+                📩 Contactez-nous
+            </h1>
+
+            <p>
+                Une question, une suggestion ou un problème ?
+                L'équipe MauriMarket est à votre écoute.
+            </p>
+
+        </div>
+
+
+        <!-- =====================================================
+             CONTENU
+        ====================================================== -->
+
+        <div class="contact-grid">
+
+
+            <!-- =================================================
+                 INFORMATIONS
+            ================================================== -->
+
+            <div class="contact-info">
+
+                <h2>
+                    Nous contacter
+                </h2>
+
+                <p>
+                    Vous pouvez nous contacter directement
+                    en utilisant le formulaire.
+                </p>
+
+
+                <div class="contact-info-item">
+
+                    <div class="contact-icon">
+                        📱
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            Téléphone
+                        </strong>
+
+                        <p>
+                            +222 XX XX XX XX
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="contact-info-item">
+
+                    <div class="contact-icon">
+                        ✉️
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            Email
+                        </strong>
+
+                        <p>
+                            contact@maurimarket.com
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="contact-info-item">
+
+                    <div class="contact-icon">
+                        📍
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            Localisation
+                        </strong>
+
+                        <p>
+                            Mauritanie
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 FORMULAIRE
+            ================================================== -->
+
+            <div class="contact-form-card">
+
+                <h2>
+                    Envoyer un message
+                </h2>
+
+
+                {% if message %}
+
+                <div class="contact-success">
+
+                    {{ message }}
+
+                </div>
+
+                {% endif %}
+
+
+                <form
+                    method="POST"
+                    action="/contact"
+                >
+
+                    <!-- NOM -->
+
+                    <div class="form-group">
+
+                        <label for="name">
+                            Nom complet
+                        </label>
+
+                        <input
+                            type="text"
+                            id="name"
+                            name="name"
+                            placeholder="Votre nom"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- TÉLÉPHONE -->
+
+                    <div class="form-group">
+
+                        <label for="phone">
+                            Téléphone
+                        </label>
+
+                        <input
+                            type="tel"
+                            id="phone"
+                            name="phone"
+                            placeholder="+222 XX XX XX XX"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- EMAIL -->
+
+                    <div class="form-group">
+
+                        <label for="email">
+                            Email
+                        </label>
+
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            placeholder="Votre adresse email"
+                        >
+
+                    </div>
+
+
+                    <!-- SUJET -->
+
+                    <div class="form-group">
+
+                        <label for="subject">
+                            Sujet
+                        </label>
+
+                        <input
+                            type="text"
+                            id="subject"
+                            name="subject"
+                            placeholder="Sujet de votre message"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- MESSAGE -->
+
+                    <div class="form-group">
+
+                        <label for="message">
+                            Message
+                        </label>
+
+                        <textarea
+                            id="message"
+                            name="message"
+                            rows="6"
+                            placeholder="Écrivez votre message..."
+                            required
+                        ></textarea>
+
+                    </div>
+
+
+                    <!-- BOUTON -->
+
+                    <button
+                        type="submit"
+                        class="contact-submit"
+                    >
+
+                        📤 Envoyer le message
+
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<style>
+
+.contact-page {
+    min-height: 70vh;
+    padding: 40px 20px 70px;
+}
+
+.contact-container {
+    max-width: 1100px;
+    margin: auto;
+}
+
+.contact-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.contact-header h1 {
+    font-size: 32px;
+    margin-bottom: 10px;
+}
+
+.contact-header p {
+    color: #777;
+    font-size: 16px;
+}
+
+.contact-grid {
+    display: grid;
+    grid-template-columns: 0.8fr 1.2fr;
+    gap: 30px;
+    align-items: start;
+}
+
+.contact-info,
+.contact-form-card {
+    background: white;
+    border-radius: 16px;
+    padding: 30px;
+    box-shadow: 0 5px 25px rgba(0,0,0,0.08);
+}
+
+.contact-info h2,
+.contact-form-card h2 {
+    margin-top: 0;
+    margin-bottom: 15px;
+}
+
+.contact-info > p {
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 30px;
+}
+
+.contact-info-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 22px;
+}
+
+.contact-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: #f1f5f9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+}
+
+.contact-info-item strong {
+    display: block;
+    margin-bottom: 4px;
+}
+
+.contact-info-item p {
+    margin: 0;
+    color: #777;
+}
+
+.form-group {
+    margin-bottom: 18px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 7px;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px 14px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 15px;
+    outline: none;
+    transition: 0.2s;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    border-color: #16a34a;
+    box-shadow: 0 0 0 3px rgba(22,163,74,0.1);
+}
+
+.form-group textarea {
+    resize: vertical;
+}
+
+.contact-submit {
+    width: 100%;
+    border: none;
+    border-radius: 10px;
+    padding: 14px 20px;
+    background: #16a34a;
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.contact-submit:hover {
+    background: #15803d;
+}
+
+.contact-success {
+    background: #dcfce7;
+    color: #166534;
+    padding: 12px 15px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media (max-width: 768px) {
+
+    .contact-page {
+        padding: 25px 15px 50px;
+    }
+
+    .contact-header h1 {
+        font-size: 26px;
+    }
+
+    .contact-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .contact-info,
+    .contact-form-card {
+        padding: 22px;
+    }
+
+}
+
+</style>
+
+{% endblock %}

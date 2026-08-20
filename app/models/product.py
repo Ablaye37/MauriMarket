@@ -57,6 +57,12 @@ class Product(Base):
         nullable=True
     )
 
+    boutique_id = Column(
+        Integer,
+        ForeignKey("boutiques.id"),
+        nullable=True
+    )
+
     image = Column(
         String(255),
         nullable=True
@@ -74,4 +80,9 @@ class Product(Base):
 
     user = relationship(
         "User"
+    )
+
+    boutique = relationship(
+        "Boutique",
+        back_populates="products"
     )

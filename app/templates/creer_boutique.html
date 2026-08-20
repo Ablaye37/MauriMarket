@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}Demander une boutique - MauriMarket{% endblock %}
+
+{% block content %}
+
+<div class="creer-boutique-page">
+
+    <div class="creer-boutique-card">
+
+        <div class="creer-boutique-header">
+
+            <div class="creer-boutique-icon">
+                <i class="bi bi-shop"></i>
+            </div>
+
+            <h1>Demander ma boutique</h1>
+
+            <p>
+                Envoyez votre demande pour ouvrir une boutique
+                sur MauriMarket.
+            </p>
+
+        </div>
+
+        <form method="POST" action="/boutique/creer">
+
+            <div class="creer-boutique-field">
+
+                <label for="name">
+                    Nom de la boutique
+                </label>
+
+                <input
+                    id="name"
+                    type="text"
+                    name="name"
+                    placeholder="Ex : Boutique Papa"
+                    required
+                >
+
+            </div>
+
+            <div class="creer-boutique-field">
+
+                <label for="sale_type">
+                    Type de vente
+                </label>
+
+                <input
+                    id="sale_type"
+                    type="text"
+                    name="sale_type"
+                    placeholder="Ex : Téléphones, vêtements, chaussures..."
+                    required
+                >
+
+                <small>
+                    Indiquez simplement ce que votre boutique vend.
+                </small>
+
+            </div>
+
+            <button type="submit">
+                <i class="bi bi-send"></i>
+                Envoyer ma demande
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

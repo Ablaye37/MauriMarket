@@ -1,11 +1,21 @@
-from app.database.database import engine, Base
+from app.database.database import Base, engine
+
 from app.models.category import Category
 from app.models.subcategory import SubCategory
 from app.models.product import Product
-# Importer tous les modèles
 from app.models.user import User
-	
+from app.models.boutique import Boutique
+from app.models.boutique_request import BoutiqueRequest
+from app.models.contact_message import ContactMessage
 
-Base.metadata.create_all(bind=engine)
+
+# =====================================================
+# CRÉER LES TABLES
+# =====================================================
+
+Base.metadata.create_all(
+    bind=engine
+)
+
 
 print("✅ Base de données créée avec succès !")
