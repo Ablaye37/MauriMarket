@@ -1,16 +1,15 @@
-from sqlalchemy import Column, Integer, String, Text, ForeignKey
+﻿from sqlalchemy import Column, Integer, String, Text, ForeignKey
 from sqlalchemy.orm import relationship
 
 from app.database.database import Base
 
 
 class Boutique(Base):
-
     __tablename__ = "boutiques"
 
-    # =====================================================
+    # ============================================================
     # IDENTIFIANT
-    # =====================================================
+    # ============================================================
 
     id = Column(
         Integer,
@@ -18,46 +17,76 @@ class Boutique(Base):
         index=True
     )
 
-    # =====================================================
-    # INFORMATIONS PRINCIPALES
-    # =====================================================
+    # ============================================================
+    # NOM
+    # ============================================================
 
     name = Column(
         String(150),
         nullable=False
     )
 
-    sale_type = Column(
+    # ============================================================
+    # CATÉGORIE DE LA BOUTIQUE
+    #
+    # À conserver pour le moment.
+    # Cette partie sera traitée séparément.
+    # ============================================================
+
+    category = Column(
         String(100),
-        nullable=False
+        nullable=True,
+        index=True
     )
 
-    # =====================================================
-    # PROFIL DE LA BOUTIQUE
-    # =====================================================
+    # ============================================================
+    # TYPE DE VENTE
+    # ============================================================
+
+    sale_type = Column(
+        String(100),
+        nullable=True
+    )
+
+    # ============================================================
+    # DESCRIPTION
+    # ============================================================
 
     description = Column(
         Text,
         nullable=True
     )
 
+    # ============================================================
+    # VILLE
+    # ============================================================
+
     city = Column(
         String(100),
         nullable=True
     )
 
+    # ============================================================
+    # LOGO
+    # ============================================================
+
     logo = Column(
         String(500),
         nullable=True
     )
-    cover_image = Column(
-    String(500),
-    nullable=True
-)
 
-    # =====================================================
+    # ============================================================
+    # IMAGE DE COUVERTURE
+    # ============================================================
+
+    cover_image = Column(
+        String(500),
+        nullable=True
+    )
+
+    # ============================================================
     # PROPRIÉTAIRE
-    # =====================================================
+    # ============================================================
 
     user_id = Column(
         Integer,
@@ -70,11 +99,12 @@ class Boutique(Base):
         back_populates="boutique"
     )
 
-    # =====================================================
-    # PRODUITS
-    # =====================================================
+    # ============================================================
+    # PRODUITS DE LA BOUTIQUE
+    # ============================================================
 
     products = relationship(
         "Product",
-        back_populates="boutique"
+        back_populates="boutique",
+        cascade="all, delete-orphan"
     )

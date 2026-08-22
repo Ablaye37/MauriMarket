@@ -8,42 +8,60 @@ Publier un produit - MauriMarket
 
 <div class="container mt-4 mb-5">
 
-    <!-- =========================
+    <!-- =====================================================
          EN-TÊTE
-    ========================== -->
+    ====================================================== -->
 
     <div class="mb-4">
 
         <h2 class="fw-bold">
+
             <i class="bi bi-plus-circle"></i>
+
             Publier un produit
+
         </h2>
 
-        {% if boutique %}
 
-        <p class="text-muted mb-0">
-            Votre produit sera publié dans :
-            <strong>{{ boutique.name }}</strong>
-        </p>
+        {% if boutique and is_boutique_publish %}
+
+            <p class="text-muted mb-0">
+
+                Votre produit sera publié dans :
+
+                <strong>
+                    {{ boutique.name }}
+                </strong>
+
+            </p>
+
+        {% elif not is_boutique_publish %}
+
+            <p class="text-muted mb-0">
+
+                Votre annonce sera publiée sur MauriMarket.
+
+            </p>
 
         {% endif %}
 
     </div>
 
 
-    <!-- =========================
+    <!-- =====================================================
          FORMULAIRE
-    ========================== -->
+    ====================================================== -->
 
     <form
-        action="/publier"
+        id="publish-form"
+        action="{% if is_boutique_publish %}/ma-boutique/publier{% else %}/publier{% endif %}"
         method="post"
         enctype="multipart/form-data"
     >
 
-        <!-- =========================
+        <!-- =================================================
              PHOTO
-        ========================== -->
+        ================================================== -->
 
         <div class="mb-3">
 
@@ -59,15 +77,21 @@ Publier un produit - MauriMarket
                 name="image"
                 id="image"
                 class="form-control"
-                accept="image/*"
+                accept="image/jpeg,image/png,image/webp"
             >
+
+            <div class="form-text">
+
+                Formats acceptés : JPG, PNG, WEBP.
+
+            </div>
 
         </div>
 
 
-        <!-- =========================
+        <!-- =================================================
              NOM
-        ========================== -->
+        ================================================== -->
 
         <div class="mb-3">
 
@@ -84,15 +108,17 @@ Publier un produit - MauriMarket
                 id="title"
                 class="form-control"
                 placeholder="Ex : iPhone 15 Pro"
+                maxlength="200"
+                autocomplete="off"
                 required
             >
 
         </div>
 
 
-        <!-- =========================
+        <!-- =================================================
              DESCRIPTION
-        ========================== -->
+        ================================================== -->
 
         <div class="mb-3">
 
@@ -115,9 +141,9 @@ Publier un produit - MauriMarket
         </div>
 
 
-        <!-- =========================
+        <!-- =================================================
              PRIX
-        ========================== -->
+        ================================================== -->
 
         <div class="mb-3">
 
@@ -142,9 +168,9 @@ Publier un produit - MauriMarket
         </div>
 
 
-        <!-- =========================
+        <!-- =================================================
              VILLE
-        ========================== -->
+        ================================================== -->
 
         <div class="mb-3">
 
@@ -155,21 +181,85 @@ Publier un produit - MauriMarket
                 Ville
             </label>
 
-            <input
-                type="text"
+            <select
                 name="city"
                 id="city"
-                class="form-control"
-                placeholder="Ex : Nouakchott"
+                class="form-select"
                 required
             >
+
+                <option value="">
+                    -- Choisir une ville --
+                </option>
+
+                <option value="Nouakchott">
+                    Nouakchott
+                </option>
+
+                <option value="Nouadhibou">
+                    Nouadhibou
+                </option>
+
+                <option value="Rosso">
+                    Rosso
+                </option>
+
+                <option value="Kiffa">
+                    Kiffa
+                </option>
+
+                <option value="Kaédi">
+                    Kaédi
+                </option>
+
+                <option value="Zouérate">
+                    Zouérate
+                </option>
+
+                <option value="Atar">
+                    Atar
+                </option>
+
+                <option value="Néma">
+                    Néma
+                </option>
+
+                <option value="Aioun">
+                    Aioun
+                </option>
+
+                <option value="Akjoujt">
+                    Akjoujt
+                </option>
+
+                <option value="Sélibaby">
+                    Sélibaby
+                </option>
+
+                <option value="Boghé">
+                    Boghé
+                </option>
+
+                <option value="Tidjikja">
+                    Tidjikja
+                </option>
+
+                <option value="Boutilimit">
+                    Boutilimit
+                </option>
+
+                <option value="Aleg">
+                    Aleg
+                </option>
+
+            </select>
 
         </div>
 
 
-        <!-- =========================
+        <!-- =================================================
              ÉTAT
-        ========================== -->
+        ================================================== -->
 
         <div class="mb-3">
 
@@ -212,9 +302,9 @@ Publier un produit - MauriMarket
         </div>
 
 
-        <!-- =========================
+        <!-- =================================================
              TYPE DE PUBLICATION
-        ========================== -->
+        ================================================== -->
 
         <div class="mb-3">
 
@@ -249,9 +339,9 @@ Publier un produit - MauriMarket
         </div>
 
 
-        <!-- =========================
+        <!-- =================================================
              CATÉGORIE
-        ========================== -->
+        ================================================== -->
 
         <div class="mb-3">
 
@@ -275,9 +365,11 @@ Publier un produit - MauriMarket
 
                 {% for category in categories %}
 
-                <option value="{{ category.id }}">
-                    {{ category.name }}
-                </option>
+                    <option
+                        value="{{ category.id }}"
+                    >
+                        {{ category.name }}
+                    </option>
 
                 {% endfor %}
 
@@ -286,9 +378,9 @@ Publier un produit - MauriMarket
         </div>
 
 
-        <!-- =========================
+        <!-- =================================================
              SOUS-CATÉGORIE
-        ========================== -->
+        ================================================== -->
 
         <div class="mb-4">
 
@@ -312,12 +404,12 @@ Publier un produit - MauriMarket
 
                 {% for subcategory in subcategories %}
 
-                <option
-                    value="{{ subcategory.id }}"
-                    data-category="{{ subcategory.category_id }}"
-                >
-                    {{ subcategory.name }}
-                </option>
+                    <option
+                        value="{{ subcategory.id }}"
+                        data-category="{{ subcategory.category_id }}"
+                    >
+                        {{ subcategory.name }}
+                    </option>
 
                 {% endfor %}
 
@@ -326,18 +418,24 @@ Publier un produit - MauriMarket
         </div>
 
 
-        <!-- =========================
-             BOUTON
-        ========================== -->
+        <!-- =================================================
+             BOUTON PUBLICATION
+        ================================================== -->
 
         <button
             type="submit"
+            id="publish-button"
             class="btn btn-success"
         >
 
-            <i class="bi bi-check-circle"></i>
+            <i
+                id="publish-icon"
+                class="bi bi-check-circle"
+            ></i>
 
-            Publier le produit
+            <span id="publish-text">
+                Publier le produit
+            </span>
 
         </button>
 
@@ -346,9 +444,11 @@ Publier un produit - MauriMarket
 </div>
 
 
-<!-- =========================
-     FILTRE DES SOUS-CATÉGORIES
-========================== -->
+<!-- =========================================================
+     JAVASCRIPT
+     - FILTRE SOUS-CATÉGORIES
+     - PROTECTION DOUBLE CLIC
+========================================================== -->
 
 <script>
 
@@ -356,78 +456,262 @@ document.addEventListener(
     "DOMContentLoaded",
     function () {
 
+        /* =====================================================
+           ÉLÉMENTS
+        ====================================================== */
+
+        const form =
+            document.getElementById(
+                "publish-form"
+            );
+
+        const button =
+            document.getElementById(
+                "publish-button"
+            );
+
+        const buttonText =
+            document.getElementById(
+                "publish-text"
+            );
+
+        const buttonIcon =
+            document.getElementById(
+                "publish-icon"
+            );
+
         const categorySelect =
-            document.getElementById("category_id");
+            document.getElementById(
+                "category_id"
+            );
 
         const subcategorySelect =
-            document.getElementById("subcategory_id");
-
-
-        if (
-            !categorySelect ||
-            !subcategorySelect
-        ) {
-            return;
-        }
-
-
-        const options =
-            Array.from(
-                subcategorySelect.options
+            document.getElementById(
+                "subcategory_id"
             );
 
 
-        function filtrerSousCategories() {
+        /* =====================================================
+           FILTRE SOUS-CATÉGORIES
+        ====================================================== */
 
-            const categoryId =
-                categorySelect.value;
+        if (
+            categorySelect &&
+            subcategorySelect
+        ) {
+
+            const options =
+                Array.from(
+                    subcategorySelect.options
+                );
 
 
-            subcategorySelect.value = "";
+            function filtrerSousCategories() {
+
+                const categoryId =
+                    categorySelect.value;
 
 
-            options.forEach(
-                function (option) {
+                /*
+                 * Remettre la sélection
+                 * à zéro quand la catégorie change.
+                 */
 
-                    if (!option.value) {
+                subcategorySelect.value = "";
 
-                        option.hidden = false;
 
-                        return;
+                options.forEach(
+                    function (option) {
+
+                        /*
+                         * Option par défaut.
+                         */
+
+                        if (!option.value) {
+
+                            option.hidden = false;
+
+                            return;
+
+                        }
+
+
+                        /*
+                         * Afficher uniquement
+                         * les sous-catégories
+                         * de la catégorie sélectionnée.
+                         */
+
+                        if (
+                            option.dataset.category ===
+                            categoryId
+                        ) {
+
+                            option.hidden = false;
+
+                        } else {
+
+                            option.hidden = true;
+
+                        }
+
+                    }
+                );
+
+            }
+
+
+            categorySelect.addEventListener(
+                "change",
+                filtrerSousCategories
+            );
+
+
+            /*
+             * Initialisation.
+             */
+
+            filtrerSousCategories();
+
+        }
+
+
+        /* =====================================================
+           PROTECTION CONTRE DOUBLE PUBLICATION
+        ====================================================== */
+
+        if (
+            form &&
+            button
+        ) {
+
+            let submitting = false;
+
+
+            form.addEventListener(
+                "submit",
+                function (event) {
+
+                    /*
+                     * Si le formulaire a déjà été envoyé,
+                     * on bloque toute nouvelle soumission.
+                     */
+
+                    if (submitting) {
+
+                        event.preventDefault();
+
+                        return false;
 
                     }
 
 
-                    if (
-                        option.dataset.category ===
-                        categoryId
-                    ) {
+                    /*
+                     * Première soumission.
+                     */
 
-                        option.hidden = false;
+                    submitting = true;
 
-                    } else {
 
-                        option.hidden = true;
+                    /*
+                     * Désactiver le bouton immédiatement.
+                     */
+
+                    button.disabled = true;
+
+
+                    /*
+                     * Empêcher les clics suivants.
+                     */
+
+                    button.style.pointerEvents =
+                        "none";
+
+
+                    /*
+                     * Modifier le texte.
+                     */
+
+                    if (buttonText) {
+
+                        buttonText.textContent =
+                            "Publication en cours...";
 
                     }
+
+
+                    /*
+                     * Modifier l'icône.
+                     */
+
+                    if (buttonIcon) {
+
+                        buttonIcon.className =
+                            "bi bi-hourglass-split";
+
+                    }
+
+
+                    /*
+                     * Changer légèrement
+                     * l'apparence du bouton.
+                     */
+
+                    button.classList.add(
+                        "disabled"
+                    );
 
                 }
             );
 
         }
 
-
-        categorySelect.addEventListener(
-            "change",
-            filtrerSousCategories
-        );
-
-
-        filtrerSousCategories();
-
     }
 );
 
 </script>
+
+
+<!-- =========================================================
+     STYLE BOUTON
+========================================================== -->
+
+<style>
+
+#publish-button {
+
+    min-width: 190px;
+
+    transition:
+        opacity 0.2s ease,
+        transform 0.2s ease;
+
+}
+
+
+#publish-button:not(:disabled):hover {
+
+    transform: translateY(-1px);
+
+}
+
+
+#publish-button:disabled {
+
+    cursor: not-allowed;
+
+    opacity: 0.7;
+
+}
+
+
+#publish-button i {
+
+    margin-right: 5px;
+
+}
+
+</style>
+
 
 {% endblock %}

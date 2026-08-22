@@ -1,41 +1,17 @@
-import os
-import uuid
-
-from dotenv import load_dotenv
-from supabase import create_client
-
 from fastapi import APIRouter, Request, Form, UploadFile, File
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 
 from app.database.database import SessionLocal
+
 from app.models.product import Product
 from app.models.category import Category
 from app.models.subcategory import SubCategory
 from app.models.boutique import Boutique
-from app.models.boutique_request import BoutiqueRequest
 
+import os
+import uuid
 
-# =====================================================
-# SUPABASE
-# =====================================================
-
-load_dotenv()
-
-SUPABASE_URL = os.getenv("SUPABASE_URL")
-SUPABASE_KEY = os.getenv("SUPABASE_KEY")
-
-supabase = create_client(
-    SUPABASE_URL,
-    SUPABASE_KEY
-)
-
-BUCKET_NAME = "product-images"
-
-
-# =====================================================
-# ROUTER
-# =====================================================
 
 router = APIRouter()
 
@@ -44,35 +20,159 @@ templates = Jinja2Templates(
 )
 
 
-# =====================================================
-# FONCTION : CATÉGORIES
-# =====================================================
+# ============================================================
+# CONFIGURATION
+# ============================================================
 
-def recuperer_categories(db):
-
-    categories = (
-        db.query(Category)
-        .order_by(Category.id)
-        .all()
-    )
-
-    subcategories = (
-        db.query(SubCategory)
-        .order_by(SubCategory.id)
-        .all()
-    )
-
-    return categories, subcategories
+UPLOAD_DIR = "app/static/uploads/products"
 
 
-# =====================================================
-# PUBLICATION ANNONCE CLASSIQUE
-# =====================================================
+# ============================================================
+# CONTEXTE GLOBAL
+# ============================================================
 
-@router.get("/publier")
-async def afficher_publier(request: Request):
+def get_global_context(request: Request, db):
 
     user_id = request.session.get("user_id")
+    user_name = request.session.get("user_name")
+
+    panier = request.session.get(
+        "panier",
+        []
+    )
+
+    boutique = None
+
+    if user_id:
+
+        boutique = (
+            db.query(Boutique)
+            .filter(
+                Boutique.user_id == user_id
+            )
+            .first()
+        )
+
+    return {
+        "user_name": user_name,
+        "user_id": user_id,
+        "panier_count": len(panier),
+        "lang": request.query_params.get(
+            "lang",
+            "fr"
+        ),
+        "has_boutique": boutique is not None,
+        "boutique": boutique
+    }
+
+
+# ============================================================
+# CATÉGORIES
+# ============================================================
+
+def get_categories(db):
+
+    return (
+        db.query(Category)
+        .order_by(
+            Category.name.asc()
+        )
+        .all()
+    )
+
+
+# ============================================================
+# SOUS-CATÉGORIES
+# ============================================================
+
+def get_subcategories(db):
+
+    return (
+        db.query(SubCategory)
+        .order_by(
+            SubCategory.name.asc()
+        )
+        .all()
+    )
+
+
+# ============================================================
+# SAUVEGARDER IMAGE
+# ============================================================
+
+async def save_product_image(
+    image: UploadFile
+):
+
+    if not image or not image.filename:
+        return None
+
+    allowed_types = {
+        "image/jpeg": ".jpg",
+        "image/png": ".png",
+        "image/webp": ".webp"
+    }
+
+    extension = allowed_types.get(
+        image.content_type
+    )
+
+    if not extension:
+        return None
+
+    os.makedirs(
+        UPLOAD_DIR,
+        exist_ok=True
+    )
+
+    filename = (
+        f"product_"
+        f"{uuid.uuid4().hex}"
+        f"{extension}"
+    )
+
+    file_path = os.path.join(
+        UPLOAD_DIR,
+        filename
+    )
+
+    content = await image.read()
+
+    if not content:
+        return None
+
+    with open(
+        file_path,
+        "wb"
+    ) as file:
+
+        file.write(content)
+
+    return (
+        f"/static/uploads/products/"
+        f"{filename}"
+    )
+
+
+# ============================================================
+# PUBLIER DEPUIS L'ACCUEIL
+# GET /publier
+#
+# IMPORTANT :
+# Une annonce publiée ici est une annonce INDÉPENDANTE.
+#
+# Elle ne doit JAMAIS être automatiquement rattachée
+# à la boutique de l'utilisateur.
+# ============================================================
+
+@router.get("/publier")
+async def publish_page(
+    request: Request
+):
+
+    user_id = request.session.get(
+        "user_id"
+    )
 
     if not user_id:
 
@@ -85,115 +185,32 @@ async def afficher_publier(request: Request):
 
     try:
 
-        categories, subcategories = recuperer_categories(db)
+        categories = get_categories(db)
+
+        subcategories = get_subcategories(db)
+
+        global_context = get_global_context(
+            request,
+            db
+        )
 
         return templates.TemplateResponse(
             request=request,
             name="publier.html",
             context={
                 "categories": categories,
-                "subcategories": subcategories
+                "subcategories": subcategories,
+                "is_boutique_publish": False,
+                **global_context
             }
         )
 
-    finally:
+    except Exception as e:
 
-        db.close()
-
-
-# =====================================================
-# CRÉER UNE ANNONCE CLASSIQUE
-# =====================================================
-
-@router.post("/publier")
-async def creer_annonce(
-    request: Request,
-
-    title: str = Form(...),
-    description: str = Form(...),
-    price: float = Form(...),
-    city: str = Form(...),
-    condition: str = Form(...),
-
-    category_id: int = Form(...),
-    subcategory_id: int = Form(...),
-
-    image: UploadFile = File(None)
-):
-
-    user_id = request.session.get("user_id")
-
-    if not user_id:
-
-        return RedirectResponse(
-            "/login",
-            status_code=303
+        print(
+            "ERREUR GET /publier :",
+            repr(e)
         )
-
-    db = SessionLocal()
-
-    try:
-
-        # =================================================
-        # IMAGE
-        # =================================================
-
-        image_url = None
-
-        if image and image.filename:
-
-            extension = os.path.splitext(
-                image.filename
-            )[1].lower()
-
-            file_name = f"{uuid.uuid4()}{extension}"
-
-            file_data = await image.read()
-
-            supabase.storage.from_(
-                BUCKET_NAME
-            ).upload(
-                file_name,
-                file_data,
-                {
-                    "content-type": (
-                        image.content_type
-                        or "application/octet-stream"
-                    )
-                }
-            )
-
-            image_url = (
-                supabase.storage.from_(
-                    BUCKET_NAME
-                ).get_public_url(
-                    file_name
-                )
-            )
-
-        # =================================================
-        # ANNONCE CLASSIQUE
-        # =================================================
-
-        produit = Product(
-            title=title,
-            description=description,
-            price=price,
-            city=city,
-            condition=condition,
-            category_id=category_id,
-            subcategory_id=subcategory_id,
-            image=image_url,
-            user_id=user_id,
-
-            # Une annonce classique
-            # n'appartient à aucune boutique
-            boutique_id=None
-        )
-
-        db.add(produit)
-
-        db.commit()
 
         return RedirectResponse(
             "/",
@@ -205,16 +222,19 @@ async def creer_annonce(
         db.close()
 
 
-# =====================================================
-# PUBLIER DANS MA BOUTIQUE
-# =====================================================
+# ============================================================
+# PUBLIER DEPUIS MA BOUTIQUE
+# GET /ma-boutique/publier
+# ============================================================
 
 @router.get("/ma-boutique/publier")
-async def afficher_publier_boutique(
+async def publish_boutique_page(
     request: Request
 ):
 
-    user_id = request.session.get("user_id")
+    user_id = request.session.get(
+        "user_id"
+    )
 
     if not user_id:
 
@@ -227,10 +247,6 @@ async def afficher_publier_boutique(
 
     try:
 
-        # =================================================
-        # VÉRIFIER LA BOUTIQUE
-        # =================================================
-
         boutique = (
             db.query(Boutique)
             .filter(
@@ -239,67 +255,43 @@ async def afficher_publier_boutique(
             .first()
         )
 
-        # =================================================
-        # BOUTIQUE ACCEPTÉE
-        # =================================================
-
-        if boutique:
-
-            categories, subcategories = (
-                recuperer_categories(db)
-            )
-
-        return templates.TemplateResponse(
-        request=request,
-        name="publier_produit_boutique.html",
-        context={
-        "categories": categories,
-        "subcategories": subcategories,
-        "boutique": boutique
-    }
-)
-
-        # =================================================
-        # PAS ENCORE DE BOUTIQUE
-        # CHERCHER UNE DEMANDE
-        # =================================================
-
-        boutique_request = (
-            db.query(BoutiqueRequest)
-            .filter(
-                BoutiqueRequest.user_id == user_id
-            )
-            .order_by(
-                BoutiqueRequest.id.desc()
-            )
-            .first()
-        )
-
-        # =================================================
-        # DEMANDE EN ATTENTE
-        # =================================================
-
-        if (
-            boutique_request
-            and boutique_request.status == "pending"
-        ):
-
-            request.session["message"] = (
-                "Votre demande de boutique est encore en attente "
-                "de validation par l'administrateur."
-            )
+        if not boutique:
 
             return RedirectResponse(
                 "/boutique/creer",
                 status_code=303
             )
 
-        # =================================================
-        # DEMANDE REFUSÉE OU AUCUNE DEMANDE
-        # =================================================
+        categories = get_categories(db)
+
+        subcategories = get_subcategories(db)
+
+        global_context = get_global_context(
+            request,
+            db
+        )
+
+        return templates.TemplateResponse(
+            request=request,
+            name="publier.html",
+            context={
+                "categories": categories,
+                "subcategories": subcategories,
+                "boutique": boutique,
+                "is_boutique_publish": True,
+                **global_context
+            }
+        )
+
+    except Exception as e:
+
+        print(
+            "ERREUR GET /ma-boutique/publier :",
+            repr(e)
+        )
 
         return RedirectResponse(
-            "/boutique/creer",
+            "/ma-boutique",
             status_code=303
         )
 
@@ -308,12 +300,20 @@ async def afficher_publier_boutique(
         db.close()
 
 
-# =====================================================
-# CRÉER UN PRODUIT DANS MA BOUTIQUE
-# =====================================================
+# ============================================================
+# TRAITEMENT PUBLICATION ACCUEIL
+# POST /publier
+#
+# IMPORTANT :
+# ICI boutique_id DOIT ÊTRE None.
+#
+# Même si l'utilisateur possède une boutique,
+# cette annonce reste indépendante.
+# ============================================================
 
-@router.post("/ma-boutique/publier")
-async def creer_produit_boutique(
+@router.post("/publier")
+async def publish_product(
+
     request: Request,
 
     title: str = Form(...),
@@ -328,7 +328,9 @@ async def creer_produit_boutique(
     image: UploadFile = File(None)
 ):
 
-    user_id = request.session.get("user_id")
+    user_id = request.session.get(
+        "user_id"
+    )
 
     if not user_id:
 
@@ -341,9 +343,213 @@ async def creer_produit_boutique(
 
     try:
 
-        # =================================================
-        # VÉRIFIER LA BOUTIQUE
-        # =================================================
+        title = title.strip()
+        description = description.strip()
+        city = city.strip()
+        condition = condition.strip()
+
+        # ----------------------------------------------------
+        # VÉRIFIER CATÉGORIE
+        # ----------------------------------------------------
+
+        category = (
+            db.query(Category)
+            .filter(
+                Category.id == category_id
+            )
+            .first()
+        )
+
+        if not category:
+
+            return RedirectResponse(
+                "/publier",
+                status_code=303
+            )
+
+        # ----------------------------------------------------
+        # VÉRIFIER SOUS-CATÉGORIE
+        # ----------------------------------------------------
+
+        subcategory = (
+            db.query(SubCategory)
+            .filter(
+                SubCategory.id == subcategory_id
+            )
+            .first()
+        )
+
+        if not subcategory:
+
+            return RedirectResponse(
+                "/publier",
+                status_code=303
+            )
+
+        # ----------------------------------------------------
+        # VÉRIFIER RELATION CATÉGORIE
+        # ----------------------------------------------------
+
+        if subcategory.category_id != category_id:
+
+            print(
+                "Sous-catégorie incompatible."
+            )
+
+            return RedirectResponse(
+                "/publier",
+                status_code=303
+            )
+
+        # ----------------------------------------------------
+        # IMAGE
+        # ----------------------------------------------------
+
+        image_path = await save_product_image(
+            image
+        )
+
+        # ----------------------------------------------------
+        # CRÉER PRODUIT INDÉPENDANT
+        #
+        # TRÈS IMPORTANT :
+        #
+        # boutique_id = None
+        #
+        # On NE cherche PAS la boutique de l'utilisateur.
+        # Même s'il possède une boutique, cette annonce
+        # publiée depuis /publier reste indépendante.
+        # ----------------------------------------------------
+
+        product = Product(
+
+            title=title,
+
+            description=description,
+
+            price=price,
+
+            city=city,
+
+            condition=condition,
+
+            category_id=category_id,
+
+            subcategory_id=subcategory_id,
+
+            user_id=user_id,
+
+            image=image_path,
+
+            boutique_id=None
+        )
+
+        db.add(product)
+
+        db.commit()
+
+        db.refresh(product)
+
+        print(
+            "=========================================="
+        )
+
+        print(
+            "PRODUIT PUBLIÉ INDÉPENDANT"
+        )
+
+        print(
+            "ID :",
+            product.id
+        )
+
+        print(
+            "BOUTIQUE ID :",
+            product.boutique_id
+        )
+
+        print(
+            "CATÉGORIE ID :",
+            product.category_id
+        )
+
+        print(
+            "SOUS-CATÉGORIE ID :",
+            product.subcategory_id
+        )
+
+        print(
+            "=========================================="
+        )
+
+        return RedirectResponse(
+            "/",
+            status_code=303
+        )
+
+    except Exception as e:
+
+        db.rollback()
+
+        print(
+            "ERREUR PUBLICATION :",
+            repr(e)
+        )
+
+        return RedirectResponse(
+            "/publier",
+            status_code=303
+        )
+
+    finally:
+
+        db.close()
+
+
+# ============================================================
+# TRAITEMENT PUBLICATION MA BOUTIQUE
+# POST /ma-boutique/publier
+#
+# ICI SEULEMENT :
+#
+# boutique_id = boutique.id
+# ============================================================
+
+@router.post("/ma-boutique/publier")
+async def publish_boutique_product(
+
+    request: Request,
+
+    title: str = Form(...),
+    description: str = Form(...),
+    price: float = Form(...),
+    city: str = Form(...),
+    condition: str = Form(...),
+
+    category_id: int = Form(...),
+    subcategory_id: int = Form(...),
+
+    image: UploadFile = File(None)
+):
+
+    user_id = request.session.get(
+        "user_id"
+    )
+
+    if not user_id:
+
+        return RedirectResponse(
+            "/login",
+            status_code=303
+        )
+
+    db = SessionLocal()
+
+    try:
+
+        # ----------------------------------------------------
+        # RÉCUPÉRER LA BOUTIQUE DU VENDEUR
+        # ----------------------------------------------------
 
         boutique = (
             db.query(Boutique)
@@ -353,85 +559,166 @@ async def creer_produit_boutique(
             .first()
         )
 
-        # =================================================
-        # SÉCURITÉ
-        # =================================================
-
         if not boutique:
-
-            request.session["message"] = (
-                "Vous devez avoir une boutique approuvée "
-                "pour publier dans une boutique."
-            )
 
             return RedirectResponse(
                 "/boutique/creer",
                 status_code=303
             )
 
-        # =================================================
+        # ----------------------------------------------------
+        # NETTOYAGE
+        # ----------------------------------------------------
+
+        title = title.strip()
+
+        description = (
+            description.strip()
+        )
+
+        city = city.strip()
+
+        condition = (
+            condition.strip()
+        )
+
+        # ----------------------------------------------------
+        # VÉRIFIER CATÉGORIE
+        # ----------------------------------------------------
+
+        category = (
+            db.query(Category)
+            .filter(
+                Category.id == category_id
+            )
+            .first()
+        )
+
+        if not category:
+
+            return RedirectResponse(
+                "/ma-boutique/publier",
+                status_code=303
+            )
+
+        # ----------------------------------------------------
+        # VÉRIFIER SOUS-CATÉGORIE
+        # ----------------------------------------------------
+
+        subcategory = (
+            db.query(SubCategory)
+            .filter(
+                SubCategory.id
+                == subcategory_id
+            )
+            .first()
+        )
+
+        if not subcategory:
+
+            return RedirectResponse(
+                "/ma-boutique/publier",
+                status_code=303
+            )
+
+        # ----------------------------------------------------
+        # VÉRIFIER RELATION
+        # ----------------------------------------------------
+
+        if (
+            subcategory.category_id
+            != category_id
+        ):
+
+            return RedirectResponse(
+                "/ma-boutique/publier",
+                status_code=303
+            )
+
+        # ----------------------------------------------------
         # IMAGE
-        # =================================================
+        # ----------------------------------------------------
 
-        image_url = None
+        image_path = await save_product_image(
+            image
+        )
 
-        if image and image.filename:
+        # ----------------------------------------------------
+        # CRÉER PRODUIT DANS LA BOUTIQUE
+        # ----------------------------------------------------
 
-            extension = os.path.splitext(
-                image.filename
-            )[1].lower()
+        product = Product(
 
-            file_name = f"{uuid.uuid4()}{extension}"
-
-            file_data = await image.read()
-
-            supabase.storage.from_(
-                BUCKET_NAME
-            ).upload(
-                file_name,
-                file_data,
-                {
-                    "content-type": (
-                        image.content_type
-                        or "application/octet-stream"
-                    )
-                }
-            )
-
-            image_url = (
-                supabase.storage.from_(
-                    BUCKET_NAME
-                ).get_public_url(
-                    file_name
-                )
-            )
-
-        # =================================================
-        # PRODUIT DE LA BOUTIQUE
-        # =================================================
-
-        produit = Product(
             title=title,
+
             description=description,
+
             price=price,
+
             city=city,
+
             condition=condition,
+
             category_id=category_id,
+
             subcategory_id=subcategory_id,
-            image=image_url,
+
             user_id=user_id,
 
-            # IMPORTANT :
-            # Le produit appartient à la boutique
+            image=image_path,
+
             boutique_id=boutique.id
         )
 
-        db.add(produit)
+        db.add(product)
 
         db.commit()
 
+        db.refresh(product)
+
+        print(
+            "=========================================="
+        )
+
+        print(
+            "PRODUIT PUBLIÉ DANS MA BOUTIQUE"
+        )
+
+        print(
+            "PRODUIT ID :",
+            product.id
+        )
+
+        print(
+            "BOUTIQUE ID :",
+            boutique.id
+        )
+
+        print(
+            "BOUTIQUE :",
+            boutique.name
+        )
+
+        print(
+            "=========================================="
+        )
+
         return RedirectResponse(
             "/ma-boutique",
+            status_code=303
+        )
+
+    except Exception as e:
+
+        db.rollback()
+
+        print(
+            "ERREUR PUBLICATION BOUTIQUE :",
+            repr(e)
+        )
+
+        return RedirectResponse(
+            "/ma-boutique/publier",
             status_code=303
         )
 

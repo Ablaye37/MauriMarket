@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+
+{% block title %}Commande confirmée - MauriMarket{% endblock %}
+
+{% block content %}
+
+<div class="container py-5">
+
+    <div class="row justify-content-center">
+
+        <div class="col-lg-7">
+
+            <div class="card shadow-sm border-0 text-center">
+
+                <div class="card-body p-5">
+
+                    <div
+                        class="mb-4"
+                        style="font-size:70px; color:#198754;">
+
+                        <i class="bi bi-check-circle-fill"></i>
+
+                    </div>
+
+                    <h1 class="fw-bold mb-3">
+                        Commande enregistrée !
+                    </h1>
+
+                    <p class="text-muted">
+                        Merci pour votre commande sur MauriMarket.
+                    </p>
+
+                    <div class="alert alert-success mt-4">
+
+                        <div class="fw-bold">
+                            Numéro de commande
+                        </div>
+
+                        <div class="fs-4">
+                            {{ order.order_number }}
+                        </div>
+
+                    </div>
+
+                    <div class="text-start mt-4">
+
+                        <h5 class="fw-bold">
+                            Résumé
+                        </h5>
+
+                        <hr>
+
+                        <div class="d-flex justify-content-between mb-2">
+
+                            <span>
+                                Client
+                            </span>
+
+                            <strong>
+                                {{ order.customer_name }}
+                            </strong>
+
+                        </div>
+
+                        <div class="d-flex justify-content-between mb-2">
+
+                            <span>
+                                Téléphone
+                            </span>
+
+                            <strong>
+                                {{ order.customer_phone }}
+                            </strong>
+
+                        </div>
+
+                        <div class="d-flex justify-content-between mb-2">
+
+                            <span>
+                                Ville
+                            </span>
+
+                            <strong>
+                                {{ order.city }}
+                            </strong>
+
+                        </div>
+
+                        <div class="d-flex justify-content-between mb-2">
+
+                            <span>
+                                Paiement
+                            </span>
+
+                            <strong>
+                                Manuel
+                            </strong>
+
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-3">
+
+                            <span class="fw-bold">
+                                Total
+                            </span>
+
+                            <strong class="text-success fs-4">
+                                {{ order.total }} MRU
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                    <div class="alert alert-info text-start mt-4">
+
+                        <i class="bi bi-telephone me-2"></i>
+
+                        <strong>Prochaine étape</strong>
+
+                        <br>
+
+                        Nous allons vous contacter pour confirmer
+                        votre commande, le paiement et la livraison.
+
+                    </div>
+
+                    <div class="d-grid gap-2 mt-4">
+
+                        <a
+                            href="/"
+                            class="btn btn-success">
+
+                            <i class="bi bi-house me-2"></i>
+                            Retour à l'accueil
+
+                        </a>
+
+                        <a
+                            href="/boutiques"
+                            class="btn btn-outline-success">
+
+                            Continuer mes achats
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

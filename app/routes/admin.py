@@ -704,18 +704,18 @@ async def accepter_boutique(
                 status_code=303
             )
 
-        # -------------------------------------------------
-        # CRÉER LA BOUTIQUE
-        # -------------------------------------------------
+            # =====================================================
+            #       CRÉER LA BOUTIQUE
+            # =====================================================
 
-        boutique = Boutique(
+            boutique = Boutique(
             name=boutique_request.name,
+            category=boutique_request.category,
             sale_type=boutique_request.sale_type,
-            user_id=boutique_request.user_id
-        )
+             user_id=boutique_request.user_id
+              )
 
-        db.add(boutique)
-
+            db.add(boutique)
         # -------------------------------------------------
         # APPROUVER
         # -------------------------------------------------

@@ -1,12 +1,16 @@
 {% extends "base.html" %}
 
+{% block title %}
+Modifier ma boutique - MauriMarket
+{% endblock %}
+
 {% block content %}
 
 <div class="edit-boutique-page">
 
-    <!-- =========================
+    <!-- =====================================================
          TOPBAR
-    ========================== -->
+    ====================================================== -->
 
     <div class="edit-boutique-topbar">
 
@@ -16,22 +20,24 @@
 
         <div>
             <h1>Modifier ma boutique</h1>
-            <p>Modifiez les informations, le logo et l'image de votre boutique.</p>
+            <p>
+                Modifiez les informations, le logo et la couverture
+                de votre boutique.
+            </p>
         </div>
 
     </div>
 
 
-    <!-- =========================
+    <!-- =====================================================
          LAYOUT
-    ========================== -->
+    ====================================================== -->
 
     <div class="edit-boutique-layout">
 
-
-        <!-- =========================
+        <!-- =================================================
              FORMULAIRE
-        ========================== -->
+        ================================================== -->
 
         <div class="edit-boutique-card">
 
@@ -43,7 +49,9 @@
 
                 <div>
                     <h2>Informations de la boutique</h2>
-                    <p>Les informations visibles par les visiteurs.</p>
+                    <p>
+                        Ces informations seront visibles par les visiteurs.
+                    </p>
                 </div>
 
             </div>
@@ -55,10 +63,9 @@
                 enctype="multipart/form-data"
             >
 
-
-                <!-- =========================
-                     IMAGE DE COUVERTURE
-                ========================== -->
+                <!-- =================================================
+                     COUVERTURE
+                ================================================== -->
 
                 <div class="field-group">
 
@@ -68,7 +75,7 @@
 
                     <div class="cover-upload-box">
 
-                        <div class="current-cover">
+                        <div class="cover-preview">
 
                             {% if boutique.cover_image %}
 
@@ -78,12 +85,21 @@
                                     alt="Couverture de {{ boutique.name }}"
                                 >
 
+                                <div
+                                    id="coverDefault"
+                                    class="cover-default"
+                                    style="display:none;"
+                                >
+                                    <i class="bi bi-image"></i>
+                                    <span>Image de couverture</span>
+                                </div>
+
                             {% else %}
 
                                 <img
                                     id="coverPreview"
                                     src=""
-                                    alt="Aperçu"
+                                    alt="Aperçu couverture"
                                     style="display:none;"
                                 >
 
@@ -91,13 +107,8 @@
                                     id="coverDefault"
                                     class="cover-default"
                                 >
-
                                     <i class="bi bi-image"></i>
-
-                                    <span>
-                                        Aucune couverture
-                                    </span>
-
+                                    <span>Image de couverture</span>
                                 </div>
 
                             {% endif %}
@@ -105,17 +116,14 @@
                         </div>
 
 
-                        <div class="cover-upload-content">
+                        <div class="cover-upload-bottom">
 
                             <label
                                 for="cover_image"
                                 class="upload-button"
                             >
-
                                 <i class="bi bi-image"></i>
-
                                 Choisir une couverture
-
                             </label>
 
                             <input
@@ -124,12 +132,10 @@
                                 name="cover_image"
                                 accept="image/jpeg,image/png,image/webp"
                                 hidden
-                                onchange="previewCover(event)"
                             >
 
                             <small>
-                                JPG, JPEG, PNG ou WEBP.
-                                Une image horizontale est recommandée.
+                                JPG, PNG ou WEBP.
                             </small>
 
                         </div>
@@ -139,9 +145,9 @@
                 </div>
 
 
-                <!-- =========================
+                <!-- =================================================
                      LOGO
-                ========================== -->
+                ================================================== -->
 
                 <div class="field-group">
 
@@ -158,15 +164,21 @@
                                 <img
                                     id="logoPreview"
                                     src="{{ boutique.logo }}"
-                                    alt="{{ boutique.name }}"
+                                    alt="Logo de {{ boutique.name }}"
                                 >
+
+                                <i
+                                    id="logoDefaultIcon"
+                                    class="bi bi-shop"
+                                    style="display:none;"
+                                ></i>
 
                             {% else %}
 
                                 <img
                                     id="logoPreview"
                                     src=""
-                                    alt="Aperçu"
+                                    alt="Aperçu du logo"
                                     style="display:none;"
                                 >
 
@@ -186,11 +198,8 @@
                                 for="logo"
                                 class="upload-button"
                             >
-
                                 <i class="bi bi-image"></i>
-
                                 Choisir un logo
-
                             </label>
 
                             <input
@@ -199,11 +208,10 @@
                                 name="logo"
                                 accept="image/jpeg,image/png,image/webp"
                                 hidden
-                                onchange="previewLogo(event)"
                             >
 
                             <small>
-                                JPG, JPEG, PNG ou WEBP.
+                                JPG, PNG ou WEBP.
                             </small>
 
                         </div>
@@ -213,9 +221,9 @@
                 </div>
 
 
-                <!-- =========================
+                <!-- =================================================
                      NOM
-                ========================== -->
+                ================================================== -->
 
                 <div class="field-group">
 
@@ -236,9 +244,9 @@
                 </div>
 
 
-                <!-- =========================
+                <!-- =================================================
                      TYPE
-                ========================== -->
+                ================================================== -->
 
                 <div class="field-group">
 
@@ -253,15 +261,16 @@
                         name="sale_type"
                         class="modern-input"
                         value="{{ boutique.sale_type }}"
+                        placeholder="Ex : Vêtements, Téléphones..."
                         required
                     >
 
                 </div>
 
 
-                <!-- =========================
+                <!-- =================================================
                      VILLE
-                ========================== -->
+                ================================================== -->
 
                 <div class="field-group">
 
@@ -287,9 +296,9 @@
                 </div>
 
 
-                <!-- =========================
+                <!-- =================================================
                      DESCRIPTION
-                ========================== -->
+                ================================================== -->
 
                 <div class="field-group">
 
@@ -307,9 +316,9 @@
                 </div>
 
 
-                <!-- =========================
+                <!-- =================================================
                      ACTIONS
-                ========================== -->
+                ================================================== -->
 
                 <div class="form-actions">
 
@@ -324,11 +333,8 @@
                         type="submit"
                         class="save-button"
                     >
-
                         <i class="bi bi-check-circle"></i>
-
                         Enregistrer les modifications
-
                     </button>
 
                 </div>
@@ -338,9 +344,9 @@
         </div>
 
 
-        <!-- =========================
+        <!-- =================================================
              APERÇU
-        ========================== -->
+        ================================================== -->
 
         <aside class="preview-card">
 
@@ -348,17 +354,17 @@
 
                 <span>
                     <i class="bi bi-eye"></i>
-                    Aperçu
+                    Aperçu de la boutique
                 </span>
 
             </div>
 
 
-            <!-- =========================
-                 COUVERTURE APERÇU
-            ========================== -->
+            <!-- =================================================
+                 COVER
+            ================================================== -->
 
-            <div class="preview-cover">
+            <div class="shop-cover-preview">
 
                 {% if boutique.cover_image %}
 
@@ -367,6 +373,14 @@
                         src="{{ boutique.cover_image }}"
                         alt="Couverture"
                     >
+
+                    <div
+                        id="previewCoverDefault"
+                        class="preview-cover-default"
+                        style="display:none;"
+                    >
+                        <i class="bi bi-shop"></i>
+                    </div>
 
                 {% else %}
 
@@ -381,13 +395,7 @@
                         id="previewCoverDefault"
                         class="preview-cover-default"
                     >
-
-                        <i class="bi bi-image"></i>
-
-                        <span>
-                            Image de couverture
-                        </span>
-
+                        <i class="bi bi-shop"></i>
                     </div>
 
                 {% endif %}
@@ -395,9 +403,9 @@
             </div>
 
 
-            <!-- =========================
-                 INFOS
-            ========================== -->
+            <!-- =================================================
+                 INFORMATIONS BOUTIQUE
+            ================================================== -->
 
             <div class="shop-preview">
 
@@ -410,6 +418,12 @@
                             src="{{ boutique.logo }}"
                             alt="{{ boutique.name }}"
                         >
+
+                        <i
+                            id="previewDefaultIcon"
+                            class="bi bi-shop"
+                            style="display:none;"
+                        ></i>
 
                     {% else %}
 
@@ -445,42 +459,30 @@
             </div>
 
 
-            <!-- =========================
+            <!-- =================================================
                  VILLE
-            ========================== -->
+            ================================================== -->
 
-            {% if boutique.city %}
+            <div
+                class="preview-location"
+                id="previewCityContainer"
+                {% if not boutique.city %}
+                style="display:none;"
+                {% endif %}
+            >
 
-                <div class="preview-location">
+                <i class="bi bi-geo-alt"></i>
 
-                    <i class="bi bi-geo-alt"></i>
+                <span id="previewCity">
+                    {{ boutique.city or '' }}
+                </span>
 
-                    <span id="previewCity">
-                        {{ boutique.city }}
-                    </span>
-
-                </div>
-
-            {% else %}
-
-                <div
-                    class="preview-location"
-                    id="previewCityContainer"
-                    style="display:none;"
-                >
-
-                    <i class="bi bi-geo-alt"></i>
-
-                    <span id="previewCity"></span>
-
-                </div>
-
-            {% endif %}
+            </div>
 
 
-            <!-- =========================
+            <!-- =================================================
                  DESCRIPTION
-            ========================== -->
+            ================================================== -->
 
             <div class="preview-description">
 
@@ -497,9 +499,9 @@
             </div>
 
 
-            <!-- =========================
+            <!-- =================================================
                  STATUT
-            ========================== -->
+            ================================================== -->
 
             <div class="preview-status">
 
@@ -518,21 +520,28 @@
 
 <style>
 
-/* =========================
+/* =====================================================
    PAGE
-========================= */
+===================================================== */
 
 .edit-boutique-page {
+    width: 100%;
     max-width: 1050px;
     margin: 0 auto;
-    padding: 15px 22px 50px;
+    padding: 18px 22px 50px;
     color: #263238;
 }
 
+.edit-boutique-page *,
+.edit-boutique-page *::before,
+.edit-boutique-page *::after {
+    box-sizing: border-box;
+}
 
-/* =========================
+
+/* =====================================================
    TOPBAR
-========================= */
+===================================================== */
 
 .edit-boutique-topbar {
     display: flex;
@@ -544,12 +553,11 @@
 .back-button {
     width: 40px;
     height: 40px;
+    min-width: 40px;
 
     display: flex;
     align-items: center;
     justify-content: center;
-
-    flex-shrink: 0;
 
     color: #198754;
     background: #eaf7f0;
@@ -563,7 +571,7 @@
 }
 
 .back-button:hover {
-    color: #ffffff;
+    color: #fff;
     background: #198754;
 }
 
@@ -581,9 +589,9 @@
 }
 
 
-/* =========================
+/* =====================================================
    LAYOUT
-========================= */
+===================================================== */
 
 .edit-boutique-layout {
     display: grid;
@@ -593,13 +601,13 @@
 }
 
 
-/* =========================
-   CARTES
-========================= */
+/* =====================================================
+   CARDS
+===================================================== */
 
 .edit-boutique-card,
 .preview-card {
-    background: #ffffff;
+    background: #fff;
     border: 1px solid #e5e7eb;
     border-radius: 12px;
     box-shadow: 0 3px 15px rgba(23,32,51,0.04);
@@ -610,17 +618,15 @@
 }
 
 
-/* =========================
-   HEADER CARTE
-========================= */
+/* =====================================================
+   HEADING
+===================================================== */
 
 .card-heading {
     display: flex;
     align-items: center;
     gap: 11px;
-
     padding: 20px 22px;
-
     border-bottom: 1px solid #edf0f2;
 }
 
@@ -653,41 +659,43 @@
 }
 
 
-/* =========================
+/* =====================================================
    FORM
-========================= */
+===================================================== */
 
 .edit-boutique-card form {
     padding: 22px;
 }
 
 .field-group {
-    margin-bottom: 18px;
+    margin-bottom: 19px;
 }
 
-.field-group label {
+.field-group > label {
     display: block;
     margin-bottom: 7px;
-
     color: #263238;
     font-size: 11px;
     font-weight: 700;
 }
 
-.field-group label span {
+.field-group > label span {
     color: #dc3545;
 }
+
+
+/* =====================================================
+   INPUT
+===================================================== */
 
 .modern-input {
     width: 100%;
     min-height: 42px;
 
-    box-sizing: border-box;
-
     padding: 10px 12px;
 
     color: #263238;
-    background: #ffffff;
+    background: #fff;
 
     border: 1px solid #dfe4e8;
     border-radius: 8px;
@@ -712,27 +720,22 @@
 }
 
 
-/* =========================
-   COUVERTURE
-========================= */
+/* =====================================================
+   COVER
+===================================================== */
 
 .cover-upload-box {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-
-    padding: 12px;
-
+    overflow: hidden;
     background: #f8faf9;
-
     border: 1px solid #e5e7eb;
-    border-radius: 9px;
+    border-radius: 10px;
 }
 
-.current-cover {
-    width: 150px;
-    height: 80px;
-    min-width: 150px;
+.cover-preview {
+    width: 100%;
+    height: 155px;
+
+    position: relative;
 
     display: flex;
     align-items: center;
@@ -741,13 +744,12 @@
     overflow: hidden;
 
     background: #eaf7f0;
-
-    border-radius: 9px;
 }
 
-.current-cover img {
+.cover-preview img {
     width: 100%;
     height: 100%;
+    display: block;
     object-fit: cover;
 }
 
@@ -756,38 +758,27 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-
-    gap: 4px;
+    gap: 7px;
 
     color: #198754;
-
-    text-align: center;
+    font-size: 10px;
 }
 
 .cover-default i {
-    font-size: 22px;
+    font-size: 30px;
 }
 
-.cover-default span {
-    font-size: 8px;
-}
-
-.cover-upload-content {
-    flex: 1;
-}
-
-.cover-upload-content small {
-    display: block;
-    margin-top: 7px;
-
-    color: #8b949e;
-    font-size: 9px;
+.cover-upload-bottom {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px;
 }
 
 
-/* =========================
+/* =====================================================
    LOGO
-========================= */
+===================================================== */
 
 .logo-upload-box {
     display: flex;
@@ -797,7 +788,6 @@
     padding: 12px;
 
     background: #f8faf9;
-
     border: 1px solid #e5e7eb;
     border-radius: 9px;
 }
@@ -813,15 +803,15 @@
 
     overflow: hidden;
 
-    background: #eaf7f0;
     color: #198754;
-
+    background: #eaf7f0;
     border-radius: 10px;
 }
 
 .current-logo img {
     width: 100%;
     height: 100%;
+    display: block;
     object-fit: cover;
 }
 
@@ -833,6 +823,11 @@
     flex: 1;
 }
 
+
+/* =====================================================
+   UPLOAD
+===================================================== */
+
 .upload-button {
     display: inline-flex !important;
     align-items: center;
@@ -841,7 +836,7 @@
 
     padding: 9px 13px;
 
-    color: #ffffff !important;
+    color: #fff !important;
     background: #198754;
 
     border-radius: 7px;
@@ -851,17 +846,31 @@
     font-size: 10px !important;
     font-weight: 700 !important;
 
+    text-decoration: none;
     margin: 0 !important;
+
+    transition: 0.2s ease;
 }
 
 .upload-button:hover {
     background: #157347;
 }
 
+.cover-upload-bottom small,
+.logo-upload-content small {
+    color: #8b949e;
+    font-size: 9px;
+}
 
-/* =========================
+.logo-upload-content small {
+    display: block;
+    margin-top: 7px;
+}
+
+
+/* =====================================================
    VILLE
-========================= */
+===================================================== */
 
 .input-with-icon {
     position: relative;
@@ -869,7 +878,6 @@
 
 .input-with-icon > i {
     position: absolute;
-
     top: 50%;
     left: 13px;
 
@@ -877,7 +885,6 @@
 
     color: #198754;
     font-size: 14px;
-
     z-index: 2;
 }
 
@@ -886,9 +893,9 @@
 }
 
 
-/* =========================
+/* =====================================================
    ACTIONS
-========================= */
+===================================================== */
 
 .form-actions {
     display: flex;
@@ -896,11 +903,9 @@
     gap: 9px;
 
     margin: 5px -22px -22px;
-
     padding: 16px 22px;
 
     background: #fafbfc;
-
     border-top: 1px solid #edf0f2;
 }
 
@@ -924,21 +929,19 @@
     padding: 0 18px;
 
     color: #59636e;
-    background: #ffffff;
+    background: #fff;
 
     border: 1px solid #dfe4e8;
 }
 
 .save-button {
     gap: 6px;
-
     padding: 0 18px;
 
-    color: #ffffff;
+    color: #fff;
     background: #198754;
 
     border: 0;
-
     cursor: pointer;
 }
 
@@ -947,9 +950,9 @@
 }
 
 
-/* =========================
-   APERÇU
-========================= */
+/* =====================================================
+   PREVIEW
+===================================================== */
 
 .preview-card {
     padding: 17px;
@@ -978,31 +981,26 @@
 }
 
 
-/* =========================
-   APERÇU COUVERTURE
-========================= */
+/* =====================================================
+   PREVIEW COVER
+===================================================== */
 
-.preview-cover {
-    position: relative;
-
+.shop-cover-preview {
     width: 100%;
-    height: 125px;
+    height: 130px;
+
+    position: relative;
 
     overflow: hidden;
 
-    margin-bottom: 14px;
-
     background: #eaf7f0;
-
     border-radius: 9px;
 }
 
-.preview-cover img {
+.shop-cover-preview img {
     width: 100%;
     height: 100%;
-
     display: block;
-
     object-fit: cover;
 }
 
@@ -1011,33 +1009,32 @@
     height: 100%;
 
     display: flex;
-    flex-direction: column;
-
     align-items: center;
     justify-content: center;
 
-    gap: 5px;
-
     color: #198754;
+    background: #eaf7f0;
 }
 
 .preview-cover-default i {
-    font-size: 25px;
-}
-
-.preview-cover-default span {
-    font-size: 9px;
+    font-size: 32px;
 }
 
 
-/* =========================
+/* =====================================================
    SHOP PREVIEW
-========================= */
+===================================================== */
 
 .shop-preview {
     display: flex;
     align-items: center;
     gap: 10px;
+
+    margin-top: -22px;
+
+    position: relative;
+
+    padding: 0 10px;
 }
 
 .shop-avatar {
@@ -1054,12 +1051,14 @@
     color: #198754;
     background: #eaf7f0;
 
+    border: 3px solid #fff;
     border-radius: 11px;
 }
 
 .shop-avatar img {
     width: 100%;
     height: 100%;
+    display: block;
     object-fit: cover;
 }
 
@@ -1072,6 +1071,8 @@
 
     display: flex;
     flex-direction: column;
+
+    padding-top: 20px;
 }
 
 .shop-preview-info strong {
@@ -1088,15 +1089,14 @@
 
 .shop-preview-info span {
     margin-top: 3px;
-
     color: #7b8492;
     font-size: 9px;
 }
 
 
-/* =========================
+/* =====================================================
    LOCALISATION
-========================= */
+===================================================== */
 
 .preview-location {
     display: flex;
@@ -1117,9 +1117,9 @@
 }
 
 
-/* =========================
+/* =====================================================
    DESCRIPTION
-========================= */
+===================================================== */
 
 .preview-description {
     margin-top: 13px;
@@ -1135,9 +1135,9 @@
 }
 
 
-/* =========================
-   STATUT
-========================= */
+/* =====================================================
+   STATUS
+===================================================== */
 
 .preview-status {
     display: flex;
@@ -1153,9 +1153,9 @@
 }
 
 
-/* =========================
+/* =====================================================
    TABLETTE
-========================= */
+===================================================== */
 
 @media (max-width: 850px) {
 
@@ -1163,12 +1163,16 @@
         grid-template-columns: 1fr;
     }
 
+    .preview-card {
+        order: 2;
+    }
+
 }
 
 
-/* =========================
+/* =====================================================
    MOBILE
-========================= */
+===================================================== */
 
 @media (max-width: 600px) {
 
@@ -1207,27 +1211,24 @@
         width: 100%;
     }
 
-    .logo-upload-box,
-    .cover-upload-box {
+    .cover-preview {
+        height: 130px;
+    }
+
+    .cover-upload-bottom {
         align-items: flex-start;
         flex-direction: column;
     }
 
-    .current-cover {
-        width: 100%;
-        height: 120px;
+    .logo-upload-box {
+        align-items: flex-start;
+        flex-direction: column;
     }
 
-}
+    .upload-button {
+        width: 100%;
+    }
 
-
-/* =========================
-   CORRECTION FOND
-========================= */
-
-.edit-boutique-page,
-.edit-boutique-page * {
-    box-sizing: border-box;
 }
 
 </style>
@@ -1235,149 +1236,135 @@
 
 <script>
 
-/* =========================
+/* =====================================================
    APERÇU COUVERTURE
-========================= */
+===================================================== */
 
-function previewCover(event) {
+const coverInput = document.getElementById("cover_image");
 
-    const file = event.target.files[0];
+if (coverInput) {
 
-    if (!file) {
-        return;
-    }
+    coverInput.addEventListener("change", function () {
 
-    if (!file.type.startsWith("image/")) {
+        const file = this.files[0];
 
-        alert("Veuillez sélectionner une image.");
+        if (!file) {
+            return;
+        }
 
-        event.target.value = "";
+        if (!file.type.startsWith("image/")) {
 
-        return;
-    }
+            alert("Veuillez sélectionner une image.");
 
-    const url = URL.createObjectURL(file);
+            this.value = "";
 
+            return;
+        }
 
-    /* COUVERTURE FORMULAIRE */
+        const url = URL.createObjectURL(file);
 
-    const coverPreview =
-        document.getElementById("coverPreview");
+        const coverPreview =
+            document.getElementById("coverPreview");
 
-    const coverDefault =
-        document.getElementById("coverDefault");
+        const coverDefault =
+            document.getElementById("coverDefault");
 
-    if (coverPreview) {
+        const previewCover =
+            document.getElementById("previewCover");
 
-        coverPreview.src = url;
-        coverPreview.style.display = "block";
-
-    }
-
-    if (coverDefault) {
-
-        coverDefault.style.display = "none";
-
-    }
+        const previewCoverDefault =
+            document.getElementById("previewCoverDefault");
 
 
-    /* COUVERTURE APERÇU */
+        if (coverPreview) {
+            coverPreview.src = url;
+            coverPreview.style.display = "block";
+        }
 
-    const previewCover =
-        document.getElementById("previewCover");
+        if (coverDefault) {
+            coverDefault.style.display = "none";
+        }
 
-    const previewCoverDefault =
-        document.getElementById("previewCoverDefault");
+        if (previewCover) {
+            previewCover.src = url;
+            previewCover.style.display = "block";
+        }
 
-    if (previewCover) {
+        if (previewCoverDefault) {
+            previewCoverDefault.style.display = "none";
+        }
 
-        previewCover.src = url;
-        previewCover.style.display = "block";
-
-    }
-
-    if (previewCoverDefault) {
-
-        previewCoverDefault.style.display = "none";
-
-    }
+    });
 
 }
 
 
-/* =========================
+/* =====================================================
    APERÇU LOGO
-========================= */
+===================================================== */
 
-function previewLogo(event) {
+const logoInput = document.getElementById("logo");
 
-    const file = event.target.files[0];
+if (logoInput) {
 
-    if (!file) {
-        return;
-    }
+    logoInput.addEventListener("change", function () {
 
-    if (!file.type.startsWith("image/")) {
+        const file = this.files[0];
 
-        alert("Veuillez sélectionner une image.");
+        if (!file) {
+            return;
+        }
 
-        event.target.value = "";
+        if (!file.type.startsWith("image/")) {
 
-        return;
-    }
+            alert("Veuillez sélectionner une image.");
 
-    const url = URL.createObjectURL(file);
+            this.value = "";
 
+            return;
+        }
 
-    /* IMAGE FORMULAIRE */
+        const url = URL.createObjectURL(file);
 
-    const logoPreview =
-        document.getElementById("logoPreview");
+        const logoPreview =
+            document.getElementById("logoPreview");
 
-    const logoDefaultIcon =
-        document.getElementById("logoDefaultIcon");
+        const logoDefaultIcon =
+            document.getElementById("logoDefaultIcon");
 
-    if (logoPreview) {
+        const previewLogo =
+            document.getElementById("previewLogo");
 
-        logoPreview.src = url;
-        logoPreview.style.display = "block";
-
-    }
-
-    if (logoDefaultIcon) {
-
-        logoDefaultIcon.style.display = "none";
-
-    }
+        const previewDefaultIcon =
+            document.getElementById("previewDefaultIcon");
 
 
-    /* IMAGE APERÇU */
+        if (logoPreview) {
+            logoPreview.src = url;
+            logoPreview.style.display = "block";
+        }
 
-    const previewLogo =
-        document.getElementById("previewLogo");
+        if (logoDefaultIcon) {
+            logoDefaultIcon.style.display = "none";
+        }
 
-    const previewDefaultIcon =
-        document.getElementById("previewDefaultIcon");
+        if (previewLogo) {
+            previewLogo.src = url;
+            previewLogo.style.display = "block";
+        }
 
-    if (previewLogo) {
+        if (previewDefaultIcon) {
+            previewDefaultIcon.style.display = "none";
+        }
 
-        previewLogo.src = url;
-        previewLogo.style.display = "block";
-
-    }
-
-    if (previewDefaultIcon) {
-
-        previewDefaultIcon.style.display = "none";
-
-    }
+    });
 
 }
 
 
-/* =========================
+/* =====================================================
    APERÇU NOM
-========================= */
+===================================================== */
 
 const nameInput =
     document.getElementById("name");
@@ -1392,7 +1379,9 @@ if (nameInput) {
         if (previewName) {
 
             previewName.textContent =
-                this.value || "Ma boutique";
+                this.value.trim()
+                    ? this.value
+                    : "Ma boutique";
 
         }
 
@@ -1401,9 +1390,9 @@ if (nameInput) {
 }
 
 
-/* =========================
+/* =====================================================
    APERÇU TYPE
-========================= */
+===================================================== */
 
 const saleTypeInput =
     document.getElementById("sale_type");
@@ -1418,7 +1407,9 @@ if (saleTypeInput) {
         if (previewSaleType) {
 
             previewSaleType.textContent =
-                this.value || "Type de boutique";
+                this.value.trim()
+                    ? this.value
+                    : "Type de boutique";
 
         }
 
@@ -1427,9 +1418,9 @@ if (saleTypeInput) {
 }
 
 
-/* =========================
+/* =====================================================
    APERÇU VILLE
-========================= */
+===================================================== */
 
 const cityInput =
     document.getElementById("city");
@@ -1439,10 +1430,14 @@ if (cityInput) {
     cityInput.addEventListener("input", function () {
 
         const container =
-            document.getElementById("previewCityContainer");
+            document.getElementById(
+                "previewCityContainer"
+            );
 
         const previewCity =
-            document.getElementById("previewCity");
+            document.getElementById(
+                "previewCity"
+            );
 
         if (previewCity) {
 
@@ -1465,9 +1460,9 @@ if (cityInput) {
 }
 
 
-/* =========================
+/* =====================================================
    APERÇU DESCRIPTION
-========================= */
+===================================================== */
 
 const descriptionInput =
     document.getElementById("description");
@@ -1477,7 +1472,9 @@ if (descriptionInput) {
     descriptionInput.addEventListener("input", function () {
 
         const previewDescription =
-            document.getElementById("previewDescription");
+            document.getElementById(
+                "previewDescription"
+            );
 
         if (previewDescription) {
 

@@ -5,33 +5,20 @@ from app.database.database import Base
 
 
 class Category(Base):
-
     __tablename__ = "categories"
 
-    id = Column(
-        Integer,
-        primary_key=True,
-        index=True
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(100), nullable=False)
+
+    # Produits de cette catégorie
+    products = relationship(
+        "Product",
+        back_populates="category"
     )
 
-    name = Column(
-        String(100),
-        unique=True,
-        nullable=False
-    )
-
-    icon = Column(
-        String(100),
-        nullable=True
-    )
-
+    # Sous-catégories
     subcategories = relationship(
         "SubCategory",
         back_populates="category",
         cascade="all, delete-orphan"
-    )
-
-    products = relationship(
-        "Product",
-        back_populates="category"
     )

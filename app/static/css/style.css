@@ -3,7 +3,6 @@
    STYLE PRINCIPAL
 ========================================================= */
 
-
 /* =========================================================
    RESET
 ========================================================= */
@@ -36,7 +35,6 @@ textarea {
     font-family: inherit;
 }
 
-
 /* =========================================================
    HEADER PRINCIPAL
 ========================================================= */
@@ -47,7 +45,6 @@ textarea {
     border-bottom: 1px solid #e5e7eb;
 }
 
-
 /* =========================================================
    LIGNE PRINCIPALE DU HEADER
 ========================================================= */
@@ -55,17 +52,12 @@ textarea {
 .header-container {
     width: 100%;
     min-height: 76px;
-
     display: flex;
     align-items: center;
-
     gap: 25px;
-
     padding: 0 2px;
-
     background: #ffffff;
 }
-
 
 /* =========================================================
    LOGO
@@ -73,26 +65,19 @@ textarea {
 
 .brand {
     flex: 0 0 auto;
-
     display: flex;
     align-items: center;
-
     min-width: 210px;
-
     color: #101828;
-
     font-size: 24px;
     font-weight: 800;
-
     white-space: nowrap;
 }
 
 .brand img {
     width: 45px;
     height: 45px;
-
     object-fit: contain;
-
     margin-right: 10px;
 }
 
@@ -100,45 +85,32 @@ textarea {
     color: #198754;
 }
 
-
 /* =========================================================
    RECHERCHE
 ========================================================= */
 
 .main-search {
     flex: 1 1 auto;
-
     width: auto;
     max-width: 680px;
-
     height: 44px;
-
     display: flex;
     align-items: stretch;
-
     margin: 0 auto;
-
     border: 1px solid #dfe3e8;
     border-radius: 8px;
-
     overflow: hidden;
-
     background: #ffffff;
 }
 
 .main-search input {
     flex: 1 1 auto;
-
     width: 100%;
     min-width: 0;
-
     height: 42px;
-
     border: 0;
     outline: none;
-
     padding: 0 16px;
-
     font-size: 14px;
     color: #333333;
 }
@@ -149,19 +121,13 @@ textarea {
 
 .main-search button {
     flex: 0 0 115px;
-
     height: 42px;
-
     border: 0;
-
     background: #198754;
     color: #ffffff;
-
     font-size: 13px;
     font-weight: 700;
-
     cursor: pointer;
-
     transition: background 0.2s ease;
 }
 
@@ -169,35 +135,26 @@ textarea {
     background: #157347;
 }
 
-
 /* =========================================================
    ACTIONS DU HEADER
 ========================================================= */
 
 .header-actions {
     flex: 0 0 auto;
-
     display: flex;
     align-items: center;
-
     gap: 20px;
-
     white-space: nowrap;
 }
 
 .header-action {
     display: flex;
     align-items: center;
-
     gap: 6px;
-
     color: #172033;
-
     font-size: 13px;
     font-weight: 600;
-
     white-space: nowrap;
-
     transition: color 0.2s ease;
 }
 
@@ -208,18 +165,13 @@ textarea {
 .header-action b {
     min-width: 20px;
     height: 20px;
-
     padding: 0 5px;
-
     border-radius: 50%;
-
     display: inline-flex;
     align-items: center;
     justify-content: center;
-
     background: #198754;
     color: #ffffff;
-
     font-size: 10px;
 }
 
@@ -227,14 +179,12 @@ textarea {
     color: #198754;
 }
 
-
 /* =========================================================
    MENU COMPTE
 ========================================================= */
 
 .account-menu {
     position: relative;
-
     display: flex;
     align-items: center;
 }
@@ -242,7 +192,6 @@ textarea {
 .account-button {
     border: 0;
     background: transparent;
-
     cursor: pointer;
 }
 
@@ -253,23 +202,15 @@ textarea {
 
 .account-dropdown {
     position: absolute;
-
     top: calc(100% + 10px);
     right: 0;
-
     width: 190px;
-
     padding: 2px;
-
     background: #ffffff;
-
     border: 1px solid #e5e7eb;
     border-radius: 9px;
-
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
-
     display: none;
-
     z-index: 1000;
 }
 
@@ -280,15 +221,10 @@ textarea {
 .account-dropdown a {
     display: flex;
     align-items: center;
-
     gap: 9px;
-
-    padding: 1px 11px;
-
+    padding: 8px 11px;
     border-radius: 6px;
-
     color: #172033;
-
     font-size: 13px;
 }
 
@@ -299,9 +235,7 @@ textarea {
 
 .account-dropdown .logout-link {
     color: #dc3545;
-
     border-top: 1px solid #eeeeee;
-
     margin-top: 5px;
 }
 
@@ -310,7 +244,6 @@ textarea {
     color: #dc3545;
 }
 
-
 /* =========================================================
    NAVBAR DES CATÉGORIES
 ========================================================= */
@@ -318,12 +251,9 @@ textarea {
 .category-navbar {
     width: 100%;
     height: 58px;
-
     background: #ffffff;
-
     border-top: 1px solid #f1f3f5;
     border-bottom: 1px solid #e1e5e9;
-
     position: relative;
     z-index: 100;
 }
@@ -331,17 +261,12 @@ textarea {
 .category-navbar-inner {
     width: 100%;
     height: 58px;
-
     display: flex;
     align-items: center;
-
     gap: 10px;
-
     padding: 0 2px;
-
     overflow: hidden;
 }
-
 
 /* =========================================================
    LIENS NAVBAR
@@ -349,26 +274,17 @@ textarea {
 
 .category-nav-link {
     flex: 0 0 auto;
-
     height: 42px;
-
     display: inline-flex;
     align-items: center;
     justify-content: center;
-
     gap: 8px;
-
     padding: 0 15px;
-
     color: #344054;
-
     border-radius: 8px;
-
     font-size: 14px;
     font-weight: 600;
-
     white-space: nowrap;
-
     transition: 0.2s ease;
 }
 
@@ -380,7 +296,6 @@ textarea {
 .category-nav-link:hover {
     background: #f0f8f4;
     color: #198754;
-
     transform: translateY(-1px);
 }
 
@@ -397,37 +312,26 @@ textarea {
     color: #198754;
 }
 
-
 /* =========================================================
    BOUTON PUBLIER
 ========================================================= */
 
 .publish-button {
     flex: 0 0 auto;
-
     height: 42px;
-
     margin-left: auto;
-
     display: inline-flex;
     align-items: center;
     justify-content: center;
-
     gap: 8px;
-
     padding: 0 18px;
-
     background: #e8f5ef;
     color: #198754;
-
     border: 1px solid #d5ecdf;
     border-radius: 8px;
-
     font-size: 13px;
     font-weight: 700;
-
     white-space: nowrap;
-
     transition: 0.2s ease;
 }
 
@@ -438,14 +342,10 @@ textarea {
 .publish-button:hover {
     background: #198754;
     color: #ffffff;
-
     border-color: #198754;
-
     transform: translateY(-1px);
-
     box-shadow: 0 4px 10px rgba(25, 135, 84, 0.18);
 }
-
 
 /* =========================================================
    CONTENU MARKETPLACE
@@ -453,49 +353,37 @@ textarea {
 
 .marketplace-content {
     width: 100%;
-
     padding: 0 24px 40px;
-
     margin: 0;
 }
 
 .marketplace-content > .row {
     --bs-gutter-x: 8px;
     --bs-gutter-y: 0;
-
     margin-top: 0;
 }
-
 
 /* =========================================================
    SIDEBAR CATÉGORIES
 ========================================================= */
 
- .category-sidebar {
+.category-sidebar {
     background: #ffffff;
-
     border: 1px solid #e5e7eb;
     border-radius: 10px;
-
     overflow: hidden;
-
     margin: 0;
 }
 
 .sidebar-title {
     display: flex;
     align-items: center;
-
     gap: 9px;
-
     padding: 15px 16px;
-
     font-size: 16px;
     font-weight: 700;
-
     border-bottom: 1px solid #eeeeee;
 }
-
 
 /* =========================================================
    TOUTES LES CATÉGORIES
@@ -503,16 +391,11 @@ textarea {
 
 .all-categories-toggle {
     width: 100%;
-
     border: 0;
-
     background: #ffffff;
     color: #172033;
-
     cursor: pointer;
-
     text-align: left;
-
     transition: 0.2s ease;
 }
 
@@ -522,21 +405,16 @@ textarea {
 }
 
 .all-categories-toggle > i:first-child {
-    width: 2Opx;
-
+    width: 20px;
     font-size: 18px;
-
     color: #198754;
 }
 
 .all-categories-toggle #categories-arrow {
     margin-left: auto;
-
     font-size: 12px;
-
     color: #7b8492;
 }
-
 
 /* =========================================================
    LISTE CATÉGORIES
@@ -554,33 +432,23 @@ textarea {
     border-bottom: none;
 }
 
-
 /* =========================================================
    CATÉGORIE
 ========================================================= */
 
 .category-toggle {
     width: 100%;
-
     border: 0;
-
     background: transparent;
     color: #172033;
-
     cursor: pointer;
-
     text-align: left;
-
     display: flex;
     align-items: center;
-
     gap: 10px;
-
     padding: 11px 15px;
-
     font-size: 13px;
     font-weight: 600;
-
     transition: 0.2s ease;
 }
 
@@ -592,11 +460,9 @@ textarea {
 .category-toggle > span:first-child {
     width: 24px;
     min-width: 24px;
-
     display: flex;
     align-items: center;
     justify-content: center;
-
     font-size: 17px;
 }
 
@@ -606,16 +472,13 @@ textarea {
 
 .category-toggle > i {
     font-size: 11px;
-
     color: #9aa1ad;
-
     transition: 0.2s ease;
 }
 
 .category-toggle:hover > i {
     color: #198754;
 }
-
 
 /* =========================================================
    ANCIENS LIENS CATÉGORIES
@@ -624,30 +487,22 @@ textarea {
 .sidebar-category {
     display: flex;
     align-items: center;
-
     gap: 10px;
-
     padding: 11px 15px;
-
     font-size: 13px;
-
     transition: 0.2s ease;
 }
 
 .sidebar-category i {
     margin-left: auto;
-
     font-size: 12px;
-
     color: #9aa1ad;
 }
 
 .sidebar-category:hover {
     background: #f0f8f4;
-
     color: #198754;
 }
-
 
 /* =========================================================
    SOUS-CATÉGORIES
@@ -655,58 +510,41 @@ textarea {
 
 .subcategories-list {
     position: relative;
-
     margin: 0 12px 8px 38px;
-
     padding: 3px 0 5px 15px;
-
     border-left: 2px solid #e7f3ed;
-
     animation: subcategoryOpen 0.2s ease;
 }
 
 .subcategory-link {
     display: flex;
     align-items: center;
-
     gap: 8px;
-
     padding: 7px 8px;
-
     color: #687181;
-
     font-size: 12px;
     font-weight: 500;
-
     border-radius: 5px;
-
     transition: 0.2s ease;
 }
 
 .subcategory-link > span:first-child {
     color: #198754;
-
     font-size: 12px;
 }
 
 .subcategory-link:hover {
     background: #f0f8f4;
-
     color: #198754;
-
     padding-left: 12px;
 }
 
 .no-subcategory {
     padding: 7px 8px;
-
     color: #9aa1ad;
-
     font-size: 11px;
-
     font-style: italic;
 }
-
 
 /* =========================================================
    BOUTIQUES DANS LA SIDEBAR
@@ -714,22 +552,16 @@ textarea {
 
 .sidebar-divider {
     height: 1px;
-
     margin: 5px 15px;
-
     background: #eeeeee;
 }
 
 .sidebar-shop {
     display: flex;
     align-items: center;
-
     gap: 9px;
-
     padding: 13px 15px;
-
     color: #198754;
-
     font-size: 12px;
     font-weight: 700;
 }
@@ -738,18 +570,15 @@ textarea {
     margin-left: auto;
 }
 
-
 /* =========================================================
    HEADER PRODUITS
 ========================================================= */
 
 .products-header {
     width: 100%;
-
     display: flex;
     align-items: center;
     justify-content: space-between;
-
     margin: 0 0 10px;
     padding: 0;
 }
@@ -758,16 +587,13 @@ textarea {
 .products-header h2 {
     margin: 0;
     padding: 0;
-
     font-size: 22px;
     font-weight: 800;
-
     color: #172033;
 }
 
 .view-all {
     color: #198754;
-
     font-size: 12px;
     font-weight: 700;
 }
@@ -776,7 +602,6 @@ textarea {
     text-decoration: underline;
 }
 
-
 /* =========================================================
    GRILLE PRODUITS PRINCIPALE
 ========================================================= */
@@ -784,37 +609,36 @@ textarea {
 .products-grid {
     display: flex;
     flex-wrap: wrap;
-
+    align-items: stretch;
     margin-left: -5px;
     margin-right: -5px;
-
     row-gap: 10px;
 }
 
 .product-column {
     width: 20%;
-
     padding-left: 5px;
     padding-right: 5px;
+    display: flex;
+    align-items: stretch;
 }
-
 
 /* =========================================================
    CARTE PRODUIT
+   CORRECTION DES HAUTEURS
 ========================================================= */
 
 .product-card {
     width: 100%;
-
+    height: 100%;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
     margin: 0;
-
     background: #ffffff;
-
     border: 1px solid #e6e8eb;
     border-radius: 8px;
-
     overflow: hidden;
-
     transition:
         transform 0.2s ease,
         box-shadow 0.2s ease;
@@ -822,48 +646,43 @@ textarea {
 
 .product-card:hover {
     transform: translateY(-2px);
-
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
 }
-
 
 /* =========================================================
    IMAGE PRODUIT
 ========================================================= */
 
+.product-image-link {
+    display: block;
+    width: 100%;
+    flex: 0 0 auto;
+}
+
 .product-image-wrapper {
     position: relative;
-
     width: 100%;
     height: 135px;
-
     background: #f1f2f4;
-
     overflow: hidden;
 }
 
 .product-image {
     width: 100%;
     height: 100%;
-
     object-fit: cover;
-
     display: block;
 }
 
 .product-no-image {
     width: 100%;
     height: 100%;
-
     display: flex;
     align-items: center;
     justify-content: center;
-
     color: #a4aab4;
-
     font-size: 40px;
 }
-
 
 /* =========================================================
    FAVORIS
@@ -871,24 +690,17 @@ textarea {
 
 .favorite-button {
     position: absolute;
-
     top: 7px;
     right: 7px;
-
     width: 29px;
     height: 29px;
-
     display: flex;
     align-items: center;
     justify-content: center;
-
     border: 0;
     border-radius: 50%;
-
     background: rgba(255, 255, 255, 0.95);
-
     color: #555d68;
-
     cursor: pointer;
 }
 
@@ -896,94 +708,99 @@ textarea {
     color: #dc3545;
 }
 
-
 /* =========================================================
    CONDITION
 ========================================================= */
 
 .condition-badge {
     position: absolute;
-
     left: 7px;
     bottom: 7px;
-
     padding: 4px 7px;
-
     background: #198754;
     color: #ffffff;
-
     border-radius: 4px;
-
     font-size: 9px;
     font-weight: 700;
 }
 
-
 /* =========================================================
    INFORMATIONS PRODUIT
+   HAUTEUR UNIFORMISÉE
 ========================================================= */
 
 .product-info {
+    flex: 1 1 auto;
+    min-height: 92px;
+    display: flex;
+    flex-direction: column;
     padding: 8px 9px 9px;
 }
 
+/* =========================================================
+   NOM PRODUIT
+========================================================= */
+
 .product-title {
+    min-height: 31px;
+    max-height: 31px;
     margin: 0;
-
     color: #172033;
-
     font-size: 13px;
     font-weight: 700;
     line-height: 1.2;
-
     display: -webkit-box;
-
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
-
     overflow: hidden;
 }
 
+/* =========================================================
+   PRIX
+========================================================= */
+
 .product-price {
+    min-height: 17px;
     margin-top: 4px;
-
     color: #198754;
-
     font-size: 14px;
     font-weight: 800;
-
     line-height: 1.2;
 }
 
-.product-location {
-    margin-top: 4px;
+/* =========================================================
+   VILLE
+========================================================= */
 
+.product-location {
+    min-height: 13px;
+    margin-top: 4px;
     display: flex;
     align-items: center;
-
     gap: 4px;
-
     color: #697180;
-
     font-size: 10px;
-
     line-height: 1.2;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 .product-location i {
+    flex: 0 0 auto;
     font-size: 11px;
 }
 
+/* =========================================================
+   LIEN PRODUIT
+========================================================= */
+
 .product-link {
     display: block;
-
     margin-top: 5px;
-
     color: #198754;
-
     font-size: 10px;
     font-weight: 700;
-
     line-height: 1.2;
 }
 
@@ -991,6 +808,47 @@ textarea {
     text-decoration: underline;
 }
 
+/* =========================================================
+   BADGE BOUTIQUE
+========================================================= */
+
+.product-boutique-badge {
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: auto;
+    padding: 4px 8px;
+    color: #198754;
+    background: #eaf7f0;
+    border: 1px solid #ccebd9;
+    border-radius: 6px;
+    font-size: 9px;
+    font-weight: 700;
+    line-height: 1;
+    text-decoration: none;
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.product-boutique-badge i {
+    font-size: 10px;
+}
+
+.product-boutique-badge span {
+    font-size: 9px;
+    font-weight: 700;
+}
+
+.product-boutique-badge:hover {
+    color: #146c43;
+    background: #dff3e8;
+    border-color: #b8dfc8;
+    transform: translateY(-1px);
+}
 
 /* =========================================================
    AUCUNE ANNONCE
@@ -998,34 +856,27 @@ textarea {
 
 .empty-products {
     padding: 55px 20px;
-
     text-align: center;
-
     background: #ffffff;
-
     border: 1px solid #e5e7eb;
     border-radius: 10px;
 }
 
 .empty-icon {
     margin-bottom: 10px;
-
     font-size: 50px;
 }
 
 .empty-products h3 {
     margin: 0;
-
     font-size: 19px;
     font-weight: 700;
 }
 
 .empty-products p {
     color: #777;
-
     font-size: 13px;
 }
-
 
 /* =========================================================
    FOOTER
@@ -1033,11 +884,8 @@ textarea {
 
 .site-footer {
     margin-top: 30px;
-
     padding: 25px 0;
-
     background: #ffffff;
-
     border-top: 1px solid #e5e7eb;
 }
 
@@ -1045,20 +893,15 @@ textarea {
     display: flex;
     align-items: center;
     justify-content: center;
-
     gap: 25px;
-
     color: #7b8492;
-
     font-size: 12px;
 }
 
 .footer-content strong {
     color: #198754;
-
     font-size: 16px;
 }
-
 
 /* =========================================================
    MESSAGE CENTRAL
@@ -1066,54 +909,39 @@ textarea {
 
 #message-overlay {
     position: fixed;
-
     inset: 0;
-
     display: flex;
     align-items: center;
     justify-content: center;
-
     background: rgba(0, 0, 0, 0.35);
-
     z-index: 9999;
-
     animation: overlayFadeIn 0.3s ease;
 }
 
 .message-box {
     width: 360px;
     min-height: 180px;
-
     background: #ffffff;
-
     border-radius: 16px;
-
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-
     text-align: center;
-
     padding: 30px;
-
     box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
-
     animation: messageAppear 0.35s ease;
 }
 
 .message-icon {
     font-size: 45px;
-
     margin-bottom: 15px;
 }
 
 .message-text {
     font-size: 18px;
-
     font-weight: 600;
 }
-
 
 /* =========================================================
    PAGES BOUTIQUES
@@ -1121,28 +949,21 @@ textarea {
 
 .boutiques-page {
     width: 100%;
-
     padding: 12px 24px 33px;
-
     margin: 0;
 }
 
 .boutiques-page .page-title {
     margin: 0 0 14px;
-
     padding: 0;
-
     font-size: 24px;
     font-weight: 800;
-
     color: #172033;
 }
 
 .boutiques-page .page-subtitle {
     margin: -7px 0 18px;
-
     color: #697180;
-
     font-size: 13px;
 }
 
@@ -1158,22 +979,17 @@ textarea {
     padding: 18px !important;
 }
 
-
 /* =========================================================
    GRILLE DES BOUTIQUES
 ========================================================= */
 
 .boutiques-grid {
     display: grid;
-
     grid-template-columns: repeat(4, minmax(0, 1fr));
-
     gap: 14px;
-
     margin: 0;
     padding: 0;
 }
-
 
 /* =========================================================
    CARTE BOUTIQUE
@@ -1182,27 +998,19 @@ textarea {
 .boutique-card {
     display: flex;
     flex-direction: column;
-
     min-height: 150px;
-
     padding: 18px;
-
     background: #ffffff;
-
     border: 1px solid #e5e7eb;
     border-radius: 10px;
-
     transition: 0.2s ease;
 }
 
 .boutique-card:hover {
     transform: translateY(-2px);
-
     border-color: #cfe8dc;
-
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.07);
 }
-
 
 /* =========================================================
    ICÔNE BOUTIQUE
@@ -1211,21 +1019,15 @@ textarea {
 .boutique-icon {
     width: 42px;
     height: 42px;
-
     display: flex;
     align-items: center;
     justify-content: center;
-
     margin-bottom: 11px;
-
     border-radius: 9px;
-
     background: #e8f5ef;
     color: #198754;
-
     font-size: 20px;
 }
-
 
 /* =========================================================
    NOM BOUTIQUE
@@ -1233,13 +1035,10 @@ textarea {
 
 .boutique-card h3 {
     margin: 0;
-
     font-size: 16px;
     font-weight: 800;
-
     color: #172033;
 }
-
 
 /* =========================================================
    TYPE BOUTIQUE
@@ -1247,12 +1046,9 @@ textarea {
 
 .boutique-card p {
     margin: 5px 0 14px;
-
     color: #697180;
-
     font-size: 12px;
 }
-
 
 /* =========================================================
    BOUTON BOUTIQUE
@@ -1260,23 +1056,16 @@ textarea {
 
 .boutique-card .boutique-button {
     margin-top: auto;
-
     display: inline-flex;
     align-items: center;
     justify-content: center;
-
     height: 34px;
-
     padding: 0 12px;
-
     border-radius: 7px;
-
     background: #198754;
     color: #ffffff;
-
     font-size: 12px;
     font-weight: 700;
-
     transition: background 0.2s ease;
 }
 
@@ -1284,19 +1073,15 @@ textarea {
     background: #157347;
 }
 
-
 /* =========================================================
    MA BOUTIQUE
 ========================================================= */
 
 .ma-boutique-page {
     width: 100%;
-
     padding: 8px 18px 25px;
-
     margin: 0;
 }
-
 
 /* =========================================================
    EN-TÊTE MA BOUTIQUE
@@ -1304,40 +1089,29 @@ textarea {
 
 .ma-boutique-header {
     width: 100%;
-
     display: flex;
     align-items: center;
     justify-content: space-between;
-
     margin: 0 0 12px;
-
     padding: 10px 14px;
-
     background: #ffffff;
-
     border: 1px solid #e5e7eb;
     border-radius: 8px;
 }
 
 .ma-boutique-header h1 {
     margin: 0;
-
     font-size: 18px;
     line-height: 1.2;
-
     font-weight: 800;
-
     color: #172033;
 }
 
 .ma-boutique-header p {
     margin: 3px 0 0;
-
     color: #697180;
-
     font-size: 11px;
 }
-
 
 /* =========================================================
    HEADER PRODUITS DE MA BOUTIQUE
@@ -1347,27 +1121,21 @@ textarea {
     display: flex;
     align-items: center;
     justify-content: space-between;
-
     margin: 0 0 8px;
 }
 
 .boutique-products-header h2 {
     margin: 0;
-
     font-size: 18px;
     font-weight: 800;
-
     color: #172033;
 }
 
 .boutique-products-header p {
     margin: 2px 0 0;
-
     color: #697180;
-
     font-size: 10px;
 }
-
 
 /* =========================================================
    GRILLE PRODUITS DE MA BOUTIQUE
@@ -1375,14 +1143,10 @@ textarea {
 
 .boutique-products-grid {
     width: 100%;
-
     display: grid;
-
     grid-template-columns: repeat(5, minmax(0, 1fr));
-
     gap: 8px;
 }
-
 
 /* =========================================================
    CARTE PRODUIT DE MA BOUTIQUE
@@ -1390,15 +1154,12 @@ textarea {
 
 .boutique-product-card {
     min-width: 0;
-
+    display: flex;
+    flex-direction: column;
     background: #ffffff;
-
     border: 1px solid #e5e7eb;
-
     border-radius: 7px;
-
     overflow: hidden;
-
     transition:
         transform 0.2s ease,
         box-shadow 0.2s ease;
@@ -1406,10 +1167,8 @@ textarea {
 
 .boutique-product-card:hover {
     transform: translateY(-2px);
-
     box-shadow: 0 5px 14px rgba(0, 0, 0, 0.08);
 }
-
 
 /* =========================================================
    IMAGE PRODUIT BOUTIQUE
@@ -1418,18 +1177,15 @@ textarea {
 .boutique-product-image {
     width: 100%;
     height: 135px;
-
+    flex: 0 0 auto;
     background: #f1f2f4;
-
     overflow: hidden;
 }
 
 .boutique-product-image img {
     width: 100%;
     height: 100%;
-
     display: block;
-
     object-fit: cover;
 }
 
@@ -1437,44 +1193,37 @@ textarea {
     display: flex;
     align-items: center;
     justify-content: center;
-
     color: #a4aab4;
-
     font-size: 38px;
 }
-
 
 /* =========================================================
    INFORMATIONS PRODUIT BOUTIQUE
 ========================================================= */
 
 .boutique-product-info {
+    flex: 1;
     padding: 8px;
 }
 
 .boutique-product-info h3 {
+    min-height: 30px;
+    max-height: 30px;
     margin: 0;
-
     color: #172033;
-
     font-size: 12px;
     font-weight: 700;
-
     line-height: 1.25;
-
     display: -webkit-box;
-
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
-
     overflow: hidden;
 }
 
 .boutique-product-price {
+    min-height: 16px;
     margin-top: 4px;
-
     color: #198754;
-
     font-size: 13px;
     font-weight: 800;
 }
@@ -1482,13 +1231,10 @@ textarea {
 .boutique-product-location {
     display: flex;
     align-items: center;
-
     gap: 4px;
-
+    min-height: 12px;
     margin-top: 4px;
-
     color: #697180;
-
     font-size: 9px;
 }
 
@@ -1498,11 +1244,8 @@ textarea {
 
 .boutique-product-link {
     display: block;
-
     margin-top: 5px;
-
     color: #198754;
-
     font-size: 9px;
     font-weight: 700;
 }
@@ -1511,46 +1254,35 @@ textarea {
     text-decoration: underline;
 }
 
-
 /* =========================================================
    BOUTIQUE VIDE
 ========================================================= */
 
 .boutique-empty {
     width: 100%;
-
     padding: 45px 20px;
-
     text-align: center;
-
     background: #ffffff;
-
     border: 1px solid #e5e7eb;
-
     border-radius: 8px;
 }
 
 .boutique-empty > i {
     font-size: 45px;
-
     color: #9aa1ad;
 }
 
 .boutique-empty h3 {
     margin: 10px 0 5px;
-
     font-size: 17px;
     font-weight: 700;
 }
 
 .boutique-empty p {
     margin: 0 0 12px;
-
     color: #697180;
-
     font-size: 11px;
 }
-
 
 /* =========================================================
    PAGE DÉTAIL BOUTIQUE
@@ -1558,38 +1290,29 @@ textarea {
 
 .boutique-detail-page {
     width: 100%;
-
     padding: 6px 24px 15px;
-
     margin: 0;
 }
 
 .boutique-detail-header {
     margin: 0 0 8px;
-
     padding: 18px;
-
     background: #ffffff;
-
     border: 1px solid #e5e7eb;
     border-radius: 10px;
 }
 
 .boutique-detail-header h1 {
     margin: 0;
-
     font-size: 24px;
     font-weight: 800;
 }
 
 .boutique-detail-header p {
     margin: 5px 0 0;
-
     color: #697180;
-
     font-size: 13px;
 }
-
 
 /* =========================================================
    CRÉER UNE BOUTIQUE
@@ -1597,11 +1320,8 @@ textarea {
 
 .creer-boutique-page {
     width: 100%;
-
     padding: 8px 12px 12px;
-
     margin: 0;
-
     display: flex;
     justify-content: center;
     align-items: flex-start;
@@ -1610,18 +1330,13 @@ textarea {
 .creer-boutique-card {
     width: 100%;
     max-width: 380px;
-
     margin: 0;
     padding: 14px;
-
     background: #ffffff;
-
     border: 1px solid #e5e7eb;
     border-radius: 8px;
-
     box-shadow: none;
 }
-
 
 /* =========================================================
    HEADER CRÉATION BOUTIQUE
@@ -1629,24 +1344,18 @@ textarea {
 
 .creer-boutique-header {
     margin: 0 0 9px;
-
     padding: 0;
-
     text-align: center;
 }
 
 .creer-boutique-icon {
     width: 34px;
     height: 34px;
-
     margin: 0 auto 4px;
-
     display: flex;
     align-items: center;
     justify-content: center;
-
     border-radius: 50%;
-
     background: #e8f5ee;
     color: #198754;
 }
@@ -1657,28 +1366,20 @@ textarea {
 
 .creer-boutique-header h1 {
     margin: 0;
-
     padding: 0;
-
     font-size: 17px;
     line-height: 1.15;
-
     font-weight: 700;
-
     color: #172033;
 }
 
 .creer-boutique-header p {
     margin: 3px 0 0;
-
     padding: 0;
-
     font-size: 9px;
     line-height: 1.2;
-
     color: #7b8492;
 }
-
 
 /* =========================================================
    CHAMPS CRÉATION BOUTIQUE
@@ -1686,22 +1387,16 @@ textarea {
 
 .creer-boutique-field {
     margin: 0 0 7px;
-
     padding: 0;
 }
 
 .creer-boutique-field label {
     display: block;
-
     margin: 0 0 3px;
-
     padding: 0;
-
     font-size: 10px;
     line-height: 1.15;
-
     font-weight: 700;
-
     color: #344054;
 }
 
@@ -1709,33 +1404,24 @@ textarea {
 .creer-boutique-field select,
 .creer-boutique-field textarea {
     display: block;
-
     width: 100%;
-
     margin: 0;
-
     box-sizing: border-box;
-
     border: 1px solid #dfe3e8;
     border-radius: 5px;
-
     outline: none;
-
     font-size: 10px;
 }
 
 .creer-boutique-field input,
 .creer-boutique-field select {
     height: 32px;
-
     padding: 0 8px;
 }
 
 .creer-boutique-field textarea {
     min-height: 65px;
-
     padding: 7px 8px;
-
     resize: vertical;
 }
 
@@ -1743,24 +1429,17 @@ textarea {
 .creer-boutique-field select:focus,
 .creer-boutique-field textarea:focus {
     border-color: #198754;
-
-    box-shadow:
-        0 0 0 2px rgba(25, 135, 84, 0.08);
+    box-shadow: 0 0 0 2px rgba(25, 135, 84, 0.08);
 }
 
 .creer-boutique-field small {
     display: block;
-
     margin: 2px 0 0;
-
     padding: 0;
-
     font-size: 8px;
     line-height: 1.15;
-
     color: #8a929e;
 }
-
 
 /* =========================================================
    BOUTON CRÉER
@@ -1768,37 +1447,26 @@ textarea {
 
 .creer-boutique-card button {
     display: flex;
-
     align-items: center;
     justify-content: center;
-
     gap: 4px;
-
     width: 100%;
     height: 32px;
-
     margin: 2px 0 0;
-
     padding: 0;
-
     border: 0;
     border-radius: 5px;
-
     background: #198754;
     color: #ffffff;
-
     font-size: 10px;
     font-weight: 700;
-
     cursor: pointer;
-
     transition: background 0.2s ease;
 }
 
 .creer-boutique-card button:hover {
     background: #157347;
 }
-
 
 /* =========================================================
    ANIMATIONS
@@ -1838,7 +1506,6 @@ textarea {
     }
 }
 
-
 /* =========================================================
    TABLETTE LARGE
 ========================================================= */
@@ -1847,13 +1514,11 @@ textarea {
 
     .header-container {
         gap: 15px;
-
         padding: 0 16px;
     }
 
     .brand {
         min-width: 180px;
-
         font-size: 21px;
     }
 
@@ -1867,19 +1532,16 @@ textarea {
 
     .category-navbar-inner {
         padding: 0 16px;
-
         gap: 5px;
     }
 
     .category-nav-link {
         padding: 0 9px;
-
         font-size: 12px;
     }
 
     .publish-button {
         padding: 0 12px;
-
         font-size: 11px;
     }
 
@@ -1896,7 +1558,6 @@ textarea {
     }
 }
 
-
 /* =========================================================
    TABLETTE
 ========================================================= */
@@ -1905,11 +1566,8 @@ textarea {
 
     .header-container {
         height: auto;
-
         min-height: 74px;
-
         flex-wrap: wrap;
-
         padding-top: 12px;
         padding-bottom: 12px;
     }
@@ -1924,19 +1582,15 @@ textarea {
 
     .main-search {
         order: 3;
-
         flex-basis: 100%;
-
         width: 100%;
         max-width: none;
-
         margin-top: 5px;
     }
 
     .category-navbar {
         overflow-x: auto;
         overflow-y: hidden;
-
         scrollbar-width: none;
     }
 
@@ -1946,11 +1600,8 @@ textarea {
 
     .category-navbar-inner {
         width: max-content;
-
         min-width: 100%;
-
         overflow: visible;
-
         padding: 0 12px;
     }
 
@@ -1971,7 +1622,6 @@ textarea {
     }
 }
 
-
 /* =========================================================
    MOBILE
 ========================================================= */
@@ -1989,7 +1639,6 @@ textarea {
     .brand img {
         width: 38px;
         height: 38px;
-
         margin-right: 7px;
     }
 
@@ -2011,9 +1660,7 @@ textarea {
 
     .category-navbar-inner {
         height: 52px;
-
         gap: 4px;
-
         padding: 0 10px;
     }
 
@@ -2024,7 +1671,6 @@ textarea {
 
     .category-nav-link {
         padding: 0 10px;
-
         font-size: 11px;
     }
 
@@ -2034,7 +1680,6 @@ textarea {
 
     .publish-button {
         padding: 0 11px;
-
         font-size: 10px;
     }
 
@@ -2051,17 +1696,36 @@ textarea {
         font-size: 18px;
     }
 
+    /* 2 cartes identiques sur mobile */
     .product-column {
         width: 50%;
+        display: flex;
+    }
+
+    .product-card {
+        height: 100%;
     }
 
     .product-image-wrapper {
         height: 125px;
     }
 
+    .product-info {
+        min-height: 91px;
+    }
+
+    .product-title {
+        min-height: 29px;
+        max-height: 29px;
+        font-size: 12px;
+    }
+
+    .product-price {
+        font-size: 13px;
+    }
+
     .footer-content {
         flex-direction: column;
-
         gap: 7px;
     }
 
@@ -2077,6 +1741,20 @@ textarea {
         margin-left: 35px;
     }
 
+    .product-boutique-badge {
+        gap: 4px;
+        margin-top: auto;
+        padding: 4px 7px;
+    }
+
+    .product-boutique-badge i {
+        font-size: 9px;
+    }
+
+    .product-boutique-badge span {
+        font-size: 8px;
+    }
+
     .boutiques-page {
         padding: 10px 12px 25px;
     }
@@ -2087,13 +1765,11 @@ textarea {
 
     .boutiques-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
-
         gap: 8px;
     }
 
     .boutique-card {
         min-height: 140px;
-
         padding: 12px;
     }
 
@@ -2111,7 +1787,6 @@ textarea {
 
     .boutique-detail-header {
         padding: 10px;
-
         margin-bottom: 6px;
     }
 
@@ -2121,7 +1796,6 @@ textarea {
 
     .boutique-products-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
-
         gap: 6px;
     }
 
@@ -2155,11 +1829,9 @@ textarea {
 
     .creer-boutique-card {
         max-width: 360px;
-
         padding: 12px;
     }
 }
-
 
 /* =========================================================
    TRÈS PETIT MOBILE
@@ -2171,15 +1843,22 @@ textarea {
         width: 50%;
     }
 
+    .products-grid {
+        row-gap: 8px;
+    }
+
     .product-image-wrapper {
         height: 115px;
     }
 
     .product-info {
+        min-height: 90px;
         padding: 7px;
     }
 
     .product-title {
+        min-height: 29px;
+        max-height: 29px;
         font-size: 12px;
     }
 
@@ -2192,24 +1871,28 @@ textarea {
         font-size: 9px;
     }
 
+    .product-boutique-badge {
+        padding: 4px 6px;
+    }
+
+    .product-boutique-badge span {
+        font-size: 8px;
+    }
+
     .boutiques-grid {
         grid-template-columns: 1fr 1fr;
-
         gap: 6px;
     }
 
     .boutique-card {
         min-height: 130px;
-
         padding: 10px;
     }
 
     .boutique-icon {
         width: 36px;
         height: 36px;
-
         margin-bottom: 7px;
-
         font-size: 17px;
     }
 
@@ -2219,15 +1902,12 @@ textarea {
 
     .boutique-card p {
         font-size: 10px;
-
         margin-bottom: 9px;
     }
 
     .boutique-card .boutique-button {
         height: 30px;
-
         padding: 0 8px;
-
         font-size: 10px;
     }
 
@@ -2261,7 +1941,6 @@ textarea {
 
     .ma-boutique-header .btn {
         font-size: 9px;
-
         padding: 5px 7px;
     }
 
@@ -2270,3 +1949,56 @@ textarea {
     }
 }
 
+/* =========================================================
+   TRÈS PETIT ÉCRAN
+   Évite les cartes trop étroites
+========================================================= */
+
+@media (max-width: 360px) {
+
+    .marketplace-content {
+        padding-left: 8px;
+        padding-right: 8px;
+    }
+
+    .products-grid {
+        margin-left: -3px;
+        margin-right: -3px;
+        row-gap: 6px;
+    }
+
+    .product-column {
+        padding-left: 3px;
+        padding-right: 3px;
+    }
+
+    .product-image-wrapper {
+        height: 105px;
+    }
+
+    .product-info {
+        min-height: 88px;
+        padding: 6px;
+    }
+
+    .product-title {
+        font-size: 11px;
+    }
+
+    .product-price {
+        font-size: 12px;
+    }
+
+    .product-location {
+        font-size: 8px;
+    }
+
+    .product-boutique-badge {
+        font-size: 7px;
+        padding: 3px 5px;
+    }
+
+    .product-boutique-badge span {
+        font-size: 7px;
+    }
+}

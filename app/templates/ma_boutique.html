@@ -1,37 +1,40 @@
 {% extends "base.html" %}
 
-{% block title %}
-Ma boutique - MauriMarket
-{% endblock %}
-
 {% block content %}
 
 <div class="ma-boutique-page">
 
-    {% if boutique.cover_image %}
-<div class="ma-boutique-cover">
-    <img
-        src="{{ boutique.cover_image }}"
-        alt="Couverture de {{ boutique.name }}"
-    >
-</div>
-{% endif %}
+    <!-- =====================================================
+         EN-TÊTE DE LA BOUTIQUE
+    ====================================================== -->
+
+    <div class="ma-boutique-cover">
+
+        {% if boutique.cover_image %}
+
+        <img
+            src="{{ boutique.cover_image }}"
+            alt="Couverture de {{ boutique.name }}"
+        >
+
+        {% else %}
+
+        <div class="default-boutique-cover">
+            <i class="bi bi-shop"></i>
+        </div>
+
+        {% endif %}
+
+    </div>
+
 
     <!-- =====================================================
-         EN-TÊTE DE MA BOUTIQUE
+         INFORMATIONS BOUTIQUE
     ====================================================== -->
 
     <div class="ma-boutique-header">
 
-
-        <!-- =========================
-             INFORMATIONS BOUTIQUE
-        ========================== -->
-
         <div class="ma-boutique-identity">
-
-
-            <!-- LOGO BOUTIQUE -->
 
             <div class="ma-boutique-logo">
 
@@ -51,28 +54,29 @@ Ma boutique - MauriMarket
             </div>
 
 
-            <!-- NOM + TYPE -->
-
             <div class="ma-boutique-info">
 
                 <h1>
                     {{ boutique.name }}
                 </h1>
 
+
+                {% if boutique.sale_type %}
+
                 <p>
-                    <i class="bi bi-shop"></i>
+                    <i class="bi bi-tag"></i>
                     {{ boutique.sale_type }}
                 </p>
 
+                {% endif %}
+
+
                 {% if boutique.city %}
 
-                <span class="boutique-city">
-
+                <p>
                     <i class="bi bi-geo-alt"></i>
-
                     {{ boutique.city }}
-
-                </span>
+                </p>
 
                 {% endif %}
 
@@ -81,42 +85,27 @@ Ma boutique - MauriMarket
         </div>
 
 
-        <!-- =========================
-             ACTIONS BOUTIQUE
-        ========================== -->
+        <!-- ACTIONS BOUTIQUE -->
 
         <div class="ma-boutique-actions">
 
-
-            <!-- MODIFIER MA BOUTIQUE -->
-
             <a
                 href="/ma-boutique/modifier"
-                class="edit-boutique-button"
+                class="edit-boutique-btn"
+                title="Modifier ma boutique"
             >
-
                 <i class="bi bi-pencil"></i>
-
-                <span>
-                    Modifier ma boutique
-                </span>
-
+                <span>Modifier</span>
             </a>
 
 
-            <!-- TOUTES LES BOUTIQUES -->
-
             <a
-                href="/boutiques"
-                class="all-boutiques-button"
+                href="/boutique/detail/{{ boutique.id }}"
+                class="view-boutique-btn"
+                title="Voir ma boutique"
             >
-
-                <i class="bi bi-shop"></i>
-
-                <span>
-                    Toutes les boutiques
-                </span>
-
+                <i class="bi bi-eye"></i>
+                <span>Voir la boutique</span>
             </a>
 
         </div>
@@ -125,14 +114,16 @@ Ma boutique - MauriMarket
 
 
     <!-- =====================================================
-         DESCRIPTION BOUTIQUE
+         DESCRIPTION
     ====================================================== -->
 
     {% if boutique.description %}
 
     <div class="ma-boutique-description">
 
-        <i class="bi bi-info-circle"></i>
+        <h2>
+            À propos de la boutique
+        </h2>
 
         <p>
             {{ boutique.description }}
@@ -144,11 +135,10 @@ Ma boutique - MauriMarket
 
 
     <!-- =====================================================
-         TITRE + PUBLICATION
+         EN-TÊTE PRODUITS
     ====================================================== -->
 
-    <div class="boutique-products-header">
-
+    <div class="products-section-header">
 
         <div>
 
@@ -156,26 +146,25 @@ Ma boutique - MauriMarket
                 Mes produits
             </h2>
 
-            <p>
-                {{ produits|length }} produit(s) dans votre boutique.
-            </p>
+            <span>
+                {% if products %}
+                    {{ products|length }} produit{% if products|length > 1 %}s{% endif %}
+                {% else %}
+                    Aucun produit
+                {% endif %}
+            </span>
 
         </div>
 
 
-        <!-- PUBLIER -->
+        <!-- PUBLIER UN PRODUIT -->
 
         <a
             href="/ma-boutique/publier"
-            class="publish-product-button"
+            class="publish-product-btn"
         >
-
             <i class="bi bi-plus-circle"></i>
-
-            <span>
-                Publier un produit
-            </span>
-
+            <span>Publier un produit</span>
         </a>
 
     </div>
@@ -185,19 +174,15 @@ Ma boutique - MauriMarket
          PRODUITS
     ====================================================== -->
 
-    {% if produits %}
+    {% if products %}
 
     <div class="boutique-products-grid">
 
-
-        {% for produit in produits %}
+        {% for produit in products %}
 
         <div class="boutique-product-card">
 
-
-            <!-- =========================
-                 IMAGE PRODUIT
-            ========================== -->
+            <!-- IMAGE -->
 
             <a
                 href="/produit/{{ produit.id }}"
@@ -213,23 +198,17 @@ Ma boutique - MauriMarket
 
                 {% else %}
 
-                <div class="boutique-no-image">
-
+                <div class="no-product-image">
                     <i class="bi bi-image"></i>
-
                 </div>
 
                 {% endif %}
 
 
-                <!-- CONDITION -->
-
                 {% if produit.condition %}
 
                 <span class="product-condition">
-
                     {{ produit.condition }}
-
                 </span>
 
                 {% endif %}
@@ -237,56 +216,85 @@ Ma boutique - MauriMarket
             </a>
 
 
-            <!-- =========================
-                 INFORMATIONS PRODUIT
-            ========================== -->
+            <!-- INFORMATIONS -->
 
             <div class="boutique-product-info">
-
-
-                <!-- NOM -->
 
                 <h3>
                     {{ produit.title }}
                 </h3>
 
 
-                <!-- PRIX -->
-
                 <div class="boutique-product-price">
-
                     {{ produit.price }} MRU
-
                 </div>
 
 
-                <!-- VILLE -->
-
                 {% if produit.city %}
 
-                <div class="boutique-product-location">
+                <div class="boutique-product-city">
 
                     <i class="bi bi-geo-alt"></i>
 
-                    {{ produit.city }}
+                    <span>
+                        {{ produit.city }}
+                    </span>
 
                 </div>
 
                 {% endif %}
 
 
-                <!-- VOIR 
+                <!-- ACTIONS -->
 
-                <a
-                    href="/produit/{{ produit.id }}"
-                    class="boutique-product-link"
-                >
+                <div class="boutique-product-actions">
 
-                   voir le produit
+                    <a
+                        href="/produit/{{ produit.id }}"
+                        class="boutique-product-link"
+                    >
+                        Voir le produit
+                        <i class="bi bi-arrow-right"></i>
+                    </a>
 
-                    <i class="bi bi-arrow-right"></i>
 
-                </a> -->
+                    <!-- =================================================
+                         ACTIONS DU PROPRIÉTAIRE
+                    ================================================== -->
+
+                    {% if request.session.get("user_id") == boutique.user_id %}
+
+                    <div class="product-owner-actions">
+
+                        <!-- MODIFIER -->
+
+                        <a
+                            href="/boutique/modifier-produit/{{ produit.id }}"
+                            class="product-edit-btn"
+                            title="Modifier ce produit"
+                        >
+                            <i class="bi bi-pencil"></i>
+                            <span>Modifier</span>
+                        </a>
+
+
+                        <!-- SUPPRIMER -->
+
+                        <a
+                            href="/boutique/supprimer-produit/{{ produit.id }}"
+                            class="product-delete-btn"
+                            title="Supprimer ce produit"
+                            onclick="return confirm('Voulez-vous vraiment supprimer ce produit ?');"
+                        >
+                            <i class="bi bi-trash"></i>
+                            <span>Supprimer</span>
+                        </a>
+
+                    </div>
+
+                    {% endif %}
+
+                </div>
 
             </div>
 
@@ -297,37 +305,31 @@ Ma boutique - MauriMarket
     </div>
 
 
+    {% else %}
+
     <!-- =====================================================
          BOUTIQUE VIDE
     ====================================================== -->
 
-    {% else %}
+    <div class="empty-boutique-products">
 
-    <div class="boutique-empty">
+        <i class="bi bi-box-seam"></i>
 
-        <div class="empty-icon">
-
-            <i class="bi bi-box-seam"></i>
-
-        </div>
-
-        <h3>
-            Votre boutique est encore vide
-        </h3>
+        <h2>
+            Aucun produit
+        </h2>
 
         <p>
-            Ajoutez votre premier produit à votre boutique.
+            Votre boutique n'a pas encore publié de produit.
         </p>
+
 
         <a
             href="/ma-boutique/publier"
-            class="publish-product-button empty-publish-button"
+            class="publish-product-btn empty-publish-btn"
         >
-
             <i class="bi bi-plus-circle"></i>
-
-            Publier votre prèmier produit
-
+            Publier un produit
         </a>
 
     </div>
@@ -336,450 +338,382 @@ Ma boutique - MauriMarket
 
 </div>
 
+
 <style>
 
-/* =========================================================
-   RESET LOCAL
-========================================================= */
-
-.ma-boutique-page,
-.ma-boutique-page * {
-    box-sizing: border-box;
-}
+/* =====================================================
+   PAGE
+===================================================== */
 
 .ma-boutique-page {
     width: 100%;
-    max-width: 100%;
-    padding: 4px;
-    margin: 0;
-    overflow-x: hidden;
+    padding: 10px 10px 30px;
 }
 
 
-/* =========================================================
+/* =====================================================
    COVER
-========================================================= */
+===================================================== */
 
 .ma-boutique-cover {
-    position: relative;
     width: 100%;
-    height: 230px;
-    margin: 0 0 15px;
+    height: 240px;
+
     overflow: hidden;
-    background: #eaf7f0;
-    border: 1px solid #e5e7eb;
+
     border-radius: 12px;
+
+    margin-bottom: 12px;
+
+    background: #f1f3f5;
 }
 
 .ma-boutique-cover img {
-    display: block;
     width: 100%;
     height: 100%;
+
+    display: block;
+
     object-fit: cover;
 }
 
+.default-boutique-cover {
+    width: 100%;
+    height: 100%;
 
-/* =========================================================
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    color: #adb5bd;
+}
+
+.default-boutique-cover i {
+    font-size: 55px;
+}
+
+
+/* =====================================================
    HEADER
-========================================================= */
+===================================================== */
 
 .ma-boutique-header {
     display: flex;
+
     align-items: center;
     justify-content: space-between;
-    width: 100%;
-    min-width: 0;
-    gap: 20px;
+
+    gap: 15px;
+
     padding: 10px 12px;
+
     margin-bottom: 12px;
+
     background: #ffffff;
+
     border: 1px solid #e5e7eb;
-    border-radius: 10px;
+
+    border-radius: 9px;
 }
 
 
-/* =========================================================
+/* =====================================================
    IDENTITÉ
-========================================================= */
+===================================================== */
 
 .ma-boutique-identity {
     display: flex;
+
     align-items: center;
+
+    gap: 10px;
+
     min-width: 0;
-    flex: 1 1 auto;
-    gap: 12px;
 }
 
 
-/* =========================================================
-   LOGO
-========================================================= */
-
 .ma-boutique-logo {
-    width: 58px;
-    height: 58px;
-    min-width: 58px;
-    flex: 0 0 58px;
+    width: 48px;
+    height: 48px;
+
+    min-width: 48px;
 
     display: flex;
+
     align-items: center;
     justify-content: center;
 
     overflow: hidden;
 
-    background: #eaf7f0;
-    color: #198754;
+    border-radius: 50%;
 
-    border-radius: 11px;
+    background: #e8f5ee;
+
+    color: #198754;
 }
 
+
 .ma-boutique-logo img {
-    display: block;
     width: 100%;
     height: 100%;
+
     object-fit: cover;
 }
 
+
 .ma-boutique-logo i {
-    font-size: 25px;
+    font-size: 21px;
 }
 
 
-/* =========================================================
+/* =====================================================
    INFORMATIONS
-========================================================= */
+===================================================== */
 
 .ma-boutique-info {
     min-width: 0;
-    flex: 1 1 auto;
 }
 
-.ma-boutique-info h1 {
-    max-width: 100%;
-    margin: 0;
 
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+.ma-boutique-info h1 {
+    margin: 0 0 3px;
 
     color: #172033;
-    font-size: 20px;
+
+    font-size: 19px;
     font-weight: 800;
+
     line-height: 1.2;
 }
 
+
 .ma-boutique-info p {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-
-    max-width: 100%;
-    margin: 4px 0 0;
-
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    margin: 2px 0;
 
     color: #7b8492;
+
     font-size: 10px;
 }
+
 
 .ma-boutique-info p i {
-    flex-shrink: 0;
-    color: #198754;
-    font-size: 10px;
-}
+    margin-right: 3px;
 
-.boutique-city {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-
-    max-width: 100%;
-    margin-top: 3px;
-
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-
-    color: #8b949e;
-    font-size: 9px;
-}
-
-.boutique-city i {
-    flex-shrink: 0;
     color: #198754;
 }
 
 
-/* =========================================================
-   ACTIONS
-========================================================= */
+/* =====================================================
+   ACTIONS BOUTIQUE
+===================================================== */
 
 .ma-boutique-actions {
     display: flex;
+
     align-items: center;
-    justify-content: flex-end;
-
-    flex: 0 0 auto;
-
-    gap: 7px;
-}
-
-
-/* =========================================================
-   BOUTONS HEADER
-========================================================= */
-
-.edit-boutique-button,
-.all-boutiques-button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
 
     gap: 6px;
 
-    min-height: 34px;
-    padding: 0 11px;
+    flex-shrink: 0;
+}
 
-    border-radius: 7px;
 
-    text-decoration: none;
+.edit-boutique-btn,
+.view-boutique-btn {
+
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 5px;
+
+    padding: 8px 10px;
+
+    border-radius: 6px;
+
+    font-size: 10px;
+    font-weight: 700;
+
     white-space: nowrap;
 
-    font-size: 9px;
-    font-weight: 800;
+    text-decoration: none;
 
-    transition:
-        background 0.2s ease,
-        color 0.2s ease,
-        border-color 0.2s ease,
-        transform 0.2s ease;
+    transition: 0.2s ease;
 }
 
-.edit-boutique-button {
+
+.edit-boutique-btn {
+
     color: #198754;
+
     background: #eaf7f0;
-    border: 1px solid #cfe9da;
+
+    border: 1px solid #cfe9dc;
 }
 
-.edit-boutique-button:hover {
+
+.edit-boutique-btn:hover {
+
     color: #ffffff;
+
     background: #198754;
-    border-color: #198754;
 }
 
-.all-boutiques-button {
-    color: #59636e;
+
+.view-boutique-btn {
+
+    color: #667085;
+
     background: #ffffff;
+
     border: 1px solid #dfe3e8;
 }
 
-.all-boutiques-button:hover {
+
+.view-boutique-btn:hover {
+
     color: #198754;
+
     border-color: #198754;
-    background: #f5fbf7;
+
+    background: #f0f8f4;
 }
 
 
-/* =========================================================
+/* =====================================================
    DESCRIPTION
-========================================================= */
+===================================================== */
 
 .ma-boutique-description {
-    display: flex;
-    align-items: flex-start;
-
-    width: 100%;
-    min-width: 0;
-
-    gap: 8px;
 
     padding: 10px 12px;
-    margin-bottom: 15px;
 
-    background: #f8faf9;
-    border: 1px solid #e5eee8;
-    border-radius: 8px;
-}
-
-.ma-boutique-description > i {
-    flex-shrink: 0;
-
-    margin-top: 2px;
-
-    color: #198754;
-    font-size: 12px;
-}
-
-.ma-boutique-description p {
-    min-width: 0;
-
-    margin: 0;
-
-    color: #667085;
-    font-size: 10px;
-    line-height: 1.5;
-
-    overflow-wrap: anywhere;
-}
-
-
-/* =========================================================
-   HEADER PRODUITS
-========================================================= */
-
-.boutique-products-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    width: 100%;
-    min-width: 0;
-
-    gap: 12px;
-    margin-bottom: 10px;
-}
-
-.boutique-products-header > div {
-    min-width: 0;
-}
-
-.boutique-products-header h2 {
-    margin: 0;
-
-    color: #172033;
-    font-size: 18px;
-    font-weight: 800;
-
-    line-height: 1.2;
-}
-
-.boutique-products-header p {
-    margin: 3px 0 0;
-
-    color: #7b8492;
-    font-size: 10px;
-
-    line-height: 1.3;
-}
-
-
-/* =========================================================
-   BOUTON PUBLIER
-========================================================= */
-
-.publish-product-button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
-    flex: 0 0 auto;
-
-    gap: 6px;
-
-    min-height: 36px;
-    padding: 0 13px;
-
-    color: #ffffff;
-    background: #198754;
-
-    border: 1px solid #198754;
-    border-radius: 7px;
-
-    text-decoration: none;
-    white-space: nowrap;
-
-    font-size: 9px;
-    font-weight: 800;
-
-    transition:
-        background 0.2s ease,
-        border-color 0.2s ease,
-        transform 0.2s ease;
-}
-
-.publish-product-button:hover {
-    color: #ffffff;
-    background: #157347;
-    border-color: #157347;
-    transform: translateY(-1px);
-}
-
-.publish-product-button i {
-    flex-shrink: 0;
-    font-size: 11px;
-}
-
-
-/* =========================================================
-   BOUTIQUE VIDE
-========================================================= */
-
-.boutique-empty {
-    width: 100%;
-
-    padding: 45px 20px;
-
-    text-align: center;
+    margin-bottom: 14px;
 
     background: #ffffff;
 
     border: 1px solid #e5e7eb;
-    border-radius: 10px;
+
+    border-radius: 9px;
 }
 
-.empty-icon {
-    width: 55px;
-    height: 55px;
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.ma-boutique-description h2 {
 
-    margin: 0 auto 10px;
-
-    color: #198754;
-    background: #eaf7f0;
-
-    border-radius: 50%;
-}
-
-.empty-icon i {
-    font-size: 25px;
-}
-
-.boutique-empty h3 {
     margin: 0 0 5px;
 
     color: #172033;
 
-    font-size: 17px;
+    font-size: 13px;
     font-weight: 800;
-    line-height: 1.3;
 }
 
-.boutique-empty p {
-    max-width: 500px;
 
-    margin: 0 auto 15px;
+.ma-boutique-description p {
 
-    color: #7b8492;
+    margin: 0;
 
-    font-size: 11px;
+    color: #667085;
+
+    font-size: 10px;
+
     line-height: 1.5;
 }
 
 
-/* =========================================================
+/* =====================================================
+   HEADER PRODUITS
+===================================================== */
+
+.products-section-header {
+
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 12px;
+
+    margin-bottom: 10px;
+}
+
+
+.products-section-header h2 {
+
+    margin: 0;
+
+    color: #172033;
+
+    font-size: 18px;
+
+    font-weight: 800;
+}
+
+
+.products-section-header span {
+
+    display: block;
+
+    margin-top: 2px;
+
+    color: #7b8492;
+
+    font-size: 10px;
+}
+
+
+/* =====================================================
+   PUBLIER
+===================================================== */
+
+.publish-product-btn {
+
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 6px;
+
+    padding: 7px 10px;
+
+    color: #ffffff;
+
+    background: #198754;
+
+    border-radius: 6px;
+
+    font-size: 10px;
+
+    font-weight: 700;
+
+    white-space: nowrap;
+
+    text-decoration: none;
+
+    transition: 0.2s ease;
+}
+
+
+.publish-product-btn:hover {
+
+    color: #ffffff;
+
+    background: #157347;
+
+    transform: translateY(-1px);
+}
+
+
+/* =====================================================
    GRILLE PRODUITS
-========================================================= */
+===================================================== */
 
 .boutique-products-grid {
-    display: grid;
 
-    width: 100%;
-    min-width: 0;
+    display: grid;
 
     grid-template-columns:
         repeat(5, minmax(0, 1fr));
@@ -788,11 +722,12 @@ Ma boutique - MauriMarket
 }
 
 
-/* =========================================================
-   CARTE PRODUIT
-========================================================= */
+/* =====================================================
+   CARTE
+===================================================== */
 
 .boutique-product-card {
+
     min-width: 0;
 
     overflow: hidden;
@@ -800,14 +735,15 @@ Ma boutique - MauriMarket
     background: #ffffff;
 
     border: 1px solid #e5e7eb;
+
     border-radius: 8px;
 
-    transition:
-        transform 0.2s ease,
-        box-shadow 0.2s ease;
+    transition: 0.2s ease;
 }
 
+
 .boutique-product-card:hover {
+
     transform: translateY(-2px);
 
     box-shadow:
@@ -815,98 +751,104 @@ Ma boutique - MauriMarket
 }
 
 
-/* =========================================================
+/* =====================================================
    IMAGE PRODUIT
-========================================================= */
+===================================================== */
 
 .boutique-product-image {
+
     position: relative;
 
     display: block;
 
     width: 100%;
-    height: 145px;
+    height: 135px;
 
     overflow: hidden;
 
     background: #f1f3f5;
 }
 
+
 .boutique-product-image img {
-    display: block;
 
     width: 100%;
     height: 100%;
 
+    display: block;
+
     object-fit: cover;
 
-    transition: transform 0.2s ease;
+    transition: 0.2s ease;
 }
+
 
 .boutique-product-card:hover
 .boutique-product-image img {
+
     transform: scale(1.03);
 }
 
 
-/* =========================================================
-   PAS D'IMAGE
-========================================================= */
+/* =====================================================
+   SANS IMAGE
+===================================================== */
 
-.boutique-no-image {
+.no-product-image {
+
     width: 100%;
     height: 100%;
 
     display: flex;
+
     align-items: center;
     justify-content: center;
 
     color: #adb5bd;
 }
 
-.boutique-no-image i {
+
+.no-product-image i {
     font-size: 35px;
 }
 
 
-/* =========================================================
+/* =====================================================
    CONDITION
-========================================================= */
+===================================================== */
 
 .product-condition {
+
     position: absolute;
 
-    left: 7px;
-    bottom: 7px;
-
-    max-width: calc(100% - 14px);
+    left: 6px;
+    bottom: 6px;
 
     padding: 3px 6px;
 
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-
     color: #ffffff;
+
     background: #198754;
 
     border-radius: 4px;
 
     font-size: 8px;
+
     font-weight: 700;
 }
 
 
-/* =========================================================
+/* =====================================================
    INFORMATIONS PRODUIT
-========================================================= */
+===================================================== */
 
 .boutique-product-info {
-    min-width: 0;
-    padding: 9px;
+    padding: 8px;
 }
 
+
 .boutique-product-info h3 {
+
     height: 30px;
 
     margin: 0;
@@ -916,152 +858,289 @@ Ma boutique - MauriMarket
     color: #172033;
 
     font-size: 12px;
+
     font-weight: 700;
+
     line-height: 1.25;
 
     display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
 
-    overflow-wrap: anywhere;
+    -webkit-line-clamp: 2;
+
+    -webkit-box-orient: vertical;
 }
 
 
-/* =========================================================
+/* =====================================================
    PRIX
-========================================================= */
+===================================================== */
 
 .boutique-product-price {
-    margin-top: 6px;
+
+    margin-top: 5px;
 
     color: #198754;
 
     font-size: 13px;
-    font-weight: 800;
 
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    font-weight: 800;
 }
 
 
-/* =========================================================
-   VILLE PRODUIT
-========================================================= */
+/* =====================================================
+   VILLE
+===================================================== */
 
-.boutique-product-location {
+.boutique-product-city {
+
     display: flex;
+
     align-items: center;
 
-    min-width: 0;
-
     gap: 4px;
-    margin-top: 4px;
+
+    margin-top: 3px;
 
     color: #7b8492;
+
     font-size: 9px;
 }
 
-.boutique-product-location i {
-    flex-shrink: 0;
+
+.boutique-product-city i {
 
     color: #198754;
+
     font-size: 10px;
 }
 
-.boutique-product-location span {
-    min-width: 0;
 
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+/* =====================================================
+   ACTIONS PRODUIT
+===================================================== */
+
+.boutique-product-actions {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 6px;
+
+    margin-top: 7px;
 }
 
 
-/* =========================================================
-   LIEN PRODUIT
-========================================================= */
+/* =====================================================
+   VOIR PRODUIT
+===================================================== */
 
 .boutique-product-link {
-    display: flex;
-    align-items: center;
 
-    min-width: 0;
-
-    gap: 4px;
-    margin-top: 7px;
+    display: block;
 
     color: #198754;
 
     font-size: 9px;
+
     font-weight: 700;
 
     text-decoration: none;
-
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
 }
+
 
 .boutique-product-link:hover {
     text-decoration: underline;
 }
 
 
-/* =========================================================
-   GRAND ÉCRAN
-========================================================= */
+/* =====================================================
+   ACTIONS PROPRIÉTAIRE
+===================================================== */
 
-@media (min-width: 1201px) {
+.product-owner-actions {
 
-    .ma-boutique-page {
-        padding: 4px;
-    }
+    display: flex;
 
+    align-items: center;
+
+    gap: 5px;
+
+    padding-top: 7px;
+
+    border-top: 1px solid #edf0f2;
 }
 
 
-/* =========================================================
-   TABLETTE LARGE
-========================================================= */
+/* =====================================================
+   MODIFIER PRODUIT
+===================================================== */
+
+.product-edit-btn {
+
+    flex: 1;
+
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 4px;
+
+    min-height: 28px;
+
+    padding: 4px 6px;
+
+    color: #198754;
+
+    background: #eaf7f0;
+
+    border: 1px solid #cfe9dc;
+
+    border-radius: 5px;
+
+    font-size: 8px;
+
+    font-weight: 700;
+
+    text-decoration: none;
+}
+
+
+.product-edit-btn:hover {
+
+    color: #ffffff;
+
+    background: #198754;
+}
+
+
+/* =====================================================
+   SUPPRIMER PRODUIT
+===================================================== */
+
+.product-delete-btn {
+
+    flex: 1;
+
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 4px;
+
+    min-height: 28px;
+
+    padding: 4px 6px;
+
+    color: #dc3545;
+
+    background: #fff5f5;
+
+    border: 1px solid #f1c7cb;
+
+    border-radius: 5px;
+
+    font-size: 8px;
+
+    font-weight: 700;
+
+    text-decoration: none;
+}
+
+
+.product-delete-btn:hover {
+
+    color: #ffffff;
+
+    background: #dc3545;
+}
+
+
+/* =====================================================
+   BOUTIQUE VIDE
+===================================================== */
+
+.empty-boutique-products {
+
+    padding: 40px 20px;
+
+    text-align: center;
+
+    background: #ffffff;
+
+    border: 1px solid #e5e7eb;
+
+    border-radius: 9px;
+}
+
+
+.empty-boutique-products > i {
+
+    display: block;
+
+    margin-bottom: 8px;
+
+    color: #adb5bd;
+
+    font-size: 40px;
+}
+
+
+.empty-boutique-products h2 {
+
+    margin: 0 0 4px;
+
+    color: #172033;
+
+    font-size: 17px;
+
+    font-weight: 700;
+}
+
+
+.empty-boutique-products p {
+
+    margin: 0 0 12px;
+
+    color: #7b8492;
+
+    font-size: 11px;
+}
+
+
+.empty-publish-btn {
+    display: inline-flex;
+}
+
+
+/* =====================================================
+   TABLETTE
+===================================================== */
 
 @media (max-width: 1200px) {
 
     .boutique-products-grid {
+
         grid-template-columns:
             repeat(4, minmax(0, 1fr));
     }
-
 }
 
 
-/* =========================================================
-   TABLETTE
-========================================================= */
+/* =====================================================
+   PETIT ÉCRAN
+===================================================== */
 
 @media (max-width: 900px) {
 
     .ma-boutique-page {
-        padding: 8px;
-    }
-
-    .ma-boutique-header {
-        gap: 14px;
         padding: 10px;
     }
 
-    .ma-boutique-logo {
-        width: 52px;
-        height: 52px;
-        min-width: 52px;
-        flex-basis: 52px;
-    }
-
-    .ma-boutique-info h1 {
-        font-size: 18px;
-    }
-
     .boutique-products-grid {
+
         grid-template-columns:
             repeat(3, minmax(0, 1fr));
 
@@ -1069,201 +1148,124 @@ Ma boutique - MauriMarket
     }
 
     .boutique-product-image {
-        height: 130px;
+        height: 125px;
     }
-
-    .ma-boutique-cover {
-        height: 190px;
-    }
-
 }
 
 
-/* =========================================================
+/* =====================================================
    MOBILE
-========================================================= */
+===================================================== */
 
 @media (max-width: 600px) {
 
     .ma-boutique-page {
-        width: 100%;
-        padding: 7px;
+        padding: 8px;
     }
 
-
-    /* -----------------------------------------------------
-       COVER
-    ----------------------------------------------------- */
 
     .ma-boutique-cover {
-        height: 155px;
-        margin-bottom: 9px;
-        border-radius: 9px;
+        height: 180px;
+
+        border-radius: 10px;
     }
 
-
-    /* -----------------------------------------------------
-       HEADER
-    ----------------------------------------------------- */
 
     .ma-boutique-header {
+
         align-items: center;
 
+        padding: 9px 10px;
+
         gap: 8px;
-
-        padding: 9px;
-
-        margin-bottom: 10px;
-
-        border-radius: 9px;
     }
 
-
-    /* -----------------------------------------------------
-       IDENTITÉ
-    ----------------------------------------------------- */
-
-    .ma-boutique-identity {
-        gap: 8px;
-        min-width: 0;
-    }
-
-
-    /* -----------------------------------------------------
-       LOGO
-    ----------------------------------------------------- */
 
     .ma-boutique-logo {
-        width: 45px;
-        height: 45px;
-        min-width: 45px;
-        flex-basis: 45px;
 
-        border-radius: 9px;
+        width: 38px;
+        height: 38px;
+
+        min-width: 38px;
     }
+
 
     .ma-boutique-logo i {
-        font-size: 19px;
+        font-size: 17px;
     }
 
-
-    /* -----------------------------------------------------
-       INFOS
-    ----------------------------------------------------- */
 
     .ma-boutique-info h1 {
         font-size: 15px;
     }
 
+
     .ma-boutique-info p {
-        font-size: 8px;
+        font-size: 9px;
     }
 
-    .boutique-city {
-        font-size: 8px;
-    }
-
-
-    /* -----------------------------------------------------
-       ACTIONS HEADER
-       On garde les boutons accessibles.
-    ----------------------------------------------------- */
 
     .ma-boutique-actions {
-        gap: 5px;
+        gap: 4px;
     }
 
-    .edit-boutique-button,
-    .all-boutiques-button {
+
+    .edit-boutique-btn,
+    .view-boutique-btn {
+
         width: 32px;
         height: 32px;
-        min-width: 32px;
-        min-height: 32px;
 
         padding: 0;
-
-        gap: 0;
     }
 
-    .edit-boutique-button span,
-    .all-boutiques-button span {
+
+    .edit-boutique-btn span,
+    .view-boutique-btn span {
         display: none;
     }
 
 
-    /* -----------------------------------------------------
-       DESCRIPTION
-    ----------------------------------------------------- */
-
     .ma-boutique-description {
-        gap: 7px;
-
-        padding: 9px;
-
-        margin-bottom: 11px;
+        padding: 9px 10px;
     }
+
+
+    .ma-boutique-description h2 {
+        font-size: 12px;
+    }
+
 
     .ma-boutique-description p {
         font-size: 9px;
     }
 
 
-    /* -----------------------------------------------------
-       HEADER PRODUITS
-    ----------------------------------------------------- */
-
-    .boutique-products-header {
-        align-items: center;
-
-        gap: 8px;
-
-        margin-bottom: 9px;
-    }
-
-    .boutique-products-header h2 {
+    .products-section-header h2 {
         font-size: 15px;
     }
 
-    .boutique-products-header p {
-        font-size: 8px;
+
+    .products-section-header span {
+        font-size: 9px;
     }
 
 
-    /* -----------------------------------------------------
-       BOUTON PUBLIER
-       IMPORTANT :
-       On garde l'icône + texte court sur mobile.
-    ----------------------------------------------------- */
+    .publish-product-btn {
 
-    .publish-product-button {
-        width: auto;
-        min-width: 36px;
-        height: 36px;
-        min-height: 36px;
-
-        padding: 0 10px;
-
-        gap: 5px;
+        padding: 7px 9px;
 
         font-size: 9px;
-
-        flex-shrink: 0;
-    }
-
-    .publish-product-button span {
-        display: inline;
-    }
-
-    .publish-product-button i {
-        font-size: 11px;
     }
 
 
-    /* -----------------------------------------------------
-       GRILLE
-    ----------------------------------------------------- */
+    .publish-product-btn span {
+        display: none;
+    }
+
 
     .boutique-products-grid {
+
         grid-template-columns:
             repeat(2, minmax(0, 1fr));
 
@@ -1271,286 +1273,83 @@ Ma boutique - MauriMarket
     }
 
 
-    /* -----------------------------------------------------
-       CARTE
-    ----------------------------------------------------- */
-
-    .boutique-product-card {
-        border-radius: 7px;
-    }
-
-
-    /* -----------------------------------------------------
-       IMAGE
-    ----------------------------------------------------- */
-
     .boutique-product-image {
-        height: 125px;
+        height: 115px;
     }
 
-
-    /* -----------------------------------------------------
-       INFORMATIONS
-    ----------------------------------------------------- */
 
     .boutique-product-info {
         padding: 7px;
     }
 
+
     .boutique-product-info h3 {
-        height: 28px;
+
+        height: 27px;
 
         font-size: 11px;
-        line-height: 1.27;
     }
 
+
     .boutique-product-price {
-        margin-top: 5px;
         font-size: 12px;
     }
 
-    .boutique-product-location {
+
+    .boutique-product-city {
         font-size: 8px;
     }
 
-    .boutique-product-location i {
-        font-size: 9px;
-    }
 
     .boutique-product-link {
-        margin-top: 6px;
         font-size: 8px;
     }
 
 
-    /* -----------------------------------------------------
-       BOUTIQUE VIDE
-    ----------------------------------------------------- */
-
-    .boutique-empty {
-        padding: 35px 14px;
-        border-radius: 9px;
+    .product-owner-actions {
+        gap: 4px;
     }
 
-    .empty-icon {
-        width: 50px;
-        height: 50px;
-    }
 
-    .empty-icon i {
-        font-size: 22px;
-    }
+    .product-edit-btn,
+    .product-delete-btn {
 
-    .boutique-empty h3 {
-        font-size: 15px;
-    }
+        min-height: 27px;
 
-    .boutique-empty p {
-        font-size: 10px;
-    }
+        padding: 4px;
 
+        font-size: 8px;
+    }
 }
 
 
-/* =========================================================
-   PETIT MOBILE
-========================================================= */
+/* =====================================================
+   TRÈS PETIT MOBILE
+===================================================== */
 
 @media (max-width: 400px) {
 
-    .ma-boutique-page {
-        padding: 5px;
-    }
-
-
-    /* -----------------------------------------------------
-       COVER
-    ----------------------------------------------------- */
-
     .ma-boutique-cover {
-        height: 125px;
-        margin-bottom: 8px;
+        height: 150px;
     }
 
-
-    /* -----------------------------------------------------
-       HEADER
-    ----------------------------------------------------- */
-
-    .ma-boutique-header {
-        gap: 6px;
-        padding: 8px;
-    }
-
-    .ma-boutique-identity {
-        gap: 7px;
-    }
-
-
-    /* -----------------------------------------------------
-       LOGO
-    ----------------------------------------------------- */
-
-    .ma-boutique-logo {
-        width: 40px;
-        height: 40px;
-        min-width: 40px;
-        flex-basis: 40px;
-
-        border-radius: 8px;
-    }
-
-    .ma-boutique-logo i {
-        font-size: 17px;
-    }
-
-
-    /* -----------------------------------------------------
-       NOM
-    ----------------------------------------------------- */
-
-    .ma-boutique-info h1 {
-        font-size: 13px;
-    }
-
-    .ma-boutique-info p {
-        font-size: 7px;
-    }
-
-    .boutique-city {
-        font-size: 7px;
-    }
-
-
-    /* -----------------------------------------------------
-       BOUTONS HEADER
-    ----------------------------------------------------- */
-
-    .edit-boutique-button,
-    .all-boutiques-button {
-        width: 30px;
-        height: 30px;
-        min-width: 30px;
-        min-height: 30px;
-    }
-
-
-    /* -----------------------------------------------------
-       PRODUITS
-    ----------------------------------------------------- */
-
-    .boutique-products-header {
-        gap: 6px;
-    }
-
-    .boutique-products-header h2 {
-        font-size: 14px;
-    }
-
-    .boutique-products-header p {
-        font-size: 7px;
-    }
-
-
-    /* -----------------------------------------------------
-       PUBLIER
-    ----------------------------------------------------- */
-
-    .publish-product-button {
-        min-width: 34px;
-        width: 34px;
-        height: 34px;
-
-        padding: 0;
-    }
-
-    .publish-product-button span {
-        display: none;
-    }
-
-
-    /* -----------------------------------------------------
-       PRODUITS
-    ----------------------------------------------------- */
-
-    .boutique-products-grid {
-        gap: 6px;
-    }
 
     .boutique-product-image {
         height: 105px;
     }
 
-    .boutique-product-info {
-        padding: 6px;
-    }
 
     .boutique-product-info h3 {
-        height: 26px;
         font-size: 10px;
     }
 
-    .boutique-product-price {
-        font-size: 11px;
+
+    .product-edit-btn span,
+    .product-delete-btn span {
+        display: none;
     }
-
-    .boutique-product-location {
-        font-size: 7px;
-    }
-
-    .boutique-product-link {
-        font-size: 7px;
-    }
-
-}
-
-
-/* =========================================================
-   TRÈS PETIT ÉCRAN
-========================================================= */
-
-@media (max-width: 340px) {
-
-    .ma-boutique-cover {
-        height: 110px;
-    }
-
-    .ma-boutique-header {
-        padding: 7px;
-    }
-
-    .ma-boutique-logo {
-        width: 37px;
-        height: 37px;
-        min-width: 37px;
-        flex-basis: 37px;
-    }
-
-    .ma-boutique-info h1 {
-        font-size: 12px;
-    }
-
-    .ma-boutique-actions {
-        gap: 3px;
-    }
-
-    .edit-boutique-button,
-    .all-boutiques-button {
-        width: 28px;
-        height: 28px;
-        min-width: 28px;
-        min-height: 28px;
-    }
-
-    .boutique-products-grid {
-        gap: 5px;
-    }
-
-    .boutique-product-image {
-        height: 95px;
-    }
-
 }
 
 </style>
+
 {% endblock %}

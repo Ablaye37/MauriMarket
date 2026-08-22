@@ -6,10 +6,11 @@
 
 <div class="container-fluid marketplace-content">
 
-  <div class="row g-3">
-        <!-- =========================
+    <div class="row g-3">
+
+        <!-- =====================================================
              SIDEBAR CATÉGORIES
-        ========================== -->
+        ====================================================== -->
 
         <aside class="col-lg-3 col-xl-2">
 
@@ -20,25 +21,30 @@
                 <button
                     type="button"
                     class="sidebar-title all-categories-toggle"
-                    onclick="toggleCategories()">
+                    onclick="toggleCategories()"
+                >
 
                     <i class="bi bi-list"></i>
 
-                    <span>Toutes les catégories</span>
+                    <span>
+                        Toutes les catégories
+                    </span>
 
                     <i
                         id="categories-arrow"
-                        class="bi bi-chevron-down ms-auto">
-                    </i>
+                        class="bi bi-chevron-down ms-auto"
+                    ></i>
 
                 </button>
+
 
                 <!-- LISTE DES CATÉGORIES -->
 
                 <div
                     id="categories-list"
                     class="sidebar-list"
-                    style="display: none;">
+                    style="display: none;"
+                >
 
                     {% for item in categories_data %}
 
@@ -50,7 +56,10 @@
                                 type="button"
                                 class="sidebar-category category-toggle"
                                 data-category-id="{{ category.id }}"
-                                onclick="toggleSubcategories(this.dataset.categoryId)">
+                                onclick="toggleSubcategories(this.dataset.categoryId)"
+                            >
+
+                                <!-- ICÔNE CATÉGORIE -->
 
                                 {% if "Téléphone" in category.name %}
 
@@ -86,13 +95,14 @@
 
                                 {% elif "Immobilier" in category.name %}
 
-                                    <span>🏠</span>
+                                    <span>🏢</span>
 
                                 {% else %}
 
                                     <span>📦</span>
 
                                 {% endif %}
+
 
                                 <span>
                                     {{ category.name }}
@@ -102,12 +112,14 @@
 
                             </button>
 
+
                             <!-- SOUS-CATÉGORIES -->
 
                             <div
                                 id="subcategories-{{ category.id }}"
                                 class="subcategories-list"
-                                style="display: none;">
+                                style="display: none;"
+                            >
 
                                 {% if item.subcategories %}
 
@@ -115,7 +127,8 @@
 
                                         <a
                                             href="/sous-categorie/{{ subcategory.id }}?lang={{ lang }}"
-                                            class="subcategory-link">
+                                            class="subcategory-link"
+                                        >
 
                                             <span>•</span>
 
@@ -130,7 +143,9 @@
                                 {% else %}
 
                                     <div class="no-subcategory">
+
                                         Aucune sous-catégorie
+
                                     </div>
 
                                 {% endif %}
@@ -143,13 +158,17 @@
 
                 </div>
 
-                <!-- BOUTIQUES -->
+
+                <!-- =================================================
+                     BOUTIQUES
+                ================================================== -->
 
                 <div class="sidebar-divider"></div>
 
                 <a
                     href="/boutiques?lang={{ lang }}"
-                    class="sidebar-shop">
+                    class="sidebar-shop"
+                >
 
                     <span>🏪</span>
 
@@ -166,21 +185,45 @@
         </aside>
 
 
-        <!-- =========================
+        <!-- =====================================================
              PRODUITS
-        ========================== -->
+        ====================================================== -->
 
         <section class="col-lg-9 col-xl-10">
 
+            <!-- =================================================
+                 EN-TÊTE PRODUITS
+            ================================================== -->
+
             <div class="products-header">
 
-                <h1>
-                    Produits populaires
-                </h1>
+                <div>
+
+                    {% if q %}
+
+                        <h1>
+                            Résultats pour « {{ q }} »
+                        </h1>
+
+                        <p class="products-search-info">
+                            Produits correspondant à votre recherche
+                        </p>
+
+                    {% else %}
+
+                        <h1>
+                            Produits récents
+                        </h1>
+
+                    {% endif %}
+
+                </div>
+
 
                 <a
                     href="/?lang={{ lang }}"
-                    class="view-all">
+                    class="view-all"
+                >
 
                     Voir tout
 
@@ -191,7 +234,9 @@
             </div>
 
 
-            <!-- GRILLE PRODUITS -->
+            <!-- =================================================
+                 GRILLE PRODUITS
+            ================================================== -->
 
             <div class="row products-grid">
 
@@ -201,20 +246,50 @@
 
                         <article class="product-card">
 
-                            <!-- IMAGE -->
+                            <!-- =================================================
+                                 LIEN PRODUIT
+                            ==================================================
 
-                            <a
-                                href="/produit/{{ product.id }}?lang={{ lang }}"
-                                class="product-image-link">
+                                 IMPORTANT :
+
+                                 Produit de boutique :
+                                 → ouvre la boutique
+
+                                 Produit indépendant :
+                                 → ouvre la fiche produit
+                            ================================================== -->
+
+                            {% if product.boutique_id and product.boutique %}
+
+                                <a
+                                    href="/boutique/detail/{{ product.boutique.id }}?lang={{ lang }}"
+                                    class="product-image-link"
+                                >
+
+                            {% else %}
+
+                                <a
+                                    href="/produit/{{ product.id }}?lang={{ lang }}"
+                                    class="product-image-link"
+                                >
+
+                            {% endif %}
+
+
+                                <!-- =================================================
+                                     IMAGE
+                                ================================================== -->
 
                                 <div class="product-image-wrapper">
 
                                     {% if product.image %}
 
-                                       <img
-                                     src="{{ product.image }}"
-                                        alt="{{ product.title }}"
-                                          class="product-image">
+                                        <img
+                                            src="{{ product.image }}"
+                                            alt="{{ product.title }}"
+                                            class="product-image"
+                                            loading="lazy"
+                                        >
 
                                     {% else %}
 
@@ -232,7 +307,9 @@
                                     <button
                                         class="favorite-button"
                                         type="button"
-                                        onclick="event.preventDefault();">
+                                        onclick="event.preventDefault();"
+                                        aria-label="Ajouter aux favoris"
+                                    >
 
                                         <i class="bi bi-heart"></i>
 
@@ -244,43 +321,100 @@
                                     {% if product.condition %}
 
                                         <span class="condition-badge">
+
                                             {{ product.condition }}
+
                                         </span>
 
                                     {% endif %}
 
                                 </div>
 
+
+                                <!-- =================================================
+                                     INFORMATIONS PRODUIT
+                                ================================================== -->
+
+                                <div class="product-info">
+
+
+                                    <!-- NOM -->
+
+                                    <h3 class="product-title">
+
+                                        {{ product.title }}
+
+                                    </h3>
+
+
+                                    <!-- PRIX -->
+
+                                    <div class="product-price">
+
+                                        {{ product.price }} MRU
+
+                                    </div>
+
+
+                                    <!-- VILLE -->
+
+                                    {% if product.city %}
+
+                                        <div class="product-location">
+
+                                            <i class="bi bi-geo-alt"></i>
+
+                                            {{ product.city }}
+
+                                        </div>
+
+                                    {% endif %}
+
+
+                                    <!-- =================================================
+                                         BOUTIQUE
+                                    ==================================================
+
+                                         Si le produit appartient à une boutique,
+                                         on affiche le nom de celle-ci.
+
+                                         Produit indépendant :
+                                         rien n'est affiché.
+                                    ================================================== -->
+
+                                    {% if product.boutique_id and product.boutique %}
+
+                                        <div
+                                            class="product-boutique-badge"
+                                            title="Produit vendu par {{ product.boutique.name }}"
+                                        >
+
+                                            <i class="bi bi-shop"></i>
+
+                                            <span>
+                                                {{ product.boutique.name }}
+                                            </span>
+
+                                        </div>
+
+                                    {% endif %}
+
+
+                                </div>
+
+
                             </a>
-
-
-                            <!-- INFORMATIONS -->
-
-                            <div class="product-info">
-
-                                <h3 class="product-title">
-                                    {{ product.title }}
-                                </h3>
-
-                                <div class="product-price">
-                                    {{ product.price }} MRU
-                                </div>
-
-                                <div class="product-location">
-
-                                    <i class="bi bi-geo-alt"></i>
-
-                                    {{ product.city }}
-
-                                </div>
-
-                            </div>
 
                         </article>
 
                     </div>
 
+
                 {% else %}
+
+                    <!-- =================================================
+                         AUCUN PRODUIT
+                    ================================================== -->
 
                     <div class="col-12">
 
@@ -290,21 +424,49 @@
                                 📦
                             </div>
 
-                            <h3>
-                                Aucune annonce pour le moment
-                            </h3>
 
-                            <p>
-                                Soyez le premier à publier une annonce.
-                            </p>
+                            {% if q %}
 
-                            <a
-                                href="/publier?lang={{ lang }}"
-                                class="btn btn-success">
+                                <h3>
+                                    Aucun résultat
+                                </h3>
 
-                                Publier une annonce
+                                <p>
+                                    Aucun produit ne correspond à
+                                    « {{ q }} ».
+                                </p>
 
-                            </a>
+
+                                <a
+                                    href="/?lang={{ lang }}"
+                                    class="btn btn-success"
+                                >
+
+                                    Voir tous les produits
+
+                                </a>
+
+                            {% else %}
+
+                                <h3>
+                                    Aucune annonce pour le moment
+                                </h3>
+
+                                <p>
+                                    Soyez le premier à publier une annonce.
+                                </p>
+
+
+                                <a
+                                    href="/publier?lang={{ lang }}"
+                                    class="btn btn-success"
+                                >
+
+                                    Publier une annonce
+
+                                </a>
+
+                            {% endif %}
 
                         </div>
 
@@ -321,30 +483,195 @@
 </div>
 
 
-<!-- =========================
+<!-- ============================================================
+     STYLE — INFORMATIONS RECHERCHE
+============================================================ -->
+
+<style>
+
+.products-search-info {
+
+    margin-top: 4px;
+
+    margin-bottom: 0;
+
+    color: #6c757d;
+
+    font-size: 14px;
+
+}
+
+
+/* ============================================================
+   BADGE BOUTIQUE
+============================================================ */
+
+.product-boutique-badge {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 5px;
+
+    max-width: 100%;
+
+    margin-top: 8px;
+
+    padding: 5px 8px;
+
+    color: #198754;
+
+    background: #eaf7f0;
+
+    border: 1px solid #ccebd9;
+
+    border-radius: 6px;
+
+    font-size: 9px;
+
+    font-weight: 700;
+
+    line-height: 1;
+
+}
+
+
+/* ============================================================
+   ICÔNE BOUTIQUE
+============================================================ */
+
+.product-boutique-badge i {
+
+    flex-shrink: 0;
+
+    font-size: 10px;
+
+}
+
+
+/* ============================================================
+   NOM BOUTIQUE
+============================================================ */
+
+.product-boutique-badge span {
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+
+    font-size: 9px;
+
+    font-weight: 700;
+
+}
+
+
+/* ============================================================
+   HOVER
+============================================================ */
+
+.product-card:hover
+.product-boutique-badge {
+
+    color: #146c43;
+
+    background: #dff3e8;
+
+    border-color: #b8dfc8;
+
+}
+
+
+/* ============================================================
+   MOBILE
+============================================================ */
+
+@media (max-width: 600px) {
+
+    .products-search-info {
+
+        font-size: 12px;
+
+    }
+
+
+    .product-boutique-badge {
+
+        gap: 4px;
+
+        margin-top: 7px;
+
+        padding: 4px 7px;
+
+    }
+
+
+    .product-boutique-badge i {
+
+        font-size: 9px;
+
+    }
+
+
+    .product-boutique-badge span {
+
+        font-size: 8px;
+
+    }
+
+}
+
+</style>
+
+
+<!-- ============================================================
      JAVASCRIPT
-========================== -->
+============================================================ -->
 
 <script>
 
 function toggleCategories() {
 
-    const list = document.getElementById("categories-list");
-    const arrow = document.getElementById("categories-arrow");
+    const list =
+        document.getElementById("categories-list");
+
+    const arrow =
+        document.getElementById("categories-arrow");
+
+
+    if (!list || !arrow) {
+
+        return;
+
+    }
+
 
     if (list.style.display === "none") {
 
         list.style.display = "block";
 
-        arrow.classList.remove("bi-chevron-down");
-        arrow.classList.add("bi-chevron-up");
+        arrow.classList.remove(
+            "bi-chevron-down"
+        );
+
+        arrow.classList.add(
+            "bi-chevron-up"
+        );
 
     } else {
 
         list.style.display = "none";
 
-        arrow.classList.remove("bi-chevron-up");
-        arrow.classList.add("bi-chevron-down");
+        arrow.classList.remove(
+            "bi-chevron-up"
+        );
+
+        arrow.classList.add(
+            "bi-chevron-down"
+        );
 
     }
 
@@ -353,13 +680,18 @@ function toggleCategories() {
 
 function toggleSubcategories(categoryId) {
 
-    const list = document.getElementById(
-        "subcategories-" + categoryId
-    );
+    const list =
+        document.getElementById(
+            "subcategories-" + categoryId
+        );
+
 
     if (!list) {
+
         return;
+
     }
+
 
     if (list.style.display === "none") {
 
@@ -374,5 +706,6 @@ function toggleSubcategories(categoryId) {
 }
 
 </script>
+
 
 {% endblock %}

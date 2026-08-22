@@ -6,81 +6,170 @@
 
 <div class="container py-5">
 
+    <h2 class="fw-bold mb-4">
+        <i class="bi bi-cart3 text-success"></i>
+        Mon panier
+    </h2>
 
-<h2 class="fw-bold mb-4">
-    <i class="bi bi-cart3 text-success"></i>
-    Mon panier
-</h2>
+    {% if products %}
 
-{% if products %}
+        <div class="row">
 
-    <div class="row">
+            <!-- ========================================= -->
+            <!-- PRODUITS -->
+            <!-- ========================================= -->
 
-        <!-- PRODUITS -->
-        <div class="col-lg-8">
+            <div class="col-lg-8">
 
-            {% for product in products %}
+                {% for product in products %}
 
-            <div class="card mb-3 shadow-sm">
+                <div class="card mb-3 shadow-sm">
 
-                <div class="row g-0 align-items-center">
+                    <div class="row g-0 align-items-center">
 
-                    <!-- IMAGE -->
-                    <div class="col-md-3">
+                        <!-- IMAGE -->
+                        <div class="col-md-3">
 
-                        {% if product.image %}
+                            {% if product.image %}
 
-                         <img src="{{ product.image }}"
-                                 class="img-fluid rounded-start"
-                                 style="height:140px; width:100%; object-fit:cover;"
-                                 alt="{{ product.title }}">
+                                <img
+                                    src="{{ product.image }}"
+                                    class="img-fluid rounded-start"
+                                    style="height:140px; width:100%; object-fit:cover;"
+                                    alt="{{ product.title }}"
+                                >
 
-                        {% else %}
+                            {% else %}
 
-                            <img src="https://placehold.co/300x200?text=MauriMarket"
-                                 class="img-fluid rounded-start"
-                                 style="height:140px; width:100%; object-fit:cover;"
-                                 alt="Produit">
+                                <img
+                                    src="https://placehold.co/300x200?text=MauriMarket"
+                                    class="img-fluid rounded-start"
+                                    style="height:140px; width:100%; object-fit:cover;"
+                                    alt="Produit"
+                                >
 
-                        {% endif %}
+                            {% endif %}
 
-                    </div>
+                        </div>
 
-                    <!-- INFORMATIONS -->
-                    <div class="col-md-6">
+                        <!-- INFORMATIONS -->
+                        <div class="col-md-6">
 
-                        <div class="card-body">
+                            <div class="card-body">
 
-                            <h5 class="fw-bold">
-                                {{ product.title }}
-                            </h5>
+                                <h5 class="fw-bold">
+                                    {{ product.title }}
+                                </h5>
 
-                            <p class="text-success fw-bold mb-1">
-                                {{ product.price }} MRU
-                            </p>
+                                <p class="text-success fw-bold mb-1">
+                                    {{ product.price }} MRU
+                                </p>
 
-                            <p class="text-muted mb-0">
-                                {{ product.city }}
-                            </p>
+                                {% if product.city %}
+                                    <p class="text-muted mb-0">
+                                        {{ product.city }}
+                                    </p>
+                                {% endif %}
+
+                            </div>
+
+                        </div>
+
+                        <!-- ACTIONS -->
+                        <div class="col-md-3 text-center">
+
+                            <a
+                                href="/produit/{{ product.id }}"
+                                class="btn btn-outline-success btn-sm mb-2"
+                            >
+                                <i class="bi bi-eye"></i>
+                                Voir
+                            </a>
+
+                            <br>
+
+                            <a
+                                href="/panier/supprimer/{{ product.id }}"
+                                class="btn btn-outline-danger btn-sm"
+                            >
+                                <i class="bi bi-trash"></i>
+                                Supprimer
+                            </a>
 
                         </div>
 
                     </div>
 
-                    <!-- ACTION -->
-                    <div class="col-md-3 text-center">
+                </div>
 
-                        <a href="/produit/{{ product.id }}"
-                           class="btn btn-outline-success btn-sm mb-2">
-                            Voir
+                {% endfor %}
+
+            </div>
+
+
+            <!-- ========================================= -->
+            <!-- RÉSUMÉ DE LA COMMANDE -->
+            <!-- ========================================= -->
+
+            <div class="col-lg-4">
+
+                <div class="card shadow-sm">
+
+                    <div class="card-body">
+
+                        <h4 class="fw-bold mb-4">
+                            <i class="bi bi-receipt"></i>
+                            Résumé
+                        </h4>
+
+                        <!-- NOMBRE DE PRODUITS -->
+                        <div class="d-flex justify-content-between">
+
+                            <span>
+                                Produits
+                            </span>
+
+                            <strong>
+                                {{ products|length }}
+                            </strong>
+
+                        </div>
+
+                        <hr>
+
+                        <!-- TOTAL -->
+                        <div class="d-flex justify-content-between align-items-center">
+
+                            <span class="fw-bold">
+                                Total
+                            </span>
+
+                            <strong class="text-success fs-4">
+                                {{ total }} MRU
+                            </strong>
+
+                        </div>
+
+                        <!-- ================================= -->
+                        <!-- VALIDER LA COMMANDE -->
+                        <!-- ================================= -->
+
+                        <a
+                            href="/commande"
+                            class="btn btn-success w-100 mt-4"
+                        >
+                            <i class="bi bi-check-circle me-2"></i>
+                            Valider ma commande
                         </a>
 
-                        <br>
+                        <!-- CONTINUER LES ACHATS -->
 
-                        <a href="/panier/supprimer/{{ product.id }}"
-                           class="btn btn-outline-danger btn-sm">
-                            <i class="bi bi-trash"></i>
-                            Supprimer
+                        <a
+                            href="/"
+                            class="btn btn-outline-secondary w-100 mt-2"
+                        >
+                            <i class="bi bi-arrow-left me-2"></i>
+                            Continuer mes achats
                         </a>
 
                     </div>
@@ -89,84 +178,40 @@
 
             </div>
 
-            {% endfor %}
+        </div>
+
+    {% else %}
+
+        <!-- ========================================= -->
+        <!-- PANIER VIDE -->
+        <!-- ========================================= -->
+
+        <div class="text-center py-5">
+
+            <i
+                class="bi bi-cart-x"
+                style="font-size:70px; color:#198754;"
+            ></i>
+
+            <h4 class="mt-3">
+                Votre panier est vide
+            </h4>
+
+            <p class="text-muted">
+                Ajoutez des produits pour les retrouver ici.
+            </p>
+
+            <a
+                href="/"
+                class="btn btn-success"
+            >
+                <i class="bi bi-shop me-2"></i>
+                Continuer mes achats
+            </a>
 
         </div>
 
-
-        <!-- TOTAL -->
-        <div class="col-lg-4">
-
-            <div class="card shadow-sm">
-
-                <div class="card-body">
-
-                    <h4 class="fw-bold mb-4">
-                        Résumé
-                    </h4>
-
-                    <div class="d-flex justify-content-between">
-
-                        <span>
-                            Produits
-                        </span>
-
-                        <strong>
-                            {{ products|length }}
-                        </strong>
-
-                    </div>
-
-                    <hr>
-
-                    <div class="d-flex justify-content-between">
-
-                        <span class="fw-bold">
-                            Total
-                        </span>
-
-                        <strong class="text-success fs-4">
-                            {{ total }} MRU
-                        </strong>
-
-                    </div>
-
-                    <button class="btn btn-success w-100 mt-4">
-                        Valider ma commande
-                    </button>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-{% else %}
-
-    <div class="text-center py-5">
-
-        <i class="bi bi-cart-x"
-           style="font-size:70px; color:#198754;">
-        </i>
-
-        <h4 class="mt-3">
-            Votre panier est vide
-        </h4>
-
-        <p class="text-muted">
-            Ajoutez des produits pour les retrouver ici.
-        </p>
-
-        <a href="/" class="btn btn-success">
-            Continuer mes achats
-        </a>
-
-    </div>
-
-{% endif %}
-
+    {% endif %}
 
 </div>
 

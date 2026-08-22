@@ -6,69 +6,150 @@
 
 <div class="creer-boutique-page">
 
-    <div class="creer-boutique-card">
 
-        <div class="creer-boutique-header">
+<div class="creer-boutique-card">
 
-            <div class="creer-boutique-icon">
-                <i class="bi bi-shop"></i>
-            </div>
+    <div class="creer-boutique-header">
 
-            <h1>Demander ma boutique</h1>
+        <div class="creer-boutique-icon">
+            <i class="bi bi-shop"></i>
+        </div>
 
-            <p>
-                Envoyez votre demande pour ouvrir une boutique
-                sur MauriMarket.
-            </p>
+        <h1>Demander ma boutique</h1>
+
+        <p>
+            Envoyez votre demande pour ouvrir une boutique
+            sur MauriMarket.
+        </p>
+
+    </div>
+
+    <form method="POST" action="/boutique/creer">
+
+        <!-- ================================================= -->
+        <!-- NOM DE LA BOUTIQUE -->
+        <!-- ================================================= -->
+
+        <div class="creer-boutique-field">
+
+            <label for="name">
+                Nom de la boutique
+            </label>
+
+            <input
+                id="name"
+                type="text"
+                name="name"
+                placeholder="Ex : DBF Business"
+                required
+            >
 
         </div>
 
-        <form method="POST" action="/boutique/creer">
 
-            <div class="creer-boutique-field">
+        <!-- ================================================= -->
+        <!-- CATÉGORIE DE LA BOUTIQUE -->
+        <!-- ================================================= -->
 
-                <label for="name">
-                    Nom de la boutique
-                </label>
+        <div class="creer-boutique-field">
 
-                <input
-                    id="name"
-                    type="text"
-                    name="name"
-                    placeholder="Ex : Boutique Papa"
-                    required
-                >
+            <label for="category">
+                Catégorie de la boutique
+            </label>
 
-            </div>
+            <select
+                id="category"
+                name="category"
+                required
+            >
 
-            <div class="creer-boutique-field">
+                <option value="">
+                    Choisir une catégorie
+                </option>
 
-                <label for="sale_type">
-                    Type de vente
-                </label>
+                <option value="Téléphones">
+                    📱 Téléphones
+                </option>
 
-                <input
-                    id="sale_type"
-                    type="text"
-                    name="sale_type"
-                    placeholder="Ex : Téléphones, vêtements, chaussures..."
-                    required
-                >
+                <option value="Informatique">
+                    💻 Informatique
+                </option>
 
-                <small>
-                    Indiquez simplement ce que votre boutique vend.
-                </small>
+                <option value="Mode">
+                    👕 Mode
+                </option>
 
-            </div>
+                <option value="Maison">
+                    🏠 Maison
+                </option>
 
-            <button type="submit">
-                <i class="bi bi-send"></i>
-                Envoyer ma demande
-            </button>
+                <option value="Automobile">
+                    🚗 Automobile
+                </option>
 
-        </form>
+                <option value="Services">
+                    🛠️ Services
+                </option>
 
-    </div>
+                <option value="Alimentation">
+                    🛒 Alimentation
+                </option>
+
+                <option value="Autre">
+                    📦 Autre
+                </option>
+
+            </select>
+
+            <small>
+                Cette catégorie permet aux visiteurs de trouver
+                votre boutique plus facilement.
+            </small>
+
+        </div>
+
+
+        <!-- ================================================= -->
+        <!-- TYPE DE VENTE -->
+        <!-- ================================================= -->
+
+        <div class="creer-boutique-field">
+
+            <label for="sale_type">
+                Type de vente
+            </label>
+
+            <input
+                id="sale_type"
+                type="text"
+                name="sale_type"
+                placeholder="Ex : Vente au détail, vente en gros..."
+                required
+            >
+
+            <small>
+                Indiquez le type de vente proposé par votre boutique.
+            </small>
+
+        </div>
+
+
+        <!-- ================================================= -->
+        <!-- BOUTON -->
+        <!-- ================================================= -->
+
+        <button type="submit">
+
+            <i class="bi bi-send"></i>
+
+            Envoyer ma demande
+
+        </button>
+
+    </form>
+
+</div>
+
 
 </div>
 

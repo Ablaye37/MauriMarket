@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+
+{% block title %}Commande confirmée - MauriMarket{% endblock %}
+
+{% block content %}
+
+<div class="container py-5">
+
+
+<div class="row justify-content-center">
+
+    <div class="col-lg-8 col-md-10">
+
+        <div class="card shadow-sm border-0">
+
+            <div class="card-body text-center p-5">
+
+                <!-- ICÔNE -->
+                <div class="mb-4">
+
+                    <div
+                        class="d-inline-flex align-items-center justify-content-center rounded-circle bg-success bg-opacity-10"
+                        style="width:90px;height:90px;"
+                    >
+                        <i
+                            class="bi bi-check-circle-fill text-success"
+                            style="font-size:55px;"
+                        ></i>
+                    </div>
+
+                </div>
+
+                <!-- TITRE -->
+
+                <h2 class="fw-bold mb-3">
+                    Commande reçue !
+                </h2>
+
+                <p class="text-muted fs-5 mb-4">
+                    Votre commande a bien été enregistrée.
+                </p>
+
+
+                <!-- NUMÉRO DE COMMANDE -->
+
+                {% if order %}
+
+                <div class="alert alert-light border mb-4">
+
+                    <p class="text-muted mb-1">
+                        Numéro de commande
+                    </p>
+
+                    <h4 class="fw-bold text-success mb-0">
+                        {{ order.order_number }}
+                    </h4>
+
+                </div>
+
+
+                <!-- TOTAL -->
+
+                <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3">
+
+                    <span class="fw-bold">
+                        Total de la commande
+                    </span>
+
+                    <strong class="text-success fs-5">
+                        {{ order.total }} MRU
+                    </strong>
+
+                </div>
+
+
+                <!-- STATUT -->
+
+                <div class="alert alert-warning text-start">
+
+                    <div class="d-flex align-items-start">
+
+                        <i
+                            class="bi bi-clock-history me-3"
+                            style="font-size:25px;"
+                        ></i>
+
+                        <div>
+
+                            <strong>
+                                Validation manuelle
+                            </strong>
+
+                            <p class="mb-0 mt-1">
+                                Votre commande est actuellement en attente
+                                de confirmation. Notre équipe va vérifier
+                                votre commande et vous contacter pour
+                                confirmer les détails.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                {% endif %}
+
+
+                <!-- INFORMATION -->
+
+                <div class="mt-4 mb-4">
+
+                    <p class="text-muted mb-2">
+                        Conservez votre numéro de commande :
+                    </p>
+
+                    <strong>
+                        {{ order.order_number if order else "—" }}
+                    </strong>
+
+                </div>
+
+
+                <!-- BOUTONS -->
+
+                <div class="d-flex flex-column flex-md-row justify-content-center gap-2">
+
+                    <a
+                        href="/"
+                        class="btn btn-success"
+                    >
+                        <i class="bi bi-house me-2"></i>
+                        Retour à l'accueil
+                    </a>
+
+                    <a
+                        href="/boutiques"
+                        class="btn btn-outline-success"
+                    >
+                        <i class="bi bi-shop me-2"></i>
+                        Voir les boutiques
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+</div>
+
+{% endblock %}

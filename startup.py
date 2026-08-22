@@ -1,324 +1,68 @@
+import logging
 
-from app.database.database import engine, Base, SessionLocal
-from sqlalchemy import text
+from app.database.database import engine
 
-from app.models.category import Category
-from app.models.subcategory import SubCategory
-from app.models.product import Product
-from app.models.user import User
-from app.models.boutique import Boutique
-from app.models.boutique_request import BoutiqueRequest
-from app.models.contact_message import ContactMessage
 
+# ============================================================
+# LOGGER
+# ============================================================
+
+logger = logging.getLogger(__name__)
+
+
+# ============================================================
+# DATABASE STARTUP
+# ============================================================
 
 def init_database():
+    """
+    Ancienne fonction de création automatique des tables.
 
-    print("Création des tables...")
+    IMPORTANT :
+    Les tables NE SONT PLUS créées automatiquement au démarrage.
 
-    # =====================================================
-    # CRÉATION DES TABLES
-    # =====================================================
+    Le schéma de production doit être géré par les migrations
+    ou directement dans Supabase.
 
-    Base.metadata.create_all(bind=engine)
+    Cette fonction est conservée pour éviter de casser
+    d'éventuels imports existants dans le projet.
+    """
 
-    # =====================================================
-    # MIGRATION BOUTIQUES
-    # =====================================================
-
-    with engine.begin() as connection:
-
-        connection.execute(text("""
-            ALTER TABLE products
-            ADD COLUMN IF NOT EXISTS boutique_id INTEGER
-        """))
-
-        connection.execute(text("""
-            CREATE TABLE IF NOT EXISTS boutiques (
-                id SERIAL PRIMARY KEY,
-                name VARCHAR(150) NOT NULL,
-                sale_type VARCHAR(100) NOT NULL,
-                user_id INTEGER NOT NULL REFERENCES users(id)
-            )
-        """))
-
-
-    db = SessionLocal()
-
-    # =====================================================
-    # AJOUT DU RÔLE AUX UTILISATEURS
-    # =====================================================
-
-
-
-
-    # =====================================================
-    # CATALOGUE MAURIMARKET
-    # =====================================================
-
-    catalogue = {
-
-        "Téléphones & Tablettes": [
-            "iPhone",
-            "Samsung",
-            "Xiaomi",
-            "Tecno",
-            "Infinix",
-            "Huawei",
-            "Oppo",
-            "Autres téléphones",
-            "Tablettes",
-            "Montres connectées"
-        ],
-
-        "Informatique": [
-            "Ordinateurs portables",
-            "Ordinateurs de bureau",
-            "MacBook",
-            "PC Gaming",
-            "Écrans",
-            "Claviers & souris",
-            "Imprimantes",
-            "Disques durs & SSD",
-            "RAM",
-            "Cartes graphiques",
-            "Accessoires informatiques",
-            "Réseaux & Wi-Fi"
-        ],
-
-        "Véhicules": [
-            "Voitures",
-            "Motos",
-            "Camions",
-            "Bus",
-            "Pièces automobiles",
-            "Pneus",
-            "Accessoires auto",
-            "Accessoires moto"
-        ],
-
-        "Mode": [
-            "Mode Homme",
-            "Mode Femme",
-            "Chaussures",
-            "Sacs",
-            "Montres",
-            "Bijoux",
-            "Accessoires"
-        ],
-
-        "Maison & Électroménager": [
-            "Réfrigérateurs",
-            "Congélateurs",
-            "Télévisions",
-            "Climatiseurs",
-            "Ventilateurs",
-            "Machines à laver",
-            "Cuisinières",
-            "Micro-ondes",
-            "Meubles",
-            "Décoration",
-            "Cuisine",
-            "Literie"
-        ],
-
-        "Gaming & Divertissement": [
-            "PlayStation",
-            "Xbox",
-            "Nintendo",
-            "Jeux vidéo",
-            "Manettes",
-            "Casques gaming",
-            "Accessoires gaming"
-        ],
-
-        "Enfants & Bébés": [
-            "Vêtements garçons",
-            "Vêtements filles",
-            "Chaussures enfants",
-            "Jouets",
-            "Poussettes",
-            "Articles pour bébé",
-            "Fournitures scolaires"
-        ],
-
-        "Services": [
-            "Transport",
-            "Livraison",
-            "Réparation",
-            "Informatique",
-            "Formation",
-            "Services professionnels"
-        ],
-
-        "Immobilier": [
-            "Maisons",
-            "Appartements",
-            "Terrains",
-            "Bureaux",
-            "Locaux commerciaux",
-            "Locations"
-        ]
-    }
-
-    # =====================================================
-    # CRÉATION DES CATÉGORIES ET SOUS-CATÉGORIES
-    # =====================================================
-
-    for category_name, subcategories in catalogue.items():
-
-        category = (
-            db.query(Category)
-            .filter(Category.name == category_name)
-            .first()
-        )
-
-        if not category:
-
-            category = Category(
-                name=category_name
-            )
-
-            db.add(category)
-            db.commit()
-            db.refresh(category)
-
-            print(
-                f"Catégorie créée : {category_name}"
-            )
-
-        for subcategory_name in subcategories:
-
-            existing_subcategory = (
-                db.query(SubCategory)
-                .filter(
-                    SubCategory.name == subcategory_name,
-                    SubCategory.category_id == category.id
-                )
-                .first()
-            )
-
-            if not existing_subcategory:
-
-                subcategory = SubCategory(
-                    name=subcategory_name,
-                    category_id=category.id
-                )
-
-                db.add(subcategory)
-
-                print(
-                    f"  Sous-catégorie créée : "
-                    f"{subcategory_name}"
-                )
-
-        db.commit()
-
-    # =====================================================
-    # MIGRATION DES ANCIENNES CATÉGORIES
-    # =====================================================
-
-    migrations = {
-        "Téléphones": "Téléphones & Tablettes",
-        "Maison": "Maison & Électroménager"
-    }
-
-    for old_name, new_name in migrations.items():
-
-        old_category = (
-            db.query(Category)
-            .filter(Category.name == old_name)
-            .first()
-        )
-
-        new_category = (
-            db.query(Category)
-            .filter(Category.name == new_name)
-            .first()
-        )
-
-        if old_category and new_category:
-
-            print(
-                f"Migration : {old_name} → {new_name}"
-            )
-
-            products = (
-                db.query(Product)
-                .filter(
-                    Product.category_id == old_category.id
-                )
-                .all()
-            )
-
-            for product in products:
-
-                product.category_id = new_category.id
-                product.subcategory_id = None
-
-            db.commit()
-
-            remaining_products = (
-                db.query(Product)
-                .filter(
-                    Product.category_id == old_category.id
-                )
-                .count()
-            )
-
-            if remaining_products == 0:
-
-                db.delete(old_category)
-                db.commit()
-
-                print(
-                    f"Ancienne catégorie supprimée : "
-                    f"{old_name}"
-                )
-
-    # =====================================================
-    # SUPPRESSION DES AUTRES ANCIENNES CATÉGORIES
-    # =====================================================
-
-    categories_existantes = (
-        db.query(Category).all()
+    logger.info(
+        "Base de données : initialisation automatique désactivée."
     )
 
-    for category in categories_existantes:
+    logger.info(
+        "Le schéma PostgreSQL/Supabase est géré par les migrations."
+    )
 
-        if category.name not in catalogue:
 
-            product_count = (
-                db.query(Product)
-                .filter(
-                    Product.category_id == category.id
-                )
-                .count()
-            )
+# ============================================================
+# OPTIONAL DATABASE CHECK
+# ============================================================
 
-            if product_count == 0:
+def check_database_connection():
+    """
+    Vérifie manuellement la connexion à la base.
 
-                print(
-                    f"Suppression ancienne catégorie : "
-                    f"{category.name}"
-                )
+    Cette fonction n'est PAS appelée automatiquement par main.py.
+    Elle peut être utilisée pour un diagnostic.
+    """
 
-                db.delete(category)
-                db.commit()
+    try:
+        with engine.connect() as connection:
+            connection.exec_driver_sql("SELECT 1")
 
-            else:
+        logger.info(
+            "Connexion à la base de données OK."
+        )
 
-                print(
-                    f"ATTENTION : catégorie conservée "
-                    f"car elle contient "
-                    f"{product_count} produit(s) : "
-                    f"{category.name}"
-                )
+        return True
 
-    # =====================================================
-    # FIN
-    # =====================================================
+    except Exception as exc:
+        logger.error(
+            "Connexion à la base de données impossible : %s",
+            exc,
+        )
 
-    db.close()
-
-    print("Base prête !")
-
+        return False

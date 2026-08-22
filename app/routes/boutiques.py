@@ -1,34 +1,94 @@
-from fastapi import APIRouter, Request, Form, UploadFile, File
+from uuid import uuid4
+from pathlib import Path
+
+from fastapi import (
+    APIRouter,
+    Request,
+    Depends,
+    UploadFile,
+    File,
+    Form,
+)
+
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
+
+from sqlalchemy.orm import Session
 
 from app.database.database import SessionLocal
 from app.models.boutique import Boutique
 from app.models.boutique_request import BoutiqueRequest
 from app.models.product import Product
 
-import os
-import uuid
 
+# ============================================================
+# ROUTER
+# ============================================================
 
 router = APIRouter()
+
+
+# ============================================================
+# TEMPLATES
+# ============================================================
 
 templates = Jinja2Templates(
     directory="app/templates"
 )
 
 
-# =====================================================
-# CONTEXTE GLOBAL
-# =====================================================
+# ============================================================
+# DOSSIER DES IMAGES
+# ============================================================
 
-def contexte_global(request: Request, db):
+BOUTIQUE_UPLOAD_DIR = Path(
+    "app/static/uploads/boutiques"
+)
+
+
+# ============================================================
+# TYPES D'IMAGES AUTORISÉS
+# ============================================================
+
+ALLOWED_IMAGE_TYPES = {
+    "image/jpeg": ".jpg",
+    "image/png": ".png",
+    "image/webp": ".webp",
+}
+
+
+# ============================================================
+# DATABASE
+# ============================================================
+
+def get_db():
+    db = SessionLocal()
+
+    try:
+        yield db
+
+    finally:
+        db.close()
+
+
+# ============================================================
+# CONTEXTE GLOBAL
+# ============================================================
+
+def contexte_global(
+    request: Request,
+    db: Session
+):
 
     user_id = request.session.get("user_id")
     user_name = request.session.get("user_name")
 
     has_boutique = False
     boutique_request = None
+
+    # --------------------------------------------------------
+    # UTILISATEUR CONNECTÉ
+    # --------------------------------------------------------
 
     if user_id:
 
@@ -40,8 +100,11 @@ def contexte_global(request: Request, db):
             .first()
         )
 
-        if boutique:
-            has_boutique = True
+        has_boutique = boutique is not None
+
+        # ----------------------------------------------------
+        # DERNIÈRE DEMANDE DE BOUTIQUE
+        # ----------------------------------------------------
 
         boutique_request = (
             db.query(BoutiqueRequest)
@@ -54,6 +117,10 @@ def contexte_global(request: Request, db):
             .first()
         )
 
+    # --------------------------------------------------------
+    # PANIER
+    # --------------------------------------------------------
+
     panier = request.session.get(
         "panier",
         []
@@ -61,815 +128,750 @@ def contexte_global(request: Request, db):
 
     panier_count = len(panier)
 
+    # --------------------------------------------------------
+    # LANGUE
+    # --------------------------------------------------------
+
     lang = request.query_params.get(
         "lang",
         "fr"
     )
 
     return {
+        "user_id": user_id,
         "user_name": user_name,
         "has_boutique": has_boutique,
         "boutique_request": boutique_request,
         "panier_count": panier_count,
-        "lang": lang
+        "lang": lang,
     }
 
 
-# =====================================================
-# UTILITAIRE : SAUVEGARDER UNE IMAGE
-# =====================================================
-
-async def sauvegarder_image(
-    fichier: UploadFile,
-    prefix: str,
-    boutique_id: int
-):
-
-    if not fichier or not fichier.filename:
-        return None
-
-    allowed_types = {
-        "image/jpeg": ".jpg",
-        "image/png": ".png",
-        "image/webp": ".webp"
-    }
-
-    extension = allowed_types.get(
-        fichier.content_type
-    )
-
-    if not extension:
-        return None
-
-    upload_dir = "app/static/uploads/boutiques"
-
-    os.makedirs(
-        upload_dir,
-        exist_ok=True
-    )
-
-    filename = (
-        f"boutique_{boutique_id}_"
-        f"{prefix}_"
-        f"{uuid.uuid4().hex}"
-        f"{extension}"
-    )
-
-    file_path = os.path.join(
-        upload_dir,
-        filename
-    )
-
-    content = await fichier.read()
-
-    if not content:
-        return None
-
-    with open(
-        file_path,
-        "wb"
-    ) as f:
-        f.write(content)
-
-    return (
-        f"/static/uploads/boutiques/{filename}"
-    )
-
-
-# =====================================================
+# ============================================================
 # LISTE DES BOUTIQUES
-# =====================================================
+# ============================================================
 
 @router.get("/boutiques")
-async def liste_boutiques(
+async def boutiques(
     request: Request,
-    q: str = ""
+    q: str = "",
+    db: Session = Depends(get_db),
 ):
 
-    db = SessionLocal()
+    query = db.query(Boutique)
 
-    try:
+    # --------------------------------------------------------
+    # RECHERCHE
+    # --------------------------------------------------------
 
-        search_query = q.strip()
+    if q:
 
-        boutique_query = db.query(Boutique)
+        search = f"%{q}%"
 
-        if search_query:
-
-            recherche = f"%{search_query}%"
-
-            boutique_query = boutique_query.filter(
-                (Boutique.name.ilike(recherche))
-                |
-                (Boutique.sale_type.ilike(recherche))
-                |
-                (Boutique.city.ilike(recherche))
-            )
-
-        boutiques = (
-            boutique_query
-            .order_by(
-                Boutique.id.desc()
-            )
-            .all()
+        query = query.filter(
+            (Boutique.name.ilike(search))
+            |
+            (Boutique.category.ilike(search))
+            |
+            (Boutique.sale_type.ilike(search))
+            |
+            (Boutique.city.ilike(search))
         )
 
-        user_id = request.session.get(
-            "user_id"
+    # --------------------------------------------------------
+    # RÉCUPÉRATION
+    # --------------------------------------------------------
+
+    boutiques_list = (
+        query
+        .order_by(
+            Boutique.id.desc()
         )
+        .all()
+    )
 
-        ma_boutique = None
+    # --------------------------------------------------------
+    # CONTEXTE
+    # --------------------------------------------------------
 
-        if user_id:
+    context = contexte_global(
+        request,
+        db
+    )
 
-            ma_boutique = (
-                db.query(Boutique)
-                .filter(
-                    Boutique.user_id == user_id
-                )
-                .first()
-            )
+    context.update({
+        "request": request,
+        "boutiques": boutiques_list,
+        "q": q,
+    })
 
-        global_context = contexte_global(
-            request,
-            db
-        )
-
-        return templates.TemplateResponse(
-            request=request,
-            name="boutiques.html",
-            context={
-                "boutiques": boutiques,
-                "ma_boutique": ma_boutique,
-                "search_query": search_query,
-                **global_context
-            }
-        )
-
-    finally:
-
-        db.close()
+    return templates.TemplateResponse(
+        request=request,
+        name="boutiques.html",
+        context=context,
+    )
 
 
-# =====================================================
-# PAGE CRÉER UNE BOUTIQUE
-# IMPORTANT :
-# Cette route doit être AVANT /boutique/{boutique_id}
-# =====================================================
+# ============================================================
+# CRÉER UNE BOUTIQUE — PAGE
+# ============================================================
 
 @router.get("/boutique/creer")
 async def page_creer_boutique(
-    request: Request
+    request: Request,
+    db: Session = Depends(get_db),
 ):
 
     user_id = request.session.get(
         "user_id"
     )
 
+    # --------------------------------------------------------
+    # NON CONNECTÉ
+    # --------------------------------------------------------
+
     if not user_id:
 
         return RedirectResponse(
-            "/login",
-            status_code=303
+            url="/login",
+            status_code=303,
         )
 
-    db = SessionLocal()
+    # --------------------------------------------------------
+    # VÉRIFIER SI L'UTILISATEUR A DÉJÀ UNE BOUTIQUE
+    # --------------------------------------------------------
 
-    try:
+    boutique = (
+        db.query(Boutique)
+        .filter(
+            Boutique.user_id == user_id
+        )
+        .first()
+    )
 
-        boutique = (
-            db.query(Boutique)
-            .filter(
-                Boutique.user_id == user_id
-            )
-            .first()
+    if boutique:
+
+        return RedirectResponse(
+            url="/ma-boutique",
+            status_code=303,
         )
 
-        if boutique:
+    # --------------------------------------------------------
+    # VÉRIFIER UNE DEMANDE EN ATTENTE
+    # --------------------------------------------------------
 
-            return RedirectResponse(
-                "/ma-boutique",
-                status_code=303
-            )
+    demande = (
+        db.query(BoutiqueRequest)
+        .filter(
+            BoutiqueRequest.user_id == user_id,
+            BoutiqueRequest.status == "pending",
+        )
+        .order_by(
+            BoutiqueRequest.id.desc()
+        )
+        .first()
+    )
 
-        demande = (
-            db.query(BoutiqueRequest)
-            .filter(
-                BoutiqueRequest.user_id == user_id
-            )
-            .order_by(
-                BoutiqueRequest.id.desc()
-            )
-            .first()
+    if demande:
+
+        return RedirectResponse(
+            url="/boutique/demande",
+            status_code=303,
         )
 
-        if demande and demande.status == "pending":
+    # --------------------------------------------------------
+    # AFFICHER LA PAGE
+    # --------------------------------------------------------
 
-            return RedirectResponse(
-                "/boutique/demande",
-                status_code=303
-            )
+    context = contexte_global(
+        request,
+        db
+    )
 
-        global_context = contexte_global(
-            request,
-            db
-        )
+    context["request"] = request
 
-        return templates.TemplateResponse(
-            request=request,
-            name="creer_boutique.html",
-            context={
-                **global_context
-            }
-        )
-
-    finally:
-
-        db.close()
+    return templates.TemplateResponse(
+        request=request,
+        name="creer_boutique.html",
+        context=context,
+    )
 
 
-# =====================================================
-# ENVOYER UNE DEMANDE DE BOUTIQUE
-# =====================================================
+# ============================================================
+# CRÉER UNE DEMANDE DE BOUTIQUE
+# ============================================================
 
 @router.post("/boutique/creer")
 async def creer_boutique(
     request: Request,
+
     name: str = Form(...),
-    sale_type: str = Form(...)
+
+    category: str = Form(""),
+
+    sale_type: str = Form(""),
+
+    db: Session = Depends(get_db),
 ):
 
     user_id = request.session.get(
         "user_id"
     )
 
+    # --------------------------------------------------------
+    # NON CONNECTÉ
+    # --------------------------------------------------------
+
     if not user_id:
 
         return RedirectResponse(
-            "/login",
-            status_code=303
+            url="/login",
+            status_code=303,
         )
 
-    name = name.strip()
-    sale_type = sale_type.strip()
+    # --------------------------------------------------------
+    # DÉJÀ UNE BOUTIQUE
+    # --------------------------------------------------------
 
-    if not name or not sale_type:
+    boutique = (
+        db.query(Boutique)
+        .filter(
+            Boutique.user_id == user_id
+        )
+        .first()
+    )
+
+    if boutique:
 
         return RedirectResponse(
-            "/boutique/creer",
-            status_code=303
+            url="/ma-boutique",
+            status_code=303,
         )
 
-    db = SessionLocal()
+    # --------------------------------------------------------
+    # DEMANDE DÉJÀ EN ATTENTE
+    # --------------------------------------------------------
 
-    try:
-
-        # -------------------------------------------------
-        # Vérifier si l'utilisateur possède déjà une boutique
-        # -------------------------------------------------
-
-        boutique = (
-            db.query(Boutique)
-            .filter(
-                Boutique.user_id == user_id
-            )
-            .first()
+    demande_existante = (
+        db.query(BoutiqueRequest)
+        .filter(
+            BoutiqueRequest.user_id == user_id,
+            BoutiqueRequest.status == "pending",
         )
+        .first()
+    )
 
-        if boutique:
-
-            return RedirectResponse(
-                "/ma-boutique",
-                status_code=303
-            )
-
-        # -------------------------------------------------
-        # Vérifier s'il existe déjà une demande en attente
-        # -------------------------------------------------
-
-        demande_en_attente = (
-            db.query(BoutiqueRequest)
-            .filter(
-                BoutiqueRequest.user_id == user_id,
-                BoutiqueRequest.status == "pending"
-            )
-            .first()
-        )
-
-        if demande_en_attente:
-
-            return RedirectResponse(
-                "/boutique/demande",
-                status_code=303
-            )
-
-        # -------------------------------------------------
-        # Créer la demande
-        # -------------------------------------------------
-
-        demande = BoutiqueRequest(
-            name=name,
-            sale_type=sale_type,
-            user_id=user_id,
-            status="pending"
-        )
-
-        db.add(demande)
-
-        db.commit()
-
-        db.refresh(demande)
-
-        request.session["message"] = (
-            "Votre demande de boutique a été envoyée. "
-            "Elle sera examinée par l'administrateur."
-        )
+    if demande_existante:
 
         return RedirectResponse(
-            "/boutique/demande",
-            status_code=303
+            url="/boutique/demande",
+            status_code=303,
         )
 
-    except Exception as e:
+    # --------------------------------------------------------
+    # CRÉER LA DEMANDE
+    # --------------------------------------------------------
 
-        db.rollback()
+    demande = BoutiqueRequest(
+        name=name.strip(),
+        category=category.strip(),
+        sale_type=sale_type.strip(),
+        user_id=user_id,
+        status="pending",
+    )
 
-        print(
-            "ERREUR DEMANDE BOUTIQUE :",
-            repr(e)
-        )
+    db.add(demande)
+    db.commit()
 
-        request.session["message"] = (
-            "Impossible d'envoyer la demande."
-        )
+    # --------------------------------------------------------
+    # MESSAGE
+    # --------------------------------------------------------
 
-        return RedirectResponse(
-            "/boutique/creer",
-            status_code=303
-        )
+    request.session["message"] = (
+        "Votre demande de boutique a été envoyée."
+    )
 
-    finally:
-
-        db.close()
+    return RedirectResponse(
+        url="/boutique/demande",
+        status_code=303,
+    )
 
 
-# =====================================================
+# ============================================================
 # STATUT DE LA DEMANDE
-# =====================================================
+# ============================================================
 
 @router.get("/boutique/demande")
 async def statut_demande(
-    request: Request
+    request: Request,
+    db: Session = Depends(get_db),
 ):
 
     user_id = request.session.get(
         "user_id"
     )
 
+    # --------------------------------------------------------
+    # NON CONNECTÉ
+    # --------------------------------------------------------
+
     if not user_id:
 
         return RedirectResponse(
-            "/login",
-            status_code=303
+            url="/login",
+            status_code=303,
         )
 
-    db = SessionLocal()
+    # --------------------------------------------------------
+    # DERNIÈRE DEMANDE
+    # --------------------------------------------------------
 
-    try:
-
-        # -------------------------------------------------
-        # Vérifier si une boutique existe déjà
-        # -------------------------------------------------
-
-        boutique = (
-            db.query(Boutique)
-            .filter(
-                Boutique.user_id == user_id
-            )
-            .first()
+    demande = (
+        db.query(BoutiqueRequest)
+        .filter(
+            BoutiqueRequest.user_id == user_id
         )
-
-        if boutique:
-
-            return RedirectResponse(
-                "/ma-boutique",
-                status_code=303
-            )
-
-        # -------------------------------------------------
-        # Récupérer la dernière demande
-        # -------------------------------------------------
-
-        demande = (
-            db.query(BoutiqueRequest)
-            .filter(
-                BoutiqueRequest.user_id == user_id
-            )
-            .order_by(
-                BoutiqueRequest.id.desc()
-            )
-            .first()
+        .order_by(
+            BoutiqueRequest.id.desc()
         )
+        .first()
+    )
 
-        global_context = contexte_global(
-            request,
-            db
-        )
+    # --------------------------------------------------------
+    # CONTEXTE
+    # --------------------------------------------------------
 
-        message = request.session.pop(
-            "message",
-            None
-        )
+    context = contexte_global(
+        request,
+        db
+    )
 
-        return templates.TemplateResponse(
-            request=request,
-            name="publier_boutique.html",
-            context={
-                "demande": demande,
-                "message": message,
-                **global_context
-            }
-        )
+    context.update({
+        "request": request,
+        "demande": demande,
+    })
 
-    finally:
-
-        db.close()
+    return templates.TemplateResponse(
+        request=request,
+        name="publier_boutique.html",
+        context=context,
+    )
 
 
-# =====================================================
-# VOIR UNE BOUTIQUE PUBLIQUEMENT
-#
-# IMPORTANT :
-# Cette route dynamique est placée APRÈS :
-# /boutique/creer
-# /boutique/demande
-#
-# Cela évite que "creer" soit interprété comme boutique_id.
-# =====================================================
-
-@router.get("/boutique/{boutique_id}")
-async def voir_boutique(
-    request: Request,
-    boutique_id: int
-):
-
-    db = SessionLocal()
-
-    try:
-
-        # -------------------------------------------------
-        # Vérifier que l'ID est valide
-        # -------------------------------------------------
-
-        boutique = (
-            db.query(Boutique)
-            .filter(
-                Boutique.id == boutique_id
-            )
-            .first()
-        )
-
-        # -------------------------------------------------
-        # Boutique introuvable
-        # -------------------------------------------------
-
-        if not boutique:
-
-            return RedirectResponse(
-                "/boutiques",
-                status_code=303
-            )
-
-        # -------------------------------------------------
-        # Récupérer les produits de la boutique
-        # -------------------------------------------------
-
-        produits = (
-            db.query(Product)
-            .filter(
-                Product.boutique_id == boutique.id
-            )
-            .order_by(
-                Product.id.desc()
-            )
-            .all()
-        )
-
-        # -------------------------------------------------
-        # Contexte global
-        # -------------------------------------------------
-
-        global_context = contexte_global(
-            request,
-            db
-        )
-
-        # -------------------------------------------------
-        # Afficher la boutique
-        # -------------------------------------------------
-
-        return templates.TemplateResponse(
-            request=request,
-            name="boutique_detail.html",
-            context={
-                "boutique": boutique,
-                "produits": produits,
-                "products": produits,
-                **global_context
-            }
-        )
-
-    finally:
-
-        db.close()
-
-
-# =====================================================
+# ============================================================
 # MA BOUTIQUE
-# =====================================================
+# ============================================================
 
 @router.get("/ma-boutique")
 async def ma_boutique(
-    request: Request
+    request: Request,
+    db: Session = Depends(get_db),
 ):
 
     user_id = request.session.get(
         "user_id"
     )
 
+    # --------------------------------------------------------
+    # NON CONNECTÉ
+    # --------------------------------------------------------
+
     if not user_id:
 
         return RedirectResponse(
-            "/login",
-            status_code=303
+            url="/login",
+            status_code=303,
         )
 
-    db = SessionLocal()
+    # --------------------------------------------------------
+    # RÉCUPÉRER LA BOUTIQUE DU PROPRIÉTAIRE
+    # --------------------------------------------------------
 
-    try:
+    boutique = (
+        db.query(Boutique)
+        .filter(
+            Boutique.user_id == user_id
+        )
+        .first()
+    )
 
-        boutique = (
-            db.query(Boutique)
-            .filter(
-                Boutique.user_id == user_id
-            )
-            .first()
+    # --------------------------------------------------------
+    # AUCUNE BOUTIQUE
+    # --------------------------------------------------------
+
+    if not boutique:
+
+        return RedirectResponse(
+            url="/boutique/creer",
+            status_code=303,
         )
 
-        if not boutique:
+    # --------------------------------------------------------
+    # PRODUITS DE CETTE BOUTIQUE UNIQUEMENT
+    # --------------------------------------------------------
 
-            return RedirectResponse(
-                "/boutique/creer",
-                status_code=303
-            )
-
-        produits = (
-            db.query(Product)
-            .filter(
-                Product.boutique_id == boutique.id
-            )
-            .order_by(
-                Product.id.desc()
-            )
-            .all()
+    products = (
+        db.query(Product)
+        .filter(
+            Product.boutique_id == boutique.id
         )
-
-        global_context = contexte_global(
-            request,
-            db
+        .order_by(
+            Product.id.desc()
         )
+        .all()
+    )
 
-        return templates.TemplateResponse(
-            request=request,
-            name="ma_boutique.html",
-            context={
-                "boutique": boutique,
-                "produits": produits,
-                "products": produits,
-                **global_context
-            }
-        )
+    # --------------------------------------------------------
+    # CONTEXTE
+    # --------------------------------------------------------
 
-    finally:
+    context = contexte_global(
+        request,
+        db
+    )
 
-        db.close()
+    context.update({
+        "request": request,
+        "boutique": boutique,
+        "products": products,
+    })
+
+    return templates.TemplateResponse(
+        request=request,
+        name="ma_boutique.html",
+        context=context,
+    )
 
 
-# =====================================================
-# PAGE MODIFIER MA BOUTIQUE
-# =====================================================
+# ============================================================
+# MODIFIER MA BOUTIQUE — PAGE
+# ============================================================
 
 @router.get("/ma-boutique/modifier")
 async def page_modifier_boutique(
-    request: Request
+    request: Request,
+    db: Session = Depends(get_db),
 ):
 
     user_id = request.session.get(
         "user_id"
     )
 
+    # --------------------------------------------------------
+    # NON CONNECTÉ
+    # --------------------------------------------------------
+
     if not user_id:
 
         return RedirectResponse(
-            "/login",
-            status_code=303
+            url="/login",
+            status_code=303,
         )
 
-    db = SessionLocal()
+    # --------------------------------------------------------
+    # RÉCUPÉRER UNIQUEMENT SA BOUTIQUE
+    # --------------------------------------------------------
 
-    try:
+    boutique = (
+        db.query(Boutique)
+        .filter(
+            Boutique.user_id == user_id
+        )
+        .first()
+    )
 
-        boutique = (
-            db.query(Boutique)
-            .filter(
-                Boutique.user_id == user_id
-            )
-            .first()
+    if not boutique:
+
+        return RedirectResponse(
+            url="/boutique/creer",
+            status_code=303,
         )
 
-        if not boutique:
+    # --------------------------------------------------------
+    # CONTEXTE
+    # --------------------------------------------------------
 
-            return RedirectResponse(
-                "/boutique/creer",
-                status_code=303
-            )
+    context = contexte_global(
+        request,
+        db
+    )
 
-        global_context = contexte_global(
-            request,
-            db
-        )
+    context.update({
+        "request": request,
+        "boutique": boutique,
+    })
 
-        return templates.TemplateResponse(
-            request=request,
-            name="modifier_boutique.html",
-            context={
-                "boutique": boutique,
-                **global_context
-            }
-        )
-
-    finally:
-
-        db.close()
+    return templates.TemplateResponse(
+        request=request,
+        name="modifier_boutique.html",
+        context=context,
+    )
 
 
-# =====================================================
-# ENREGISTRER LES MODIFICATIONS
-# LOGO + COVER
-# =====================================================
+# ============================================================
+# MODIFIER MA BOUTIQUE
+# ============================================================
 
 @router.post("/ma-boutique/modifier")
 async def modifier_boutique(
     request: Request,
+
     name: str = Form(...),
-    sale_type: str = Form(...),
+
+    category: str = Form(""),
+
+    sale_type: str = Form(""),
+
     description: str = Form(""),
+
     city: str = Form(""),
-    logo: UploadFile = File(None),
-    cover_image: UploadFile = File(None)
+
+    logo: UploadFile | None = File(None),
+
+    cover_image: UploadFile | None = File(None),
+
+    db: Session = Depends(get_db),
 ):
 
     user_id = request.session.get(
         "user_id"
     )
 
+    # --------------------------------------------------------
+    # NON CONNECTÉ
+    # --------------------------------------------------------
+
     if not user_id:
 
         return RedirectResponse(
-            "/login",
-            status_code=303
+            url="/login",
+            status_code=303,
         )
 
-    db = SessionLocal()
+    # --------------------------------------------------------
+    # RÉCUPÉRER UNIQUEMENT SA BOUTIQUE
+    # --------------------------------------------------------
 
-    try:
-
-        boutique = (
-            db.query(Boutique)
-            .filter(
-                Boutique.user_id == user_id
-            )
-            .first()
+    boutique = (
+        db.query(Boutique)
+        .filter(
+            Boutique.user_id == user_id
         )
+        .first()
+    )
 
-        if not boutique:
-
-            return RedirectResponse(
-                "/boutique/creer",
-                status_code=303
-            )
-
-        # -------------------------------------------------
-        # Nettoyer les données
-        # -------------------------------------------------
-
-        name = name.strip()
-        sale_type = sale_type.strip()
-        description = description.strip()
-        city = city.strip()
-
-        if not name or not sale_type:
-
-            return RedirectResponse(
-                "/ma-boutique/modifier",
-                status_code=303
-            )
-
-        # -------------------------------------------------
-        # Modifier les informations
-        # -------------------------------------------------
-
-        boutique.name = name
-        boutique.sale_type = sale_type
-        boutique.description = description or None
-        boutique.city = city or None
-
-        # -------------------------------------------------
-        # LOGO
-        # -------------------------------------------------
-
-        if logo and logo.filename:
-
-            nouveau_logo = await sauvegarder_image(
-                logo,
-                "logo",
-                boutique.id
-            )
-
-            if nouveau_logo:
-
-                boutique.logo = nouveau_logo
-
-        # -------------------------------------------------
-        # COVER
-        # -------------------------------------------------
-
-        if cover_image and cover_image.filename:
-
-            nouvelle_cover = await sauvegarder_image(
-                cover_image,
-                "cover",
-                boutique.id
-            )
-
-            if nouvelle_cover:
-
-                boutique.cover_image = nouvelle_cover
-
-        # -------------------------------------------------
-        # Sauvegarder
-        # -------------------------------------------------
-
-        db.commit()
-
-        db.refresh(boutique)
-
-        print(
-            "=========================================="
-        )
-
-        print(
-            "BOUTIQUE MODIFIÉE"
-        )
-
-        print(
-            "ID :",
-            boutique.id
-        )
-
-        print(
-            "LOGO :",
-            boutique.logo
-        )
-
-        print(
-            "COVER :",
-            boutique.cover_image
-        )
-
-        print(
-            "=========================================="
-        )
+    if not boutique:
 
         return RedirectResponse(
-            "/ma-boutique",
-            status_code=303
+            url="/boutique/creer",
+            status_code=303,
         )
 
-    except Exception as e:
+    # --------------------------------------------------------
+    # INFORMATIONS
+    # --------------------------------------------------------
 
-        db.rollback()
+    boutique.name = name.strip()
 
-        print(
-            "ERREUR MODIFICATION BOUTIQUE :",
-            repr(e)
+    # On conserve category pour compatibilité avec
+    # la base actuelle, mais on ne développe pas cette
+    # fonctionnalité pour l'instant.
+    boutique.category = category.strip()
+
+    boutique.sale_type = sale_type.strip()
+
+    boutique.description = description.strip()
+
+    boutique.city = city.strip()
+
+    # --------------------------------------------------------
+    # CRÉER LE DOSSIER
+    # --------------------------------------------------------
+
+    BOUTIQUE_UPLOAD_DIR.mkdir(
+        parents=True,
+        exist_ok=True
+    )
+
+    # --------------------------------------------------------
+    # LOGO
+    # --------------------------------------------------------
+
+    if logo and logo.filename:
+
+        extension = ALLOWED_IMAGE_TYPES.get(
+            logo.content_type
         )
+
+        if extension:
+
+            filename = (
+                f"boutique_{boutique.id}_"
+                f"logo_{uuid4().hex}"
+                f"{extension}"
+            )
+
+            file_path = (
+                BOUTIQUE_UPLOAD_DIR / filename
+            )
+
+            content = await logo.read()
+
+            with open(
+                file_path,
+                "wb"
+            ) as file:
+
+                file.write(content)
+
+            boutique.logo = (
+                f"/static/uploads/boutiques/{filename}"
+            )
+
+    # --------------------------------------------------------
+    # IMAGE DE COUVERTURE
+    # --------------------------------------------------------
+
+    if cover_image and cover_image.filename:
+
+        extension = ALLOWED_IMAGE_TYPES.get(
+            cover_image.content_type
+        )
+
+        if extension:
+
+            filename = (
+                f"boutique_{boutique.id}_"
+                f"cover_{uuid4().hex}"
+                f"{extension}"
+            )
+
+            file_path = (
+                BOUTIQUE_UPLOAD_DIR / filename
+            )
+
+            content = await cover_image.read()
+
+            with open(
+                file_path,
+                "wb"
+            ) as file:
+
+                file.write(content)
+
+            boutique.cover_image = (
+                f"/static/uploads/boutiques/{filename}"
+            )
+
+    # --------------------------------------------------------
+    # SAUVEGARDER
+    # --------------------------------------------------------
+
+    db.commit()
+    db.refresh(boutique)
+
+    request.session["message"] = (
+        "Votre boutique a été modifiée avec succès."
+    )
+
+    return RedirectResponse(
+        url="/ma-boutique",
+        status_code=303,
+    )
+
+
+# ============================================================
+# DÉTAIL D'UNE BOUTIQUE
+# ============================================================
+
+@router.get("/boutique/detail/{boutique_id}")
+async def boutique_detail(
+    boutique_id: int,
+    request: Request,
+    db: Session = Depends(get_db),
+):
+
+    # --------------------------------------------------------
+    # RÉCUPÉRER LA BOUTIQUE
+    # --------------------------------------------------------
+
+    boutique = (
+        db.query(Boutique)
+        .filter(
+            Boutique.id == boutique_id
+        )
+        .first()
+    )
+
+    if not boutique:
 
         return RedirectResponse(
-            "/ma-boutique/modifier",
-            status_code=303
+            url="/boutiques",
+            status_code=303,
         )
 
-    finally:
+    # --------------------------------------------------------
+    # PRODUITS DE LA BOUTIQUE
+    # --------------------------------------------------------
 
-        db.close()
+    products = (
+        db.query(Product)
+        .filter(
+            Product.boutique_id == boutique.id
+        )
+        .order_by(
+            Product.id.desc()
+        )
+        .all()
+    )
+
+    # --------------------------------------------------------
+    # CONTEXTE
+    # --------------------------------------------------------
+
+    context = contexte_global(
+        request,
+        db
+    )
+
+    context.update({
+    "request": request,             
+    "boutique": boutique,
+    "products": products,
+    "produits": products,
+    })
+    return templates.TemplateResponse(
+        request=request,
+        name="boutique_detail.html",
+        context=context,
+    )
+
+
+# ============================================================
+# COMPATIBILITÉ AVEC L'ANCIEN LIEN
+# ============================================================
+#
+# Ancienne URL :
+#
+#     /boutique/5
+#
+# Nouvelle URL :
+#
+#     /boutique/detail/5
+#
+# On garde l'ancienne route pour éviter de casser
+# d'anciens liens.
+# ============================================================
+
+@router.get("/boutique/{boutique_id}")
+async def boutique_detail_ancien_lien(
+    boutique_id: int,
+    request: Request,
+    db: Session = Depends(get_db),
+):
+
+    return await boutique_detail(
+        boutique_id=boutique_id,
+        request=request,
+        db=db,
+    )

@@ -1,22 +1,49 @@
 {% extends "base.html" %}
 
+{% block title %}
+Modifier le produit - MauriMarket
+{% endblock %}
+
 {% block content %}
 
-<div class="edit-boutique-page">
+<div class="edit-product-page">
 
     <!-- =====================================================
          TOPBAR
     ====================================================== -->
 
-    <div class="edit-boutique-topbar">
+    <div class="edit-product-topbar">
 
-        <a href="/ma-boutique" class="back-button">
+        {% if from_boutique %}
+
+        <a
+            href="/ma-boutique"
+            class="back-button"
+        >
             <i class="bi bi-arrow-left"></i>
         </a>
 
+        {% else %}
+
+        <a
+            href="/mes-annonces"
+            class="back-button"
+        >
+            <i class="bi bi-arrow-left"></i>
+        </a>
+
+        {% endif %}
+
         <div>
-            <h1>Modifier ma boutique</h1>
-            <p>Modifiez les informations, le logo et la couverture de votre boutique.</p>
+
+            <h1>
+                Modifier le produit
+            </h1>
+
+            <p>
+                Modifiez les informations et la photo de votre produit.
+            </p>
+
         </div>
 
     </div>
@@ -26,182 +53,140 @@
          LAYOUT
     ====================================================== -->
 
-    <div class="edit-boutique-layout">
+    <div class="edit-product-layout">
 
 
         <!-- =================================================
              FORMULAIRE
         ================================================== -->
 
-        <div class="edit-boutique-card">
+        <div class="edit-product-card">
+
+
+            <!-- HEADER -->
 
             <div class="card-heading">
 
                 <div class="heading-icon">
-                    <i class="bi bi-shop"></i>
+                    <i class="bi bi-box-seam"></i>
                 </div>
 
                 <div>
-                    <h2>Informations de la boutique</h2>
-                    <p>Ces informations seront visibles par les visiteurs.</p>
+
+                    <h2>
+                        Informations du produit
+                    </h2>
+
+                    <p>
+                        Ces informations seront visibles par les acheteurs.
+                    </p>
+
                 </div>
 
             </div>
 
 
+            <!-- FORM -->
+
             <form
-                action="/ma-boutique/modifier"
+                {% if from_boutique %}
+                action="/boutique/modifier-produit/{{ product.id }}"
+                {% else %}
+                action="/modifier-produit/{{ product.id }}"
+                {% endif %}
                 method="POST"
                 enctype="multipart/form-data"
             >
 
 
                 <!-- =================================================
-                     COVER
+                     IMAGE
                 ================================================== -->
 
                 <div class="field-group">
 
                     <label>
-                        Image de couverture
+                        Photo du produit
                     </label>
 
-                    <div class="cover-upload-box">
 
-                        <div class="cover-preview">
+                    <div class="product-image-upload">
 
-                            {% if boutique.cover_image %}
 
-                                <img
-                                    id="coverPreview"
-                                    src="{{ boutique.cover_image }}"
-                                    alt="Couverture de {{ boutique.name }}"
-                                >
+                        <!-- APERÇU -->
 
-                                <div
-                                    id="coverDefault"
-                                    class="cover-default"
-                                    style="display:none;"
-                                >
-                                    <i class="bi bi-image"></i>
-                                    <span>Image de couverture</span>
-                                </div>
+                        <div class="current-product-image">
+
+                            {% if product.image %}
+
+                            <img
+                                id="productImagePreview"
+                                src="{{ product.image }}"
+                                alt="{{ product.title }}"
+                            >
+
+                            <div
+                                id="productImageDefault"
+                                class="image-default"
+                                style="display:none;"
+                            >
+                                <i class="bi bi-image"></i>
+                                <span>
+                                    Aucune image
+                                </span>
+                            </div>
 
                             {% else %}
 
-                                <img
-                                    id="coverPreview"
-                                    src=""
-                                    alt="Aperçu couverture"
-                                    style="display:none;"
-                                >
+                            <img
+                                id="productImagePreview"
+                                src=""
+                                alt="Aperçu"
+                                style="display:none;"
+                            >
 
-                                <div
-                                    id="coverDefault"
-                                    class="cover-default"
-                                >
-                                    <i class="bi bi-image"></i>
-                                    <span>Image de couverture</span>
-                                </div>
+                            <div
+                                id="productImageDefault"
+                                class="image-default"
+                            >
+
+                                <i class="bi bi-image"></i>
+
+                                <span>
+                                    Aucune image
+                                </span>
+
+                            </div>
 
                             {% endif %}
 
                         </div>
 
 
-                        <div class="cover-upload-bottom">
+                        <!-- BOUTON -->
+
+                        <div class="image-upload-content">
 
                             <label
-                                for="cover_image"
+                                for="photo"
                                 class="upload-button"
                             >
+
                                 <i class="bi bi-image"></i>
-                                Choisir une couverture
+
+                                Changer la photo
+
                             </label>
+
 
                             <input
                                 type="file"
-                                id="cover_image"
-                                name="cover_image"
+                                id="photo"
+                                name="photo"
                                 accept="image/jpeg,image/png,image/webp"
                                 hidden
                             >
 
-                            <small>
-                                JPG, PNG ou WEBP.
-                            </small>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <!-- =================================================
-                     LOGO
-                ================================================== -->
-
-                <div class="field-group">
-
-                    <label>
-                        Logo de la boutique
-                    </label>
-
-                    <div class="logo-upload-box">
-
-                        <div class="current-logo">
-
-                            {% if boutique.logo %}
-
-                                <img
-                                    id="logoPreview"
-                                    src="{{ boutique.logo }}"
-                                    alt="Logo de {{ boutique.name }}"
-                                >
-
-                                <i
-                                    id="logoDefaultIcon"
-                                    class="bi bi-shop"
-                                    style="display:none;"
-                                ></i>
-
-                            {% else %}
-
-                                <img
-                                    id="logoPreview"
-                                    src=""
-                                    alt="Aperçu du logo"
-                                    style="display:none;"
-                                >
-
-                                <i
-                                    id="logoDefaultIcon"
-                                    class="bi bi-shop"
-                                ></i>
-
-                            {% endif %}
-
-                        </div>
-
-
-                        <div class="logo-upload-content">
-
-                            <label
-                                for="logo"
-                                class="upload-button"
-                            >
-                                <i class="bi bi-image"></i>
-                                Choisir un logo
-                            </label>
-
-                            <input
-                                type="file"
-                                id="logo"
-                                name="logo"
-                                accept="image/jpeg,image/png,image/webp"
-                                hidden
-                            >
 
                             <small>
                                 JPG, PNG ou WEBP.
@@ -220,17 +205,20 @@
 
                 <div class="field-group">
 
-                    <label for="name">
-                        Nom de la boutique
+                    <label for="title">
+
+                        Nom du produit
+
                         <span>*</span>
+
                     </label>
 
                     <input
                         type="text"
-                        id="name"
-                        name="name"
+                        id="title"
+                        name="title"
                         class="modern-input"
-                        value="{{ boutique.name }}"
+                        value="{{ product.title }}"
                         required
                     >
 
@@ -238,25 +226,58 @@
 
 
                 <!-- =================================================
-                     TYPE
+                     DESCRIPTION
                 ================================================== -->
 
                 <div class="field-group">
 
-                    <label for="sale_type">
-                        Type de boutique
+                    <label for="description">
+                        Description
                         <span>*</span>
                     </label>
 
-                    <input
-                        type="text"
-                        id="sale_type"
-                        name="sale_type"
-                        class="modern-input"
-                        value="{{ boutique.sale_type }}"
-                        placeholder="Ex : Vêtements, Téléphones..."
+                    <textarea
+                        id="description"
+                        name="description"
+                        class="modern-input modern-textarea"
                         required
-                    >
+                    >{{ product.description or '' }}</textarea>
+
+                </div>
+
+
+                <!-- =================================================
+                     PRIX
+                ================================================== -->
+
+                <div class="field-group">
+
+                    <label for="price">
+
+                        Prix
+
+                        <span>*</span>
+
+                    </label>
+
+                    <div class="price-input">
+
+                        <input
+                            type="number"
+                            id="price"
+                            name="price"
+                            class="modern-input"
+                            value="{{ product.price }}"
+                            min="0"
+                            step="0.01"
+                            required
+                        >
+
+                        <span>
+                            MRU
+                        </span>
+
+                    </div>
 
                 </div>
 
@@ -280,7 +301,7 @@
                             id="city"
                             name="city"
                             class="modern-input"
-                            value="{{ boutique.city or '' }}"
+                            value="{{ product.city or '' }}"
                             placeholder="Ex : Nouakchott"
                         >
 
@@ -290,21 +311,62 @@
 
 
                 <!-- =================================================
-                     DESCRIPTION
+                     ÉTAT
                 ================================================== -->
 
                 <div class="field-group">
 
-                    <label for="description">
-                        Description
+                    <label for="condition">
+
+                        État du produit
+
+                        <span>*</span>
+
                     </label>
 
-                    <textarea
-                        id="description"
-                        name="description"
-                        class="modern-input modern-textarea"
-                        placeholder="Présentez votre boutique..."
-                    >{{ boutique.description or '' }}</textarea>
+                    <select
+                        id="condition"
+                        name="condition"
+                        class="modern-input"
+                        required
+                    >
+
+                        <option
+                            value="Neuf"
+                            {% if product.condition == "Neuf" %}selected{% endif %}
+                        >
+                            Neuf
+                        </option>
+
+                        <option
+                            value="Comme neuf"
+                            {% if product.condition == "Comme neuf" %}selected{% endif %}
+                        >
+                            Comme neuf
+                        </option>
+
+                        <option
+                            value="Bon état"
+                            {% if product.condition == "Bon état" %}selected{% endif %}
+                        >
+                            Bon état
+                        </option>
+
+                        <option
+                            value="État moyen"
+                            {% if product.condition == "État moyen" %}selected{% endif %}
+                        >
+                            État moyen
+                        </option>
+
+                        <option
+                            value="À réparer"
+                            {% if product.condition == "À réparer" %}selected{% endif %}
+                        >
+                            À réparer
+                        </option>
+
+                    </select>
 
                 </div>
 
@@ -315,6 +377,8 @@
 
                 <div class="form-actions">
 
+                    {% if from_boutique %}
+
                     <a
                         href="/ma-boutique"
                         class="cancel-button"
@@ -322,12 +386,27 @@
                         Annuler
                     </a>
 
+                    {% else %}
+
+                    <a
+                        href="/mes-annonces"
+                        class="cancel-button"
+                    >
+                        Annuler
+                    </a>
+
+                    {% endif %}
+
+
                     <button
                         type="submit"
                         class="save-button"
                     >
+
                         <i class="bi bi-check-circle"></i>
+
                         Enregistrer les modifications
+
                     </button>
 
                 </div>
@@ -343,169 +422,121 @@
 
         <aside class="preview-card">
 
+
             <div class="preview-header">
 
                 <span>
+
                     <i class="bi bi-eye"></i>
-                    Aperçu de la boutique
+
+                    Aperçu du produit
+
                 </span>
 
             </div>
 
 
-            <!-- COVER APERÇU -->
+            <!-- IMAGE -->
 
-            <div class="shop-cover-preview">
+            <div class="product-preview-image">
 
-                {% if boutique.cover_image %}
+                {% if product.image %}
 
-                    <img
-                        id="previewCover"
-                        src="{{ boutique.cover_image }}"
-                        alt="Couverture"
-                    >
+                <img
+                    id="previewProductImage"
+                    src="{{ product.image }}"
+                    alt="{{ product.title }}"
+                >
 
-                    <div
-                        id="previewCoverDefault"
-                        class="preview-cover-default"
-                        style="display:none;"
-                    >
-                        <i class="bi bi-shop"></i>
-                    </div>
+                <div
+                    id="previewProductDefault"
+                    class="preview-image-default"
+                    style="display:none;"
+                >
+
+                    <i class="bi bi-image"></i>
+
+                </div>
 
                 {% else %}
 
-                    <img
-                        id="previewCover"
-                        src=""
-                        alt="Couverture"
-                        style="display:none;"
-                    >
+                <img
+                    id="previewProductImage"
+                    src=""
+                    alt="Produit"
+                    style="display:none;"
+                >
 
-                    <div
-                        id="previewCoverDefault"
-                        class="preview-cover-default"
-                    >
-                        <i class="bi bi-shop"></i>
-                    </div>
+                <div
+                    id="previewProductDefault"
+                    class="preview-image-default"
+                >
+
+                    <i class="bi bi-image"></i>
+
+                </div>
 
                 {% endif %}
 
             </div>
 
 
-            <!-- BLOC BOUTIQUE -->
+            <!-- INFOS -->
 
-            <div class="shop-preview">
-
-                <div class="shop-avatar">
-
-                    {% if boutique.logo %}
-
-                        <img
-                            id="previewLogo"
-                            src="{{ boutique.logo }}"
-                            alt="{{ boutique.name }}"
-                        >
-
-                        <i
-                            id="previewDefaultIcon"
-                            class="bi bi-shop"
-                            style="display:none;"
-                        ></i>
-
-                    {% else %}
-
-                        <img
-                            id="previewLogo"
-                            src=""
-                            alt="Logo"
-                            style="display:none;"
-                        >
-
-                        <i
-                            id="previewDefaultIcon"
-                            class="bi bi-shop"
-                        ></i>
-
-                    {% endif %}
-
-                </div>
+            <div class="preview-product-info">
 
 
-                <div class="shop-preview-info">
+                <h3 id="previewTitle">
+                    {{ product.title }}
+                </h3>
 
-                    <strong id="previewName">
-                        {{ boutique.name }}
-                    </strong>
-
-                    <span id="previewSaleType">
-                        {{ boutique.sale_type }}
-                    </span>
-
-                </div>
-
-            </div>
-
-
-            <!-- VILLE -->
-
-            {% if boutique.city %}
 
                 <div
-                    class="preview-location"
+                    class="preview-price"
+                    id="previewPrice"
+                >
+                    {{ product.price }} MRU
+                </div>
+
+
+                <div
+                    class="preview-condition"
+                    id="previewCondition"
+                >
+                    {{ product.condition }}
+                </div>
+
+
+                <div
+                    class="preview-city"
                     id="previewCityContainer"
+                    {% if not product.city %}
+                    style="display:none;"
+                    {% endif %}
                 >
 
                     <i class="bi bi-geo-alt"></i>
 
                     <span id="previewCity">
-                        {{ boutique.city }}
+                        {{ product.city or '' }}
                     </span>
 
                 </div>
 
-            {% else %}
 
-                <div
-                    class="preview-location"
-                    id="previewCityContainer"
-                    style="display:none;"
-                >
+                <div class="preview-description">
 
-                    <i class="bi bi-geo-alt"></i>
+                    <span id="previewDescription">
 
-                    <span id="previewCity"></span>
+                        {% if product.description %}
+                            {{ product.description }}
+                        {% else %}
+                            Aucune description.
+                        {% endif %}
+
+                    </span>
 
                 </div>
-
-            {% endif %}
-
-
-            <!-- DESCRIPTION -->
-
-            <div class="preview-description">
-
-                <span id="previewDescription">
-
-                    {% if boutique.description %}
-                        {{ boutique.description }}
-                    {% else %}
-                        Aucune description pour le moment.
-                    {% endif %}
-
-                </span>
-
-            </div>
-
-
-            <!-- STATUT -->
-
-            <div class="preview-status">
-
-                <i class="bi bi-check-circle-fill"></i>
-
-                Boutique active
 
             </div>
 
@@ -522,16 +553,21 @@
    PAGE
 ===================================================== */
 
-.edit-boutique-page {
+.edit-product-page {
+
     max-width: 1050px;
+
     margin: 0 auto;
+
     padding: 18px 22px 50px;
+
     color: #263238;
 }
 
-.edit-boutique-page *,
-.edit-boutique-page *::before,
-.edit-boutique-page *::after {
+.edit-product-page *,
+.edit-product-page *::before,
+.edit-product-page *::after {
+
     box-sizing: border-box;
 }
 
@@ -540,48 +576,62 @@
    TOPBAR
 ===================================================== */
 
-.edit-boutique-topbar {
+.edit-product-topbar {
+
     display: flex;
+
     align-items: center;
+
     gap: 13px;
+
     margin-bottom: 22px;
 }
 
 .back-button {
+
     width: 40px;
     height: 40px;
+
     min-width: 40px;
 
     display: flex;
+
     align-items: center;
     justify-content: center;
 
     color: #198754;
+
     background: #eaf7f0;
 
     border-radius: 9px;
 
     text-decoration: none;
+
     font-size: 17px;
 
     transition: 0.2s ease;
 }
 
 .back-button:hover {
+
     color: #fff;
+
     background: #198754;
 }
 
-.edit-boutique-topbar h1 {
+.edit-product-topbar h1 {
+
     margin: 0;
 
     color: #172033;
 
     font-size: 23px;
+
     font-weight: 800;
 }
 
-.edit-boutique-topbar p {
+.edit-product-topbar p {
+
     margin: 4px 0 0;
 
     color: #7b8492;
@@ -594,7 +644,8 @@
    LAYOUT
 ===================================================== */
 
-.edit-boutique-layout {
+.edit-product-layout {
+
     display: grid;
 
     grid-template-columns:
@@ -611,29 +662,35 @@
    CARDS
 ===================================================== */
 
-.edit-boutique-card,
+.edit-product-card,
 .preview-card {
+
     background: #fff;
 
     border: 1px solid #e5e7eb;
+
     border-radius: 12px;
 
     box-shadow:
         0 3px 15px rgba(23,32,51,0.04);
 }
 
-.edit-boutique-card {
+.edit-product-card {
+
     overflow: hidden;
 }
 
 
 /* =====================================================
-   CARD HEADING
+   HEADER
 ===================================================== */
 
 .card-heading {
+
     display: flex;
+
     align-items: center;
+
     gap: 11px;
 
     padding: 20px 22px;
@@ -642,14 +699,17 @@
 }
 
 .heading-icon {
+
     width: 38px;
     height: 38px;
 
     display: flex;
+
     align-items: center;
     justify-content: center;
 
     color: #198754;
+
     background: #eaf7f0;
 
     border-radius: 9px;
@@ -658,15 +718,18 @@
 }
 
 .card-heading h2 {
+
     margin: 0;
 
     color: #172033;
 
     font-size: 15px;
+
     font-weight: 800;
 }
 
 .card-heading p {
+
     margin: 3px 0 0;
 
     color: #89919d;
@@ -679,15 +742,18 @@
    FORM
 ===================================================== */
 
-.edit-boutique-card form {
+.edit-product-card form {
+
     padding: 22px;
 }
 
 .field-group {
+
     margin-bottom: 19px;
 }
 
 .field-group > label {
+
     display: block;
 
     margin-bottom: 7px;
@@ -695,10 +761,12 @@
     color: #263238;
 
     font-size: 11px;
+
     font-weight: 700;
 }
 
 .field-group > label span {
+
     color: #dc3545;
 }
 
@@ -708,26 +776,32 @@
 ===================================================== */
 
 .modern-input {
+
     width: 100%;
+
     min-height: 42px;
 
     padding: 10px 12px;
 
     color: #263238;
+
     background: #fff;
 
     border: 1px solid #dfe4e8;
+
     border-radius: 8px;
 
     outline: none;
 
     font-family: inherit;
+
     font-size: 11px;
 
     transition: 0.2s ease;
 }
 
 .modern-input:focus {
+
     border-color: #198754;
 
     box-shadow:
@@ -735,7 +809,8 @@
 }
 
 .modern-textarea {
-    min-height: 130px;
+
+    min-height: 125px;
 
     resize: vertical;
 
@@ -744,78 +819,13 @@
 
 
 /* =====================================================
-   COVER UPLOAD
+   IMAGE UPLOAD
 ===================================================== */
 
-.cover-upload-box {
-    overflow: hidden;
-
-    background: #f8faf9;
-
-    border: 1px solid #e5e7eb;
-
-    border-radius: 10px;
-}
-
-.cover-preview {
-    width: 100%;
-    height: 155px;
-
-    position: relative;
+.product-image-upload {
 
     display: flex;
-    align-items: center;
-    justify-content: center;
 
-    overflow: hidden;
-
-    background: #eaf7f0;
-}
-
-.cover-preview img {
-    width: 100%;
-    height: 100%;
-
-    display: block;
-
-    object-fit: cover;
-}
-
-.cover-default {
-    display: flex;
-
-    flex-direction: column;
-
-    align-items: center;
-    justify-content: center;
-
-    gap: 7px;
-
-    color: #198754;
-
-    font-size: 10px;
-}
-
-.cover-default i {
-    font-size: 30px;
-}
-
-.cover-upload-bottom {
-    display: flex;
-    align-items: center;
-
-    gap: 10px;
-
-    padding: 12px;
-}
-
-
-/* =====================================================
-   LOGO
-===================================================== */
-
-.logo-upload-box {
-    display: flex;
     align-items: center;
 
     gap: 14px;
@@ -829,25 +839,29 @@
     border-radius: 9px;
 }
 
-.current-logo {
-    width: 75px;
-    height: 75px;
+.current-product-image {
 
-    min-width: 75px;
+    width: 110px;
+    height: 110px;
+
+    min-width: 110px;
+
+    position: relative;
 
     display: flex;
+
     align-items: center;
     justify-content: center;
 
     overflow: hidden;
 
-    color: #198754;
     background: #eaf7f0;
 
-    border-radius: 10px;
+    border-radius: 9px;
 }
 
-.current-logo img {
+.current-product-image img {
+
     width: 100%;
     height: 100%;
 
@@ -856,73 +870,120 @@
     object-fit: cover;
 }
 
-.current-logo i {
-    font-size: 28px;
+.image-default {
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 5px;
+
+    color: #198754;
+
+    font-size: 9px;
 }
 
-.logo-upload-content {
+.image-default i {
+
+    font-size: 27px;
+}
+
+.image-upload-content {
+
     flex: 1;
 }
 
-
-/* =====================================================
-   UPLOAD BUTTON
-===================================================== */
-
 .upload-button {
-    display: inline-flex !important;
+
+    display: inline-flex;
 
     align-items: center;
+
     justify-content: center;
 
     gap: 7px;
 
     padding: 9px 13px;
 
-    color: #fff !important;
+    color: #fff;
+
     background: #198754;
 
     border-radius: 7px;
 
     cursor: pointer;
 
-    font-size: 10px !important;
-    font-weight: 700 !important;
+    font-size: 10px;
 
-    text-decoration: none;
-
-    margin: 0 !important;
+    font-weight: 700;
 
     transition: 0.2s ease;
 }
 
 .upload-button:hover {
+
     background: #157347;
 }
 
-.cover-upload-bottom small,
-.logo-upload-content small {
+.image-upload-content small {
+
+    display: block;
+
+    margin-top: 7px;
+
     color: #8b949e;
 
     font-size: 9px;
 }
 
-.logo-upload-content small {
-    display: block;
 
-    margin-top: 7px;
+/* =====================================================
+   PRICE
+===================================================== */
+
+.price-input {
+
+    position: relative;
+}
+
+.price-input input {
+
+    padding-right: 55px;
+}
+
+.price-input span {
+
+    position: absolute;
+
+    top: 50%;
+    right: 13px;
+
+    transform: translateY(-50%);
+
+    color: #7b8492;
+
+    font-size: 10px;
+
+    font-weight: 700;
+
+    pointer-events: none;
 }
 
 
 /* =====================================================
-   VILLE
+   CITY
 ===================================================== */
 
 .input-with-icon {
+
     position: relative;
 }
 
 .input-with-icon > i {
+
     position: absolute;
 
     top: 50%;
@@ -938,6 +999,7 @@
 }
 
 .input-with-icon input {
+
     padding-left: 35px;
 }
 
@@ -947,6 +1009,7 @@
 ===================================================== */
 
 .form-actions {
+
     display: flex;
 
     justify-content: flex-end;
@@ -967,36 +1030,43 @@
 
 .cancel-button,
 .save-button {
+
     min-height: 40px;
 
     display: inline-flex;
 
     align-items: center;
+
     justify-content: center;
 
     border-radius: 8px;
 
     font-size: 10px;
+
     font-weight: 700;
 
     text-decoration: none;
 }
 
 .cancel-button {
+
     padding: 0 18px;
 
     color: #59636e;
+
     background: #fff;
 
     border: 1px solid #dfe4e8;
 }
 
 .save-button {
+
     gap: 6px;
 
     padding: 0 18px;
 
     color: #fff;
+
     background: #198754;
 
     border: 0;
@@ -1005,19 +1075,22 @@
 }
 
 .save-button:hover {
+
     background: #157347;
 }
 
 
 /* =====================================================
-   PREVIEW CARD
+   PREVIEW
 ===================================================== */
 
 .preview-card {
+
     padding: 17px;
 }
 
 .preview-header {
+
     padding-bottom: 12px;
 
     margin-bottom: 15px;
@@ -1026,6 +1099,7 @@
 }
 
 .preview-header span {
+
     display: flex;
 
     align-items: center;
@@ -1035,32 +1109,41 @@
     color: #263238;
 
     font-size: 11px;
+
     font-weight: 800;
 }
 
 .preview-header i {
+
     color: #198754;
 }
 
 
 /* =====================================================
-   PREVIEW COVER
+   PREVIEW IMAGE
 ===================================================== */
 
-.shop-cover-preview {
-    width: 100%;
-    height: 130px;
+.product-preview-image {
 
-    position: relative;
+    width: 100%;
+
+    height: 220px;
 
     overflow: hidden;
 
-    background: #eaf7f0;
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background: #f1f5f3;
 
     border-radius: 9px;
 }
 
-.shop-cover-preview img {
+.product-preview-image img {
+
     width: 100%;
     height: 100%;
 
@@ -1069,143 +1152,102 @@
     object-fit: cover;
 }
 
-.preview-cover-default {
-    width: 100%;
-    height: 100%;
+.preview-image-default {
 
     display: flex;
 
     align-items: center;
     justify-content: center;
 
+    width: 100%;
+    height: 100%;
+
     color: #198754;
 
     background: #eaf7f0;
 }
 
-.preview-cover-default i {
-    font-size: 32px;
+.preview-image-default i {
+
+    font-size: 42px;
 }
 
 
 /* =====================================================
-   SHOP PREVIEW
+   PREVIEW INFO
 ===================================================== */
 
-.shop-preview {
-    display: flex;
+.preview-product-info {
 
-    align-items: center;
-
-    gap: 10px;
-
-    margin-top: -22px;
-
-    position: relative;
-
-    padding: 0 10px;
+    padding: 14px 4px 0;
 }
 
-.shop-avatar {
-    width: 55px;
-    height: 55px;
+.preview-product-info h3 {
 
-    min-width: 55px;
-
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-
-    overflow: hidden;
-
-    color: #198754;
-    background: #eaf7f0;
-
-    border: 3px solid #fff;
-
-    border-radius: 11px;
-}
-
-.shop-avatar img {
-    width: 100%;
-    height: 100%;
-
-    display: block;
-
-    object-fit: cover;
-}
-
-.shop-avatar i {
-    font-size: 22px;
-}
-
-.shop-preview-info {
-    min-width: 0;
-
-    display: flex;
-
-    flex-direction: column;
-
-    padding-top: 20px;
-}
-
-.shop-preview-info strong {
-    overflow: hidden;
+    margin: 0;
 
     color: #172033;
 
-    font-size: 12px;
+    font-size: 14px;
+
     font-weight: 800;
-
-    text-overflow: ellipsis;
-    white-space: nowrap;
 }
 
-.shop-preview-info span {
-    margin-top: 3px;
+.preview-price {
 
-    color: #7b8492;
+    margin-top: 7px;
 
-    font-size: 9px;
+    color: #198754;
+
+    font-size: 15px;
+
+    font-weight: 800;
 }
 
+.preview-condition {
 
-/* =====================================================
-   LOCALISATION
-===================================================== */
+    display: inline-block;
 
-.preview-location {
+    margin-top: 8px;
+
+    padding: 4px 7px;
+
+    color: #198754;
+
+    background: #eaf7f0;
+
+    border-radius: 5px;
+
+    font-size: 8px;
+
+    font-weight: 700;
+}
+
+.preview-city {
+
     display: flex;
 
     align-items: center;
 
     gap: 5px;
 
-    margin-top: 15px;
-
-    padding-top: 12px;
-
-    border-top: 1px solid #edf0f2;
+    margin-top: 11px;
 
     color: #667085;
 
     font-size: 9px;
 }
 
-.preview-location i {
+.preview-city i {
+
     color: #198754;
 }
 
-
-/* =====================================================
-   DESCRIPTION
-===================================================== */
-
 .preview-description {
-    margin-top: 13px;
 
-    padding: 11px;
+    margin-top: 12px;
+
+    padding: 10px;
 
     color: #667085;
 
@@ -1220,40 +1262,20 @@
 
 
 /* =====================================================
-   STATUS
-===================================================== */
-
-.preview-status {
-    display: flex;
-
-    align-items: center;
-
-    gap: 5px;
-
-    margin-top: 13px;
-
-    color: #198754;
-
-    font-size: 9px;
-
-    font-weight: 700;
-}
-
-
-/* =====================================================
-   TABLETTE
+   TABLET
 ===================================================== */
 
 @media (max-width: 850px) {
 
-    .edit-boutique-layout {
+    .edit-product-layout {
+
         grid-template-columns: 1fr;
     }
 
     .preview-card {
+
         order: 2;
     }
-
 }
 
 
@@ -1263,29 +1285,60 @@
 
 @media (max-width: 600px) {
 
-    .edit-boutique-page {
+    .edit-product-page {
+
         padding: 12px 10px 35px;
     }
 
-    .edit-boutique-topbar h1 {
+    .edit-product-topbar h1 {
+
         font-size: 19px;
     }
 
-    .edit-boutique-topbar p {
+    .edit-product-topbar p {
+
         font-size: 9px;
     }
 
-    .edit-boutique-card form {
+    .card-heading {
+
         padding: 16px;
     }
 
-    .card-heading {
+    .edit-product-card form {
+
         padding: 16px;
+    }
+
+    .product-image-upload {
+
+        align-items: flex-start;
+
+        flex-direction: column;
+    }
+
+    .current-product-image {
+
+        width: 100%;
+        height: 180px;
+    }
+
+    .image-upload-content {
+
+        width: 100%;
+    }
+
+    .upload-button {
+
+        width: 100%;
     }
 
     .form-actions {
+
         margin-left: -16px;
+
         margin-right: -16px;
+
         margin-bottom: -16px;
 
         padding: 13px 16px;
@@ -1295,36 +1348,10 @@
 
     .cancel-button,
     .save-button {
+
         width: 100%;
     }
 
-    .cover-preview {
-        height: 130px;
-    }
-
-    .cover-upload-bottom {
-        align-items: flex-start;
-        flex-direction: column;
-    }
-
-    .logo-upload-box {
-        align-items: flex-start;
-        flex-direction: column;
-    }
-
-    .upload-button {
-        width: 100%;
-    }
-
-}
-
-
-/* =====================================================
-   CORRECTION FOND
-===================================================== */
-
-.edit-boutique-page {
-    color: #263238;
 }
 
 </style>
@@ -1333,189 +1360,97 @@
 <script>
 
 /* =====================================================
-   COVER
+   IMAGE
 ===================================================== */
 
-const coverInput = document.getElementById("cover_image");
+const photoInput =
+    document.getElementById("photo");
 
-if (coverInput) {
 
-    coverInput.addEventListener("change", function () {
+if (photoInput) {
 
-        const file = this.files[0];
-
-        if (!file) {
-            return;
-        }
-
-        if (!file.type.startsWith("image/")) {
-
-            alert("Veuillez sélectionner une image.");
-
-            this.value = "";
-
-            return;
-        }
-
-        const url = URL.createObjectURL(file);
-
-
-        /* IMAGE FORMULAIRE */
-
-        const coverPreview =
-            document.getElementById("coverPreview");
-
-        const coverDefault =
-            document.getElementById("coverDefault");
-
-        if (coverPreview) {
-
-            coverPreview.src = url;
-
-            coverPreview.style.display = "block";
-        }
-
-        if (coverDefault) {
-
-            coverDefault.style.display = "none";
-        }
-
-
-        /* IMAGE APERÇU */
-
-        const previewCover =
-            document.getElementById("previewCover");
-
-        const previewCoverDefault =
-            document.getElementById(
-                "previewCoverDefault"
-            );
-
-        if (previewCover) {
-
-            previewCover.src = url;
-
-            previewCover.style.display = "block";
-        }
-
-        if (previewCoverDefault) {
-
-            previewCoverDefault.style.display =
-                "none";
-        }
-
-    });
-
-}
-
-
-/* =====================================================
-   LOGO
-===================================================== */
-
-const logoInput =
-    document.getElementById("logo");
-
-if (logoInput) {
-
-    logoInput.addEventListener("change", function () {
-
-        const file = this.files[0];
-
-        if (!file) {
-            return;
-        }
-
-        if (!file.type.startsWith("image/")) {
-
-            alert("Veuillez sélectionner une image.");
-
-            this.value = "";
-
-            return;
-        }
-
-        const url = URL.createObjectURL(file);
-
-
-        /* IMAGE FORMULAIRE */
-
-        const logoPreview =
-            document.getElementById("logoPreview");
-
-        const logoDefaultIcon =
-            document.getElementById(
-                "logoDefaultIcon"
-            );
-
-        if (logoPreview) {
-
-            logoPreview.src = url;
-
-            logoPreview.style.display =
-                "block";
-        }
-
-        if (logoDefaultIcon) {
-
-            logoDefaultIcon.style.display =
-                "none";
-        }
-
-
-        /* IMAGE APERÇU */
-
-        const previewLogo =
-            document.getElementById("previewLogo");
-
-        const previewDefaultIcon =
-            document.getElementById(
-                "previewDefaultIcon"
-            );
-
-        if (previewLogo) {
-
-            previewLogo.src = url;
-
-            previewLogo.style.display =
-                "block";
-        }
-
-        if (previewDefaultIcon) {
-
-            previewDefaultIcon.style.display =
-                "none";
-        }
-
-    });
-
-}
-
-
-/* =====================================================
-   NOM
-===================================================== */
-
-const nameInput =
-    document.getElementById("name");
-
-if (nameInput) {
-
-    nameInput.addEventListener(
-        "input",
+    photoInput.addEventListener(
+        "change",
         function () {
 
-            const previewName =
-                document.getElementById(
-                    "previewName"
+            const file = this.files[0];
+
+            if (!file) {
+                return;
+            }
+
+
+            if (!file.type.startsWith("image/")) {
+
+                alert(
+                    "Veuillez sélectionner une image."
                 );
 
-            if (previewName) {
+                this.value = "";
 
-                previewName.textContent =
-                    this.value.trim()
-                        ? this.value
-                        : "Ma boutique";
+                return;
+            }
+
+
+            const url =
+                URL.createObjectURL(file);
+
+
+            /* IMAGE FORMULAIRE */
+
+            const imagePreview =
+                document.getElementById(
+                    "productImagePreview"
+                );
+
+            const imageDefault =
+                document.getElementById(
+                    "productImageDefault"
+                );
+
+
+            if (imagePreview) {
+
+                imagePreview.src = url;
+
+                imagePreview.style.display =
+                    "block";
+            }
+
+
+            if (imageDefault) {
+
+                imageDefault.style.display =
+                    "none";
+            }
+
+
+            /* IMAGE APERÇU */
+
+            const previewImage =
+                document.getElementById(
+                    "previewProductImage"
+                );
+
+            const previewDefault =
+                document.getElementById(
+                    "previewProductDefault"
+                );
+
+
+            if (previewImage) {
+
+                previewImage.src = url;
+
+                previewImage.style.display =
+                    "block";
+            }
+
+
+            if (previewDefault) {
+
+                previewDefault.style.display =
+                    "none";
             }
 
         }
@@ -1525,72 +1460,30 @@ if (nameInput) {
 
 
 /* =====================================================
-   TYPE
+   TITRE
 ===================================================== */
 
-const saleTypeInput =
-    document.getElementById("sale_type");
+const titleInput =
+    document.getElementById("title");
 
-if (saleTypeInput) {
 
-    saleTypeInput.addEventListener(
+if (titleInput) {
+
+    titleInput.addEventListener(
         "input",
         function () {
 
-            const previewSaleType =
+            const preview =
                 document.getElementById(
-                    "previewSaleType"
+                    "previewTitle"
                 );
 
-            if (previewSaleType) {
+            if (preview) {
 
-                previewSaleType.textContent =
+                preview.textContent =
                     this.value.trim()
-                        ? this.value
-                        : "Type de boutique";
-            }
-
-        }
-    );
-
-}
-
-
-/* =====================================================
-   VILLE
-===================================================== */
-
-const cityInput =
-    document.getElementById("city");
-
-if (cityInput) {
-
-    cityInput.addEventListener(
-        "input",
-        function () {
-
-            const container =
-                document.getElementById(
-                    "previewCityContainer"
-                );
-
-            const previewCity =
-                document.getElementById(
-                    "previewCity"
-                );
-
-            if (previewCity) {
-
-                previewCity.textContent =
-                    this.value;
-            }
-
-            if (container) {
-
-                container.style.display =
-                    this.value.trim()
-                        ? "flex"
-                        : "none";
+                    ? this.value
+                    : "Nom du produit";
             }
 
         }
@@ -1606,23 +1499,144 @@ if (cityInput) {
 const descriptionInput =
     document.getElementById("description");
 
+
 if (descriptionInput) {
 
     descriptionInput.addEventListener(
         "input",
         function () {
 
-            const previewDescription =
+            const preview =
                 document.getElementById(
                     "previewDescription"
                 );
 
-            if (previewDescription) {
+            if (preview) {
 
-                previewDescription.textContent =
+                preview.textContent =
                     this.value.trim()
-                        ? this.value
-                        : "Aucune description pour le moment.";
+                    ? this.value
+                    : "Aucune description.";
+            }
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   PRIX
+===================================================== */
+
+const priceInput =
+    document.getElementById("price");
+
+
+if (priceInput) {
+
+    priceInput.addEventListener(
+        "input",
+        function () {
+
+            const preview =
+                document.getElementById(
+                    "previewPrice"
+                );
+
+            if (preview) {
+
+                const value =
+                    parseFloat(this.value);
+
+                if (!isNaN(value)) {
+
+                    preview.textContent =
+                        value + " MRU";
+
+                } else {
+
+                    preview.textContent =
+                        "0 MRU";
+                }
+
+            }
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   VILLE
+===================================================== */
+
+const cityInput =
+    document.getElementById("city");
+
+
+if (cityInput) {
+
+    cityInput.addEventListener(
+        "input",
+        function () {
+
+            const container =
+                document.getElementById(
+                    "previewCityContainer"
+                );
+
+            const preview =
+                document.getElementById(
+                    "previewCity"
+                );
+
+
+            if (preview) {
+
+                preview.textContent =
+                    this.value;
+            }
+
+
+            if (container) {
+
+                container.style.display =
+                    this.value.trim()
+                    ? "flex"
+                    : "none";
+            }
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   CONDITION
+===================================================== */
+
+const conditionInput =
+    document.getElementById("condition");
+
+
+if (conditionInput) {
+
+    conditionInput.addEventListener(
+        "change",
+        function () {
+
+            const preview =
+                document.getElementById(
+                    "previewCondition"
+                );
+
+            if (preview) {
+
+                preview.textContent =
+                    this.value;
             }
 
         }
