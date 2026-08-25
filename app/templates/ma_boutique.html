@@ -1,3 +1,4 @@
+
 {% extends "base.html" %}
 
 {% block content %}
@@ -269,7 +270,7 @@
                         <!-- MODIFIER -->
 
                         <a
-                            href="/boutique/modifier-produit/{{ produit.id }}"
+                            href="/annonce/modifier/{{ produit.id }}"
                             class="product-edit-btn"
                             title="Modifier ce produit"
                         >
@@ -280,15 +281,23 @@
 
                         <!-- SUPPRIMER -->
 
-                        <a
-                            href="/boutique/supprimer-produit/{{ produit.id }}"
-                            class="product-delete-btn"
-                            title="Supprimer ce produit"
-                            onclick="return confirm('Voulez-vous vraiment supprimer ce produit ?');"
+                        <form
+                            action="/annonce/supprimer/{{ produit.id }}"
+                            method="POST"
+                            class="product-delete-form"
+                            onsubmit="return confirm('Voulez-vous vraiment supprimer ce produit ?');"
                         >
-                            <i class="bi bi-trash"></i>
-                            <span>Supprimer</span>
-                        </a>
+
+                            <button
+                                type="submit"
+                                class="product-delete-btn"
+                                title="Supprimer ce produit"
+                            >
+                                <i class="bi bi-trash"></i>
+                                <span>Supprimer</span>
+                            </button>
+
+                        </form>
 
                     </div>
 
@@ -962,13 +971,27 @@
 
     display: flex;
 
-    align-items: center;
+    align-items: stretch;
 
     gap: 5px;
 
     padding-top: 7px;
 
     border-top: 1px solid #edf0f2;
+}
+
+
+/* =====================================================
+   FORMULAIRE SUPPRESSION
+===================================================== */
+
+.product-delete-form {
+
+    flex: 1;
+
+    display: flex;
+
+    margin: 0;
 }
 
 
@@ -1004,6 +1027,10 @@
     font-weight: 700;
 
     text-decoration: none;
+
+    cursor: pointer;
+
+    transition: 0.2s ease;
 }
 
 
@@ -1021,7 +1048,11 @@
 
 .product-delete-btn {
 
-    flex: 1;
+    width: 100%;
+
+    min-height: 28px;
+
+    padding: 4px 6px;
 
     display: inline-flex;
 
@@ -1029,10 +1060,6 @@
     justify-content: center;
 
     gap: 4px;
-
-    min-height: 28px;
-
-    padding: 4px 6px;
 
     color: #dc3545;
 
@@ -1046,7 +1073,11 @@
 
     font-weight: 700;
 
-    text-decoration: none;
+    font-family: inherit;
+
+    cursor: pointer;
+
+    transition: 0.2s ease;
 }
 
 
@@ -1353,3 +1384,14 @@
 </style>
 
 {% endblock %}
+
+⚠️ **Important :** ce fichier corrige les boutons, mais il ne peut pas à lui seul empêcher les produits `is_active=False` d'être affichés.
+
+Il faut maintenant corriger la route **`/ma-boutique`** dans `app/routes/boutiques.py` pour qu'elle fasse bien :
+
+
+Product.boutique_id == boutique.id,
+Product.is_active == True
+
+
+C'est la prochaine vérification à faire.

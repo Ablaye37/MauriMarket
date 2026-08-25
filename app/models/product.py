@@ -1,10 +1,11 @@
-from sqlalchemy import Column, Integer, String, Text, Float, ForeignKey
+from sqlalchemy import Column, Integer, String, Text, Float, Boolean, ForeignKey
 from sqlalchemy.orm import relationship
 
 from app.database.database import Base
 
 
 class Product(Base):
+
     __tablename__ = "products"
 
     # =====================================================
@@ -57,10 +58,6 @@ class Product(Base):
 
     # =====================================================
     # CATÉGORIE
-    #
-    # IMPORTANT :
-    # Cette partie est laissée telle quelle.
-    # On ne travaille pas sur les catégories actuellement.
     # =====================================================
 
     category_id = Column(
@@ -71,9 +68,6 @@ class Product(Base):
 
     # =====================================================
     # SOUS-CATÉGORIE
-    #
-    # IMPORTANT :
-    # Cette partie est laissée telle quelle.
     # =====================================================
 
     subcategory_id = Column(
@@ -83,7 +77,7 @@ class Product(Base):
     )
 
     # =====================================================
-    # PROPRIÉTAIRE DU PRODUIT
+    # PROPRIÉTAIRE
     # =====================================================
 
     user_id = Column(
@@ -95,24 +89,6 @@ class Product(Base):
 
     # =====================================================
     # BOUTIQUE
-    #
-    # NULL = produit normal
-    # ID   = produit appartenant à une boutique
-    #
-    # C'est cette relation qui permet de faire :
-    #
-    # Ma boutique
-    #      ↓
-    # produit
-    #      ↓
-    # boutique_id
-    #      ↓
-    # boutique
-    #
-    # Le même produit peut alors être affiché :
-    # - dans Ma boutique
-    # - dans la page publique de la boutique
-    # - sur l'accueil comme produit provenant d'une boutique
     # =====================================================
 
     boutique_id = Column(
@@ -123,9 +99,26 @@ class Product(Base):
     )
 
     # =====================================================
-    # RELATION CATÉGORIE
+    # STATUT DE L'ANNONCE
     #
-    # Conservée sans modification de logique.
+    # True  = annonce visible
+    # False = annonce supprimée/désactivée
+    #
+    # IMPORTANT :
+    # On ne supprime pas réellement la ligne SQL.
+    # Cela permet de conserver les références des commandes.
+    # =====================================================
+
+    is_active = Column(
+        Boolean,
+        nullable=False,
+        default=True,
+        server_default="true",
+        index=True
+    )
+
+    # =====================================================
+    # RELATION CATÉGORIE
     # =====================================================
 
     category = relationship(
@@ -135,8 +128,6 @@ class Product(Base):
 
     # =====================================================
     # RELATION SOUS-CATÉGORIE
-    #
-    # Conservée sans modification de logique.
     # =====================================================
 
     subcategory = relationship(

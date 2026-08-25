@@ -23,9 +23,14 @@ Mes annonces - MauriMarket
             <div class="card shadow">
 
                 {% if product.image %}
-                <img src="{{ product.image }}"
-                     class="card-img-top"
-                     height="200">
+
+                <img
+                    src="{{ product.image }}"
+                    class="card-img-top"
+                    height="200"
+                    alt="{{ product.title }}"
+                >
+
                 {% endif %}
 
 
@@ -35,34 +40,60 @@ Mes annonces - MauriMarket
                         {{ product.title }}
                     </h5>
 
+
                     <p>
                         {{ product.description }}
                     </p>
+
 
                     <strong>
                         {{ product.price }} MRU
                     </strong>
 
+
                     <p>
                         {{ product.city }}
                     </p>
 
-                    <a href="/modifier-produit/{{ product.id }}" 
-                    class="btn btn-primary">
+
+                    <!-- =====================================
+                         MODIFIER
+                    ====================================== -->
+
+                    <a
+                        href="/annonce/modifier/{{ product.id }}"
+                        class="btn btn-primary"
+                    >
                         Modifier
                     </a>
 
-                <a href="/supprimer-produit/{{ product.id }}"
-                 class="btn btn-danger"
-                  onclick="return confirm('Supprimer cette annonce ?');">
-                        Supprimer
-                </a>
-                
+
+                    <!-- =====================================
+                         SUPPRIMER
+                    ====================================== -->
+
+                    <form
+                        method="POST"
+                        action="/annonce/supprimer/{{ product.id }}"
+                        style="display: inline;"
+                        onsubmit="return confirm('Supprimer cette annonce ?');"
+                    >
+
+                        <button
+                            type="submit"
+                            class="btn btn-danger"
+                        >
+                            Supprimer
+                        </button>
+
+                    </form>
+
                 </div>
 
             </div>
 
         </div>
+
 
         {% else %}
 
