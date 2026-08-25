@@ -1,20 +1,19 @@
-from fastapi import (
-    APIRouter,
-    Request,
-    Form,
-    UploadFile,
-    File
-)
+from fastapi import APIRouter, Request, Form, UploadFile, File
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 
-import shutil
+from app.database.database import SessionLocal
+
+from app.models.product import Product
+from app.models.category import Category
+from app.models.subcategory import SubCategory
+from app.models.boutique import Boutique
+
+from supabase import create_client
+
 import os
 import uuid
-
-from app.database.database import SessionLocal
-from app.models.product import Product
-from app.models.boutique import Boutique
+import traceback
 
 
 router = APIRouter()
@@ -25,38 +24,222 @@ templates = Jinja2Templates(
 
 
 # ============================================================
-# OUTILS IMAGES
+# CONFIGURATION SUPABASE
 # ============================================================
 
-def save_product_image(photo: UploadFile):
-    """
-    Sauvegarde une image produit dans :
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 
-    app/static/uploads/products/
+BUCKET_NAME = "product-images"
 
-    Retourne le chemin web :
 
-    /static/uploads/products/nom.ext
+supabase = None
 
-    Retourne None si le fichier n'est pas valide.
-    """
+if SUPABASE_URL and SUPABASE_KEY:
 
-    if not photo or not photo.filename:
-        return None
+    try:
 
-    extension = os.path.splitext(
-        photo.filename
-    )[1].lower()
+        supabase = create_client(
+            SUPABASE_URL,
+            SUPABASE_KEY
+        )
 
-    allowed_extensions = {
-        ".jpg",
-        ".jpeg",
-        ".png",
-        ".webp"
+        print(
+            "✅ Client Supabase initialisé"
+        )
+
+        print(
+            "✅ Bucket images produits :",
+            BUCKET_NAME
+        )
+
+    except Exception as e:
+
+        print(
+            "❌ ERREUR INITIALISATION SUPABASE :",
+            repr(e)
+        )
+
+else:
+
+    print(
+        "❌ SUPABASE_URL ou SUPABASE_KEY manquant."
+    )
+
+
+# ============================================================
+# CONTEXTE GLOBAL
+# ============================================================
+
+def get_global_context(
+    request: Request,
+    db
+):
+
+    user_id = request.session.get(
+        "user_id"
+    )
+
+    user_name = request.session.get(
+        "user_name"
+    )
+
+    panier = request.session.get(
+        "panier",
+        []
+    )
+
+    boutique = None
+
+    if user_id:
+
+        boutique = (
+            db.query(Boutique)
+            .filter(
+                Boutique.user_id == user_id
+            )
+            .first()
+        )
+
+    return {
+
+        "user_name": user_name,
+
+        "user_id": user_id,
+
+        "panier_count": len(panier),
+
+        "lang": request.query_params.get(
+            "lang",
+            "fr"
+        ),
+
+        "has_boutique":
+            boutique is not None,
+
+        "boutique":
+            boutique
     }
 
-    if extension not in allowed_extensions:
+
+# ============================================================
+# CATÉGORIES
+# ============================================================
+
+def get_categories(db):
+
+    return (
+        db.query(Category)
+        .order_by(
+            Category.name.asc()
+        )
+        .all()
+    )
+
+
+# ============================================================
+# SOUS-CATÉGORIES
+# ============================================================
+
+def get_subcategories(db):
+
+    return (
+        db.query(SubCategory)
+        .order_by(
+            SubCategory.name.asc()
+        )
+        .all()
+    )
+
+
+# ============================================================
+# SAUVEGARDER IMAGE SUR SUPABASE
+#
+# IMPORTANT :
+# AUCUNE IMAGE PRODUIT N'EST SAUVEGARDÉE
+# SUR LE DISQUE LOCAL DE RAILWAY.
+#
+# TOUT PASSE PAR SUPABASE STORAGE.
+# ============================================================
+
+async def save_product_image(
+    image: UploadFile
+):
+
+    # --------------------------------------------------------
+    # AUCUNE IMAGE
+    # --------------------------------------------------------
+
+    if not image or not image.filename:
+
+        print(
+            "ℹ️ Aucun fichier image fourni."
+        )
+
         return None
+
+
+    # --------------------------------------------------------
+    # VÉRIFIER SUPABASE
+    # --------------------------------------------------------
+
+    if not supabase:
+
+        print(
+            "❌ Supabase n'est pas configuré."
+        )
+
+        return None
+
+
+    # --------------------------------------------------------
+    # TYPES AUTORISÉS
+    # --------------------------------------------------------
+
+    allowed_types = {
+
+        "image/jpeg": ".jpg",
+
+        "image/png": ".png",
+
+        "image/webp": ".webp"
+    }
+
+
+    extension = allowed_types.get(
+        image.content_type
+    )
+
+
+    if not extension:
+
+        print(
+            "❌ Type d'image non autorisé :",
+            image.content_type
+        )
+
+        return None
+
+
+    # --------------------------------------------------------
+    # LIRE IMAGE
+    # --------------------------------------------------------
+
+    content = await image.read()
+
+
+    if not content:
+
+        print(
+            "❌ Image vide."
+        )
+
+        return None
+
+
+    # --------------------------------------------------------
+    # NOM UNIQUE
+    # --------------------------------------------------------
 
     filename = (
         f"product_"
@@ -64,305 +247,301 @@ def save_product_image(photo: UploadFile):
         f"{extension}"
     )
 
-    upload_dir = os.path.join(
-        "app",
-        "static",
-        "uploads",
-        "products"
-    )
 
-    os.makedirs(
-        upload_dir,
-        exist_ok=True
-    )
+    # --------------------------------------------------------
+    # CHEMIN DANS SUPABASE
+    # --------------------------------------------------------
 
-    photo_path = os.path.join(
-        upload_dir,
-        filename
-    )
+    file_path = filename
+
+
+    # --------------------------------------------------------
+    # UPLOAD SUPABASE
+    # --------------------------------------------------------
 
     try:
 
-        with open(
-            photo_path,
-            "wb"
-        ) as buffer:
+        supabase.storage \
+            .from_(BUCKET_NAME) \
+            .upload(
 
-            shutil.copyfileobj(
-                photo.file,
-                buffer
+                path=file_path,
+
+                file=content,
+
+                file_options={
+
+                    "content-type":
+                        image.content_type,
+
+                    "cache-control":
+                        "3600",
+
+                    "upsert":
+                        "false"
+                }
             )
 
-    except OSError as e:
 
         print(
-            "ERREUR SAUVEGARDE IMAGE PRODUIT :",
+            "=========================================="
+        )
+
+        print(
+            "✅ IMAGE ENVOYÉE SUR SUPABASE"
+        )
+
+        print(
+            "BUCKET :",
+            BUCKET_NAME
+        )
+
+        print(
+            "FICHIER :",
+            file_path
+        )
+
+        print(
+            "=========================================="
+        )
+
+
+    except Exception as e:
+
+        print(
+            "=========================================="
+        )
+
+        print(
+            "❌ ERREUR UPLOAD SUPABASE"
+        )
+
+        print(
+            "TYPE :",
+            type(e).__name__
+        )
+
+        print(
+            "ERREUR :",
+            str(e)
+        )
+
+        print(
+            "=========================================="
+        )
+
+        return None
+
+
+    # --------------------------------------------------------
+    # RÉCUPÉRER URL PUBLIQUE
+    # --------------------------------------------------------
+
+    try:
+
+        public_url = (
+            supabase
+            .storage
+            .from_(BUCKET_NAME)
+            .get_public_url(
+                file_path
+            )
+        )
+
+
+        print(
+            "✅ URL IMAGE SUPABASE :",
+            public_url
+        )
+
+
+        return public_url
+
+
+    except Exception as e:
+
+        print(
+            "❌ ERREUR URL SUPABASE :",
             repr(e)
         )
 
         return None
 
-    return (
-        f"/static/uploads/products/{filename}"
+
+# ============================================================
+# VÉRIFIER CATÉGORIE + SOUS-CATÉGORIE
+# ============================================================
+
+def validate_category_and_subcategory(
+    db,
+    category_id: int,
+    subcategory_id: int
+):
+
+    # --------------------------------------------------------
+    # CATÉGORIE
+    # --------------------------------------------------------
+
+    category = (
+        db.query(Category)
+        .filter(
+            Category.id == category_id
+        )
+        .first()
     )
 
 
-def get_local_image_path(image_value):
-    """
-    Transforme les anciens formats de chemins
-    en chemin physique local.
+    if not category:
 
-    Formats acceptés :
+        return None, None
 
-    nom.webp
-    /static/uploads/nom.webp
-    /static/uploads/products/nom.webp
-    static/uploads/products/nom.webp
-    products/nom.webp
-    """
-
-    if not image_value:
-        return None
-
-    value = str(
-        image_value
-    ).strip()
-
-    if not value:
-        return None
 
     # --------------------------------------------------------
-    # URL EXTERNE
+    # SOUS-CATÉGORIE
+    # --------------------------------------------------------
+
+    subcategory = (
+        db.query(SubCategory)
+        .filter(
+            SubCategory.id == subcategory_id
+        )
+        .first()
+    )
+
+
+    if not subcategory:
+
+        return None, None
+
+
+    # --------------------------------------------------------
+    # VÉRIFIER RELATION
     # --------------------------------------------------------
 
     if (
-        value.startswith("http://")
-        or value.startswith("https://")
-    ):
-        return None
-
-    value = value.replace(
-        "\\",
-        "/"
-    )
-
-    # --------------------------------------------------------
-    # /static/...
-    # --------------------------------------------------------
-
-    if value.startswith(
-        "/static/"
+        subcategory.category_id
+        != category_id
     ):
 
-        value = value[1:]
-
-    # --------------------------------------------------------
-    # static/...
-    # --------------------------------------------------------
-
-    if value.startswith(
-        "static/"
-    ):
-
-        return os.path.join(
-            "app",
-            value
+        print(
+            "❌ Sous-catégorie incompatible."
         )
 
-    # --------------------------------------------------------
-    # products/...
-    # --------------------------------------------------------
-
-    if value.startswith(
-        "products/"
-    ):
-
-        return os.path.join(
-            "app",
-            "static",
-            "uploads",
-            value
+        print(
+            "Catégorie sélectionnée :",
+            category_id
         )
 
-    # --------------------------------------------------------
-    # ANCIEN NOM DE FICHIER
-    # --------------------------------------------------------
-
-    return os.path.join(
-        "app",
-        "static",
-        "uploads",
-        "products",
-        os.path.basename(
-            value
+        print(
+            "Catégorie de la sous-catégorie :",
+            subcategory.category_id
         )
-    )
+
+        return None, None
 
 
-def delete_product_image(image_value):
-    """
-    Supprime une ancienne image locale
-    si elle existe.
-
-    Les images externes ne sont jamais supprimées.
-    """
-
-    if not image_value:
-        return
-
-    path = get_local_image_path(
-        image_value
-    )
-
-    if not path:
-        return
-
-    if os.path.isfile(path):
-
-        try:
-
-            os.remove(path)
-
-        except OSError as e:
-
-            print(
-                "ERREUR SUPPRESSION IMAGE PRODUIT :",
-                repr(e)
-            )
+    return category, subcategory
 
 
 # ============================================================
-# OUTILS AUTHENTIFICATION
+# PUBLIER DEPUIS L'ACCUEIL
+# GET /publier
 # ============================================================
 
-def get_current_user_id(request: Request):
-    """
-    Retourne l'identifiant de l'utilisateur
-    actuellement connecté.
-    """
+@router.get("/publier")
+async def publish_page(
+    request: Request
+):
 
-    return request.session.get(
+    user_id = request.session.get(
         "user_id"
     )
 
 
-# ============================================================
-# OUTILS BOUTIQUE
-# ============================================================
-
-def get_user_boutique(
-    db,
-    user_id
-):
-    """
-    Retourne uniquement la boutique appartenant
-    à l'utilisateur connecté.
-    """
-
     if not user_id:
-        return None
 
-    return (
-        db.query(Boutique)
-        .filter(
-            Boutique.user_id == user_id
+        return RedirectResponse(
+            "/login",
+            status_code=303
         )
-        .first()
-    )
 
 
-# ============================================================
-# OUTILS PROPRIÉTÉ PRODUIT CLASSIQUE
-# ============================================================
+    db = SessionLocal()
 
-def get_owned_product(
-    db,
-    product_id,
-    user_id
-):
-    """
-    Retourne un produit si et seulement si
-    celui-ci appartient à l'utilisateur connecté.
 
-    Vérification :
+    try:
 
-        Product.user_id == user_id
-    """
-
-    if not user_id:
-        return None
-
-    return (
-        db.query(Product)
-        .filter(
-            Product.id == product_id,
-            Product.user_id == user_id
+        categories = get_categories(
+            db
         )
-        .first()
-    )
 
-
-# ============================================================
-# OUTILS PROPRIÉTÉ PRODUIT BOUTIQUE
-# ============================================================
-
-def get_owned_boutique_product(
-    db,
-    product_id,
-    user_id
-):
-    """
-    Retourne un produit de boutique uniquement si :
-
-    1. l'utilisateur est connecté ;
-    2. il possède une boutique ;
-    3. le produit appartient à cet utilisateur ;
-    4. le produit appartient à SA boutique.
-
-    Cette double vérification est importante.
-
-    Elle empêche par exemple :
-
-        /boutique/modifier-produit/15
-
-    de modifier le produit 15 si celui-ci appartient
-    à une autre boutique.
-    """
-
-    if not user_id:
-        return None
-
-    boutique = get_user_boutique(
-        db,
-        user_id
-    )
-
-    if not boutique:
-        return None
-
-    return (
-        db.query(Product)
-        .filter(
-            Product.id == product_id,
-            Product.user_id == user_id,
-            Product.boutique_id == boutique.id
+        subcategories = get_subcategories(
+            db
         )
-        .first()
-    )
+
+        global_context = get_global_context(
+            request,
+            db
+        )
+
+
+        return templates.TemplateResponse(
+
+            request=request,
+
+            name="publier.html",
+
+            context={
+
+                "categories":
+                    categories,
+
+                "subcategories":
+                    subcategories,
+
+                "is_boutique_publish":
+                    False,
+
+                **global_context
+            }
+        )
+
+
+    except Exception as e:
+
+        print(
+            "ERREUR GET /publier :",
+            repr(e)
+        )
+
+        traceback.print_exc()
+
+
+        return RedirectResponse(
+            "/",
+            status_code=303
+        )
+
+
+    finally:
+
+        db.close()
 
 
 # ============================================================
-# PAGE PUBLIER
+# PUBLIER DEPUIS MA BOUTIQUE
+# GET /ma-boutique/publier
 # ============================================================
 
-@router.get("/publish")
-def publish_page(
+@router.get("/ma-boutique/publier")
+async def publish_boutique_page(
     request: Request
 ):
 
-    user_id = get_current_user_id(
-        request
+    user_id = request.session.get(
+        "user_id"
     )
+
 
     if not user_id:
 
@@ -371,32 +550,124 @@ def publish_page(
             status_code=303
         )
 
-    return templates.TemplateResponse(
-        request=request,
-        name="publish.html"
-    )
+
+    db = SessionLocal()
+
+
+    try:
+
+        boutique = (
+            db.query(Boutique)
+            .filter(
+                Boutique.user_id == user_id
+            )
+            .first()
+        )
+
+
+        if not boutique:
+
+            return RedirectResponse(
+                "/boutique/creer",
+                status_code=303
+            )
+
+
+        categories = get_categories(
+            db
+        )
+
+        subcategories = get_subcategories(
+            db
+        )
+
+        global_context = get_global_context(
+            request,
+            db
+        )
+
+
+        return templates.TemplateResponse(
+
+            request=request,
+
+            name="publier.html",
+
+            context={
+
+                "categories":
+                    categories,
+
+                "subcategories":
+                    subcategories,
+
+                "boutique":
+                    boutique,
+
+                "is_boutique_publish":
+                    True,
+
+                **global_context
+            }
+        )
+
+
+    except Exception as e:
+
+        print(
+            "ERREUR GET /ma-boutique/publier :",
+            repr(e)
+        )
+
+        traceback.print_exc()
+
+
+        return RedirectResponse(
+            "/ma-boutique",
+            status_code=303
+        )
+
+
+    finally:
+
+        db.close()
 
 
 # ============================================================
-# CRÉER UN PRODUIT CLASSIQUE
+# TRAITEMENT PUBLICATION ACCUEIL
+# POST /publier
+#
+# Produit indépendant
+# boutique_id = None
 # ============================================================
 
-@router.post("/publish")
-def create_product(
+@router.post("/publier")
+async def publish_product(
+
     request: Request,
 
     title: str = Form(...),
+
     description: str = Form(...),
+
     price: float = Form(...),
+
     city: str = Form(...),
+
     condition: str = Form(...),
 
-    photo: UploadFile = File(None)
+    category_id: int = Form(...),
+
+    subcategory_id: int = Form(...),
+
+    image: UploadFile = File(None)
+
 ):
 
-    user_id = get_current_user_id(
-        request
+    user_id = request.session.get(
+        "user_id"
     )
+
 
     if not user_id:
 
@@ -405,84 +676,210 @@ def create_product(
             status_code=303
         )
 
-    filename = None
-
-    # --------------------------------------------------------
-    # IMAGE
-    # --------------------------------------------------------
-
-    if photo and photo.filename:
-
-        filename = save_product_image(
-            photo
-        )
 
     db = SessionLocal()
+
 
     try:
 
         # ----------------------------------------------------
-        # PRODUIT CLASSIQUE
-        #
-        # Une annonce publiée depuis la publication classique
-        # n'appartient à aucune boutique.
+        # NETTOYAGE
+        # ----------------------------------------------------
+
+        title = title.strip()
+
+        description = description.strip()
+
+        city = city.strip()
+
+        condition = condition.strip()
+
+
+        # ----------------------------------------------------
+        # VÉRIFIER CATÉGORIE
+        # ----------------------------------------------------
+
+        category, subcategory = (
+            validate_category_and_subcategory(
+                db,
+                category_id,
+                subcategory_id
+            )
+        )
+
+
+        if not category or not subcategory:
+
+            return RedirectResponse(
+                "/publier",
+                status_code=303
+            )
+
+
+        # ----------------------------------------------------
+        # IMAGE SUPABASE
+        # ----------------------------------------------------
+
+        image_path = await save_product_image(
+            image
+        )
+
+
+        # ----------------------------------------------------
+        # CRÉER PRODUIT INDÉPENDANT
         # ----------------------------------------------------
 
         product = Product(
+
             title=title,
+
             description=description,
+
             price=price,
+
             city=city,
+
             condition=condition,
-            image=filename,
+
+            category_id=category_id,
+
+            subcategory_id=subcategory_id,
+
             user_id=user_id,
+
+            image=image_path,
+
             boutique_id=None
         )
+
 
         db.add(product)
 
         db.commit()
 
+        db.refresh(product)
+
+
+        print(
+            "=========================================="
+        )
+
+        print(
+            "✅ PRODUIT PUBLIÉ INDÉPENDANT"
+        )
+
+        print(
+            "ID :",
+            product.id
+        )
+
+        print(
+            "IMAGE :",
+            product.image
+        )
+
+        print(
+            "CATÉGORIE ID :",
+            product.category_id
+        )
+
+        print(
+            "SOUS-CATÉGORIE ID :",
+            product.subcategory_id
+        )
+
+        print(
+            "BOUTIQUE ID :",
+            product.boutique_id
+        )
+
+        print(
+            "=========================================="
+        )
+
+
+        return RedirectResponse(
+            "/",
+            status_code=303
+        )
+
+
     except Exception as e:
 
         db.rollback()
 
-        # Si l'enregistrement DB échoue,
-        # l'image nouvellement créée est supprimée.
-
-        if filename:
-
-            delete_product_image(
-                filename
-            )
 
         print(
-            "ERREUR CRÉATION PRODUIT :",
-            repr(e)
+            "=========================================="
         )
+
+        print(
+            "❌ ERREUR PUBLICATION"
+        )
+
+        print(
+            "TYPE :",
+            type(e).__name__
+        )
+
+        print(
+            "ERREUR :",
+            str(e)
+        )
+
+        traceback.print_exc()
+
+        print(
+            "=========================================="
+        )
+
+
+        return RedirectResponse(
+            "/publier",
+            status_code=303
+        )
+
 
     finally:
 
         db.close()
 
-    return RedirectResponse(
-        "/",
-        status_code=303
-    )
-
 
 # ============================================================
-# MES ANNONCES
+# TRAITEMENT PUBLICATION MA BOUTIQUE
+# POST /ma-boutique/publier
+#
+# Produit appartenant à la boutique du vendeur
+# boutique_id = boutique.id
 # ============================================================
 
-@router.get("/mes-annonces")
-def mes_annonces(
-    request: Request
+@router.post("/ma-boutique/publier")
+async def publish_boutique_product(
+
+    request: Request,
+
+    title: str = Form(...),
+
+    description: str = Form(...),
+
+    price: float = Form(...),
+
+    city: str = Form(...),
+
+    condition: str = Form(...),
+
+    category_id: int = Form(...),
+
+    subcategory_id: int = Form(...),
+
+    image: UploadFile = File(None)
+
 ):
 
-    user_id = get_current_user_id(
-        request
+    user_id = request.session.get(
+        "user_id"
     )
+
 
     if not user_id:
 
@@ -491,628 +888,196 @@ def mes_annonces(
             status_code=303
         )
 
+
     db = SessionLocal()
+
 
     try:
 
-        products = (
-            db.query(Product)
+        # ----------------------------------------------------
+        # RÉCUPÉRER LA BOUTIQUE DU VENDEUR
+        # ----------------------------------------------------
+
+        boutique = (
+            db.query(Boutique)
             .filter(
-                Product.user_id == user_id
+                Boutique.user_id == user_id
             )
-            .order_by(
-                Product.id.desc()
-            )
-            .all()
+            .first()
         )
 
-    finally:
-
-        db.close()
-
-    return templates.TemplateResponse(
-        request=request,
-        name="mes_annonces.html",
-        context={
-            "products": products
-        }
-    )
-
-
-# ============================================================
-# MODIFIER PRODUIT CLASSIQUE - PAGE
-# ============================================================
-
-@router.get(
-    "/modifier-produit/{product_id}"
-)
-def modifier_page(
-    request: Request,
-    product_id: int
-):
-
-    user_id = get_current_user_id(
-        request
-    )
-
-    if not user_id:
-
-        return RedirectResponse(
-            "/login",
-            status_code=303
-        )
-
-    db = SessionLocal()
-
-    try:
-
-        product = get_owned_product(
-            db,
-            product_id,
-            user_id
-        )
-
-        if not product:
-
-            return RedirectResponse(
-                "/mes-annonces",
-                status_code=303
-            )
-
-        return templates.TemplateResponse(
-            request=request,
-            name="modifier_produit.html",
-            context={
-                "product": product,
-                "produit": product,
-                "from_boutique": False
-            }
-        )
-
-    finally:
-
-        db.close()
-
-
-# ============================================================
-# MODIFIER PRODUIT CLASSIQUE
-# ============================================================
-
-@router.post(
-    "/modifier-produit/{product_id}"
-)
-def modifier_produit(
-    request: Request,
-    product_id: int,
-
-    title: str = Form(...),
-    description: str = Form(...),
-    price: float = Form(...),
-    city: str = Form(...),
-    condition: str = Form(...),
-
-    photo: UploadFile = File(None)
-):
-
-    user_id = get_current_user_id(
-        request
-    )
-
-    if not user_id:
-
-        return RedirectResponse(
-            "/login",
-            status_code=303
-        )
-
-    db = SessionLocal()
-
-    new_image = None
-    old_image = None
-
-    try:
-
-        # ----------------------------------------------------
-        # VÉRIFICATION PROPRIÉTAIRE
-        # ----------------------------------------------------
-
-        product = get_owned_product(
-            db,
-            product_id,
-            user_id
-        )
-
-        if not product:
-
-            return RedirectResponse(
-                "/mes-annonces",
-                status_code=303
-            )
-
-        # ----------------------------------------------------
-        # INFORMATIONS
-        # ----------------------------------------------------
-
-        product.title = title
-        product.description = description
-        product.price = price
-        product.city = city
-        product.condition = condition
-
-        # ----------------------------------------------------
-        # NOUVELLE IMAGE
-        # ----------------------------------------------------
-
-        if photo and photo.filename:
-
-            new_image = save_product_image(
-                photo
-            )
-
-            if new_image:
-
-                old_image = product.image
-
-                product.image = new_image
-
-        # ----------------------------------------------------
-        # SAUVEGARDE
-        # ----------------------------------------------------
-
-        db.commit()
-
-        # ----------------------------------------------------
-        # SUPPRESSION DE L'ANCIENNE IMAGE
-        #
-        # On attend que le commit DB soit réussi.
-        # ----------------------------------------------------
-
-        if new_image and old_image:
-
-            delete_product_image(
-                old_image
-            )
-
-    except Exception as e:
-
-        db.rollback()
-
-        # Si la DB échoue, on supprime uniquement
-        # la nouvelle image qui n'est finalement pas utilisée.
-
-        if new_image:
-
-            delete_product_image(
-                new_image
-            )
-
-        print(
-            "ERREUR MODIFICATION PRODUIT :",
-            repr(e)
-        )
-
-    finally:
-
-        db.close()
-
-    return RedirectResponse(
-        "/mes-annonces",
-        status_code=303
-    )
-
-
-# ============================================================
-# SUPPRIMER PRODUIT CLASSIQUE
-# ============================================================
-
-@router.get(
-    "/supprimer-produit/{product_id}"
-)
-def supprimer_produit(
-    request: Request,
-    product_id: int
-):
-
-    user_id = get_current_user_id(
-        request
-    )
-
-    if not user_id:
-
-        return RedirectResponse(
-            "/login",
-            status_code=303
-        )
-
-    db = SessionLocal()
-
-    try:
-
-        # ----------------------------------------------------
-        # VÉRIFICATION PROPRIÉTAIRE
-        # ----------------------------------------------------
-
-        product = get_owned_product(
-            db,
-            product_id,
-            user_id
-        )
-
-        # ----------------------------------------------------
-        # SI LE PRODUIT N'APPARTIENT PAS À L'UTILISATEUR
-        #
-        # AUCUNE SUPPRESSION
-        # ----------------------------------------------------
-
-        if not product:
-
-            return RedirectResponse(
-                "/mes-annonces",
-                status_code=303
-            )
-
-        image = product.image
-
-        db.delete(product)
-
-        db.commit()
-
-        # ----------------------------------------------------
-        # SUPPRESSION IMAGE APRÈS COMMIT
-        # ----------------------------------------------------
-
-        if image:
-
-            delete_product_image(
-                image
-            )
-
-    except Exception as e:
-
-        db.rollback()
-
-        print(
-            "ERREUR SUPPRESSION PRODUIT :",
-            repr(e)
-        )
-
-    finally:
-
-        db.close()
-
-    return RedirectResponse(
-        "/mes-annonces",
-        status_code=303
-    )
-
-
-# ============================================================
-# MODIFIER PRODUIT BOUTIQUE - PAGE
-# ============================================================
-
-@router.get(
-    "/boutique/modifier-produit/{product_id}"
-)
-def modifier_produit_boutique_page(
-    request: Request,
-    product_id: int
-):
-
-    user_id = get_current_user_id(
-        request
-    )
-
-    if not user_id:
-
-        return RedirectResponse(
-            "/login",
-            status_code=303
-        )
-
-    db = SessionLocal()
-
-    try:
-
-        # ----------------------------------------------------
-        # BOUTIQUE DU PROPRIÉTAIRE
-        # ----------------------------------------------------
-
-        boutique = get_user_boutique(
-            db,
-            user_id
-        )
 
         if not boutique:
 
             return RedirectResponse(
-                "/boutiques",
+                "/boutique/creer",
                 status_code=303
             )
 
+
         # ----------------------------------------------------
-        # PRODUIT DE SA PROPRE BOUTIQUE
+        # NETTOYAGE
         # ----------------------------------------------------
 
-        product = get_owned_boutique_product(
-            db,
-            product_id,
-            user_id
+        title = title.strip()
+
+        description = description.strip()
+
+        city = city.strip()
+
+        condition = condition.strip()
+
+
+        # ----------------------------------------------------
+        # VÉRIFIER CATÉGORIE
+        # ----------------------------------------------------
+
+        category, subcategory = (
+            validate_category_and_subcategory(
+                db,
+                category_id,
+                subcategory_id
+            )
         )
 
-        if not product:
+
+        if not category or not subcategory:
 
             return RedirectResponse(
-                "/ma-boutique",
+                "/ma-boutique/publier",
                 status_code=303
             )
 
+
         # ----------------------------------------------------
-        # PAGE DE MODIFICATION
+        # IMAGE SUPABASE
         # ----------------------------------------------------
 
-        return templates.TemplateResponse(
-            request=request,
-            name="modifier_produit.html",
-            context={
-                "product": product,
-                "produit": product,
-                "boutique": boutique,
-                "from_boutique": True
-            }
+        image_path = await save_product_image(
+            image
         )
 
-    finally:
 
-        db.close()
+        # ----------------------------------------------------
+        # CRÉER PRODUIT DANS LA BOUTIQUE
+        # ----------------------------------------------------
 
+        product = Product(
 
-# ============================================================
-# ENREGISTRER MODIFICATION PRODUIT BOUTIQUE
-# ============================================================
+            title=title,
 
-@router.post(
-    "/boutique/modifier-produit/{product_id}"
-)
-def modifier_produit_boutique(
-    request: Request,
-    product_id: int,
+            description=description,
 
-    title: str = Form(...),
-    description: str = Form(...),
-    price: float = Form(...),
-    city: str = Form(...),
-    condition: str = Form(...),
+            price=price,
 
-    photo: UploadFile = File(None)
-):
+            city=city,
 
-    user_id = get_current_user_id(
-        request
-    )
+            condition=condition,
 
-    if not user_id:
+            category_id=category_id,
 
-        return RedirectResponse(
-            "/login",
-            status_code=303
+            subcategory_id=subcategory_id,
+
+            user_id=user_id,
+
+            image=image_path,
+
+            boutique_id=boutique.id
         )
 
-    db = SessionLocal()
 
-    new_image = None
-    old_image = None
-
-    try:
-
-        # ----------------------------------------------------
-        # BOUTIQUE DU PROPRIÉTAIRE
-        # ----------------------------------------------------
-
-        boutique = get_user_boutique(
-            db,
-            user_id
-        )
-
-        if not boutique:
-
-            return RedirectResponse(
-                "/boutiques",
-                status_code=303
-            )
-
-        # ----------------------------------------------------
-        # DOUBLE VÉRIFICATION
-        #
-        # 1. user_id
-        # 2. boutique_id
-        # ----------------------------------------------------
-
-        product = get_owned_boutique_product(
-            db,
-            product_id,
-            user_id
-        )
-
-        if not product:
-
-            return RedirectResponse(
-                "/ma-boutique",
-                status_code=303
-            )
-
-        # ----------------------------------------------------
-        # INFORMATIONS
-        # ----------------------------------------------------
-
-        product.title = title
-        product.description = description
-        product.price = price
-        product.city = city
-        product.condition = condition
-
-        # ----------------------------------------------------
-        # IMAGE
-        # ----------------------------------------------------
-
-        if photo and photo.filename:
-
-            new_image = save_product_image(
-                photo
-            )
-
-            if new_image:
-
-                old_image = product.image
-
-                product.image = new_image
-
-        # ----------------------------------------------------
-        # SAUVEGARDE
-        # ----------------------------------------------------
+        db.add(product)
 
         db.commit()
 
-        # ----------------------------------------------------
-        # ANCIENNE IMAGE
-        # ----------------------------------------------------
+        db.refresh(product)
 
-        if new_image and old_image:
 
-            delete_product_image(
-                old_image
-            )
+        print(
+            "=========================================="
+        )
+
+        print(
+            "✅ PRODUIT PUBLIÉ DANS MA BOUTIQUE"
+        )
+
+        print(
+            "PRODUIT ID :",
+            product.id
+        )
+
+        print(
+            "IMAGE :",
+            product.image
+        )
+
+        print(
+            "BOUTIQUE ID :",
+            boutique.id
+        )
+
+        print(
+            "BOUTIQUE :",
+            boutique.name
+        )
+
+        print(
+            "CATÉGORIE ID :",
+            product.category_id
+        )
+
+        print(
+            "SOUS-CATÉGORIE ID :",
+            product.subcategory_id
+        )
+
+        print(
+            "=========================================="
+        )
+
+
+        return RedirectResponse(
+            "/ma-boutique",
+            status_code=303
+        )
+
 
     except Exception as e:
 
         db.rollback()
 
-        # Si la DB échoue,
-        # la nouvelle image n'est pas conservée.
-
-        if new_image:
-
-            delete_product_image(
-                new_image
-            )
 
         print(
-            "ERREUR MODIFICATION PRODUIT BOUTIQUE :",
-            repr(e)
+            "=========================================="
         )
 
-    finally:
+        print(
+            "❌ ERREUR PUBLICATION BOUTIQUE"
+        )
 
-        db.close()
+        print(
+            "TYPE :",
+            type(e).__name__
+        )
 
-    return RedirectResponse(
-        "/ma-boutique",
-        status_code=303
-    )
+        print(
+            "ERREUR :",
+            str(e)
+        )
 
+        traceback.print_exc()
 
-# ============================================================
-# SUPPRIMER PRODUIT BOUTIQUE
-# ============================================================
+        print(
+            "=========================================="
+        )
 
-@router.get(
-    "/boutique/supprimer-produit/{product_id}"
-)
-def supprimer_produit_boutique(
-    request: Request,
-    product_id: int
-):
-
-    user_id = get_current_user_id(
-        request
-    )
-
-    if not user_id:
 
         return RedirectResponse(
-            "/login",
+            "/ma-boutique/publier",
             status_code=303
         )
 
-    db = SessionLocal()
-
-    try:
-
-        # ----------------------------------------------------
-        # BOUTIQUE DU PROPRIÉTAIRE
-        # ----------------------------------------------------
-
-        boutique = get_user_boutique(
-            db,
-            user_id
-        )
-
-        if not boutique:
-
-            return RedirectResponse(
-                "/boutiques",
-                status_code=303
-            )
-
-        # ----------------------------------------------------
-        # DOUBLE CONTRÔLE DU PRODUIT
-        #
-        # Le produit doit :
-        #
-        # - appartenir à l'utilisateur connecté
-        # - appartenir à sa boutique
-        # ----------------------------------------------------
-
-        product = get_owned_boutique_product(
-            db,
-            product_id,
-            user_id
-        )
-
-        if not product:
-
-            return RedirectResponse(
-                "/ma-boutique",
-                status_code=303
-            )
-
-        # ----------------------------------------------------
-        # IMAGE
-        # ----------------------------------------------------
-
-        image = product.image
-
-        # ----------------------------------------------------
-        # SUPPRESSION DB
-        # ----------------------------------------------------
-
-        db.delete(product)
-
-        db.commit()
-
-        # ----------------------------------------------------
-        # SUPPRESSION FICHIER APRÈS COMMIT
-        # ----------------------------------------------------
-
-        if image:
-
-            delete_product_image(
-                image
-            )
-
-    except Exception as e:
-
-        db.rollback()
-
-        print(
-            "ERREUR SUPPRESSION PRODUIT BOUTIQUE :",
-            repr(e)
-        )
 
     finally:
 
         db.close()
-
-    return RedirectResponse(
-        "/ma-boutique",
-        status_code=303
-    )
