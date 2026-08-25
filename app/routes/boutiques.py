@@ -1,3 +1,4 @@
+
 from uuid import uuid4
 from urllib.parse import urlparse, unquote
 import os
@@ -48,8 +49,7 @@ templates = Jinja2Templates(
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 
-# On utilise le bucket déjà existant
-# pour éviter d'avoir besoin de créer un nouveau bucket.
+# Bucket déjà utilisé pour les images
 SUPABASE_BUCKET = "product-images"
 
 
@@ -238,7 +238,6 @@ async def upload_boutique_image(
 
         return None
 
-
     # --------------------------------------------------------
     # VÉRIFIER SUPABASE
     # --------------------------------------------------------
@@ -250,7 +249,6 @@ async def upload_boutique_image(
         )
 
         return None
-
 
     # --------------------------------------------------------
     # TYPE
@@ -269,7 +267,6 @@ async def upload_boutique_image(
 
         return None
 
-
     # --------------------------------------------------------
     # LIRE LE FICHIER
     # --------------------------------------------------------
@@ -284,7 +281,6 @@ async def upload_boutique_image(
 
         return None
 
-
     # --------------------------------------------------------
     # NOM UNIQUE
     # --------------------------------------------------------
@@ -294,7 +290,6 @@ async def upload_boutique_image(
         f"{uuid4().hex}"
         f"{extension}"
     )
-
 
     # --------------------------------------------------------
     # UPLOAD SUPABASE
@@ -323,7 +318,6 @@ async def upload_boutique_image(
                 }
             )
 
-
         print(
             "=========================================="
         )
@@ -345,7 +339,6 @@ async def upload_boutique_image(
         print(
             "=========================================="
         )
-
 
     except Exception as e:
 
@@ -375,7 +368,6 @@ async def upload_boutique_image(
 
         return None
 
-
     # --------------------------------------------------------
     # URL PUBLIQUE
     # --------------------------------------------------------
@@ -391,15 +383,12 @@ async def upload_boutique_image(
             )
         )
 
-
         print(
             "✅ URL SUPABASE :",
             public_url
         )
 
-
         return public_url
-
 
     except Exception as e:
 
@@ -422,10 +411,8 @@ def delete_supabase_image(
     if not image_url:
         return
 
-
     if not supabase:
         return
-
 
     # --------------------------------------------------------
     # UNIQUEMENT LES IMAGES SUPABASE
@@ -440,7 +427,6 @@ def delete_supabase_image(
 
         return
 
-
     try:
 
         parsed = urlparse(
@@ -451,12 +437,10 @@ def delete_supabase_image(
             parsed.path
         )
 
-
         marker = (
             f"/storage/v1/object/public/"
             f"{SUPABASE_BUCKET}/"
         )
-
 
         if marker not in path:
 
@@ -466,17 +450,13 @@ def delete_supabase_image(
 
             return
 
-
         file_path = path.split(
             marker,
             1
         )[1]
 
-
         if not file_path:
-
             return
-
 
         supabase.storage \
             .from_(SUPABASE_BUCKET) \
@@ -484,12 +464,10 @@ def delete_supabase_image(
                 file_path
             ])
 
-
         print(
             "✅ IMAGE SUPPRIMÉE DE SUPABASE :",
             file_path
         )
-
 
     except Exception as e:
 
@@ -536,7 +514,6 @@ async def boutiques(
             (Boutique.city.ilike(search))
         )
 
-
     # --------------------------------------------------------
     # RÉCUPÉRATION
     # --------------------------------------------------------
@@ -548,7 +525,6 @@ async def boutiques(
         )
         .all()
     )
-
 
     # --------------------------------------------------------
     # CONTEXTE
@@ -570,7 +546,6 @@ async def boutiques(
         "q":
             q,
     })
-
 
     return templates.TemplateResponse(
 
@@ -598,14 +573,12 @@ async def page_creer_boutique(
         "user_id"
     )
 
-
     if not user_id:
 
         return RedirectResponse(
             url="/login",
             status_code=303,
         )
-
 
     # --------------------------------------------------------
     # VÉRIFIER SI BOUTIQUE EXISTE
@@ -619,14 +592,12 @@ async def page_creer_boutique(
         .first()
     )
 
-
     if boutique:
 
         return RedirectResponse(
             url="/ma-boutique",
             status_code=303,
         )
-
 
     # --------------------------------------------------------
     # DERNIÈRE DEMANDE
@@ -643,14 +614,12 @@ async def page_creer_boutique(
         .first()
     )
 
-
     if demande and demande.status == "pending":
 
         return RedirectResponse(
             url="/boutique/demande",
             status_code=303,
         )
-
 
     # --------------------------------------------------------
     # DEMANDE ACCEPTÉE
@@ -665,7 +634,6 @@ async def page_creer_boutique(
             )
             .first()
         )
-
 
         if not boutique:
 
@@ -690,12 +658,10 @@ async def page_creer_boutique(
                 boutique
             )
 
-
         return RedirectResponse(
             url="/ma-boutique",
             status_code=303,
         )
-
 
     # --------------------------------------------------------
     # FORMULAIRE
@@ -707,7 +673,6 @@ async def page_creer_boutique(
     )
 
     context["request"] = request
-
 
     return templates.TemplateResponse(
 
@@ -741,14 +706,12 @@ async def creer_boutique(
         "user_id"
     )
 
-
     if not user_id:
 
         return RedirectResponse(
             url="/login",
             status_code=303,
         )
-
 
     # --------------------------------------------------------
     # BOUTIQUE EXISTANTE
@@ -762,14 +725,12 @@ async def creer_boutique(
         .first()
     )
 
-
     if boutique:
 
         return RedirectResponse(
             url="/ma-boutique",
             status_code=303,
         )
-
 
     # --------------------------------------------------------
     # DERNIÈRE DEMANDE
@@ -786,7 +747,6 @@ async def creer_boutique(
         .first()
     )
 
-
     if (
         derniere_demande
         and derniere_demande.status == "pending"
@@ -796,7 +756,6 @@ async def creer_boutique(
             url="/boutique/demande",
             status_code=303,
         )
-
 
     # --------------------------------------------------------
     # DEMANDE APPROUVÉE
@@ -814,7 +773,6 @@ async def creer_boutique(
             )
             .first()
         )
-
 
         if not boutique:
 
@@ -839,12 +797,10 @@ async def creer_boutique(
                 boutique
             )
 
-
         return RedirectResponse(
             url="/ma-boutique",
             status_code=303,
         )
-
 
     # --------------------------------------------------------
     # NOUVELLE DEMANDE
@@ -863,18 +819,15 @@ async def creer_boutique(
         status="pending",
     )
 
-
     db.add(
         demande
     )
 
     db.commit()
 
-
     request.session["message"] = (
         "Votre demande de boutique a été envoyée."
     )
-
 
     return RedirectResponse(
         url="/boutique/demande",
@@ -898,14 +851,12 @@ async def statut_demande(
         "user_id"
     )
 
-
     if not user_id:
 
         return RedirectResponse(
             url="/login",
             status_code=303,
         )
-
 
     # --------------------------------------------------------
     # BOUTIQUE EXISTANTE
@@ -919,14 +870,12 @@ async def statut_demande(
         .first()
     )
 
-
     if boutique:
 
         return RedirectResponse(
             url="/ma-boutique",
             status_code=303,
         )
-
 
     # --------------------------------------------------------
     # DERNIÈRE DEMANDE
@@ -942,7 +891,6 @@ async def statut_demande(
         )
         .first()
     )
-
 
     # --------------------------------------------------------
     # APPROUVÉE
@@ -967,12 +915,10 @@ async def statut_demande(
 
         db.commit()
 
-
         return RedirectResponse(
             url="/ma-boutique",
             status_code=303,
         )
-
 
     # --------------------------------------------------------
     # CONTEXTE
@@ -991,7 +937,6 @@ async def statut_demande(
         "demande":
             demande,
     })
-
 
     return templates.TemplateResponse(
 
@@ -1019,14 +964,12 @@ async def ma_boutique(
         "user_id"
     )
 
-
     if not user_id:
 
         return RedirectResponse(
             url="/login",
             status_code=303,
         )
-
 
     # --------------------------------------------------------
     # SA BOUTIQUE UNIQUEMENT
@@ -1040,7 +983,6 @@ async def ma_boutique(
         .first()
     )
 
-
     if not boutique:
 
         return RedirectResponse(
@@ -1048,22 +990,25 @@ async def ma_boutique(
             status_code=303,
         )
 
-
     # --------------------------------------------------------
-    # PRODUITS DE SA BOUTIQUE
+    # PRODUITS ACTIFS DE SA BOUTIQUE
+    #
+    # IMPORTANT :
+    # Les produits supprimés avec is_active=False
+    # ne doivent plus apparaître ici.
     # --------------------------------------------------------
 
     products = (
         db.query(Product)
         .filter(
-            Product.boutique_id == boutique.id
+            Product.boutique_id == boutique.id,
+            Product.is_active == True
         )
         .order_by(
             Product.id.desc()
         )
         .all()
     )
-
 
     # --------------------------------------------------------
     # CONTEXTE
@@ -1085,7 +1030,6 @@ async def ma_boutique(
         "products":
             products,
     })
-
 
     return templates.TemplateResponse(
 
@@ -1113,14 +1057,12 @@ async def page_modifier_boutique(
         "user_id"
     )
 
-
     if not user_id:
 
         return RedirectResponse(
             url="/login",
             status_code=303,
         )
-
 
     # --------------------------------------------------------
     # SA BOUTIQUE
@@ -1134,14 +1076,12 @@ async def page_modifier_boutique(
         .first()
     )
 
-
     if not boutique:
 
         return RedirectResponse(
             url="/boutique/creer",
             status_code=303,
         )
-
 
     context = contexte_global(
         request,
@@ -1156,7 +1096,6 @@ async def page_modifier_boutique(
         "boutique":
             boutique,
     })
-
 
     return templates.TemplateResponse(
 
@@ -1201,14 +1140,12 @@ async def modifier_boutique(
         "user_id"
     )
 
-
     if not user_id:
 
         return RedirectResponse(
             url="/login",
             status_code=303,
         )
-
 
     # --------------------------------------------------------
     # SA BOUTIQUE
@@ -1222,14 +1159,12 @@ async def modifier_boutique(
         .first()
     )
 
-
     if not boutique:
 
         return RedirectResponse(
             url="/boutique/creer",
             status_code=303,
         )
-
 
     # --------------------------------------------------------
     # INFORMATIONS
@@ -1245,7 +1180,6 @@ async def modifier_boutique(
 
     boutique.city = city.strip()
 
-
     # --------------------------------------------------------
     # LOGO
     # --------------------------------------------------------
@@ -1254,7 +1188,6 @@ async def modifier_boutique(
 
         old_logo = boutique.logo
 
-
         logo_url = await upload_boutique_image(
 
             logo,
@@ -1262,16 +1195,13 @@ async def modifier_boutique(
             f"boutique_{boutique.id}_logo"
         )
 
-
         if logo_url:
 
             boutique.logo = logo_url
 
-            # Supprimer l'ancien fichier Supabase
             delete_supabase_image(
                 old_logo
             )
-
 
     # --------------------------------------------------------
     # COUVERTURE
@@ -1281,7 +1211,6 @@ async def modifier_boutique(
 
         old_cover = boutique.cover_image
 
-
         cover_url = await upload_boutique_image(
 
             cover_image,
@@ -1289,16 +1218,13 @@ async def modifier_boutique(
             f"boutique_{boutique.id}_cover"
         )
 
-
         if cover_url:
 
             boutique.cover_image = cover_url
 
-            # Supprimer l'ancien fichier Supabase
             delete_supabase_image(
                 old_cover
             )
-
 
     # --------------------------------------------------------
     # SAUVEGARDER
@@ -1310,11 +1236,9 @@ async def modifier_boutique(
         boutique
     )
 
-
     request.session["message"] = (
         "Votre boutique a été modifiée avec succès."
     )
-
 
     print(
         "=========================================="
@@ -1342,191 +1266,6 @@ async def modifier_boutique(
     print(
         "=========================================="
     )
-
-
-    return RedirectResponse(
-        url="/ma-boutique",
-        status_code=303,
-    )
-
-
-# ============================================================
-# SUPPRIMER UN PRODUIT DE MA BOUTIQUE
-#
-# GET /boutique/supprimer-produit/{product_id}
-#
-# IMPORTANT :
-# SEUL LE PROPRIÉTAIRE DE LA BOUTIQUE PEUT SUPPRIMER
-# ============================================================
-
-@router.get(
-    "/boutique/supprimer-produit/{product_id}"
-)
-async def supprimer_produit_boutique(
-
-    product_id: int,
-
-    request: Request,
-
-    db: Session = Depends(get_db),
-):
-
-    user_id = request.session.get(
-        "user_id"
-    )
-
-
-    # --------------------------------------------------------
-    # NON CONNECTÉ
-    # --------------------------------------------------------
-
-    if not user_id:
-
-        return RedirectResponse(
-            url="/login",
-            status_code=303,
-        )
-
-
-    # --------------------------------------------------------
-    # RÉCUPÉRER LE PRODUIT
-    # --------------------------------------------------------
-
-    product = (
-        db.query(Product)
-        .filter(
-            Product.id == product_id
-        )
-        .first()
-    )
-
-
-    if not product:
-
-        return RedirectResponse(
-            url="/ma-boutique",
-            status_code=303,
-        )
-
-
-    # --------------------------------------------------------
-    # LE PRODUIT DOIT APPARTENIR À UNE BOUTIQUE
-    # --------------------------------------------------------
-
-    if not product.boutique_id:
-
-        return RedirectResponse(
-            url="/ma-boutique",
-            status_code=303,
-        )
-
-
-    # --------------------------------------------------------
-    # RÉCUPÉRER LA BOUTIQUE
-    # --------------------------------------------------------
-
-    boutique = (
-        db.query(Boutique)
-        .filter(
-            Boutique.id == product.boutique_id
-        )
-        .first()
-    )
-
-
-    if not boutique:
-
-        return RedirectResponse(
-            url="/ma-boutique",
-            status_code=303,
-        )
-
-
-    # --------------------------------------------------------
-    # VÉRIFICATION PROPRIÉTAIRE
-    # --------------------------------------------------------
-
-    if boutique.user_id != user_id:
-
-        print(
-            "❌ SUPPRESSION REFUSÉE"
-        )
-
-        print(
-            "Utilisateur :",
-            user_id
-        )
-
-        print(
-            "Propriétaire :",
-            boutique.user_id
-        )
-
-        return RedirectResponse(
-            url="/ma-boutique",
-            status_code=303,
-        )
-
-
-    # --------------------------------------------------------
-    # SAUVEGARDER L'IMAGE
-    # --------------------------------------------------------
-
-    product_image = product.image
-
-
-    # --------------------------------------------------------
-    # SUPPRIMER L'IMAGE SUPABASE
-    # --------------------------------------------------------
-
-    delete_supabase_image(
-        product_image
-    )
-
-
-    # --------------------------------------------------------
-    # SUPPRIMER LE PRODUIT
-    # --------------------------------------------------------
-
-    db.delete(
-        product
-    )
-
-    db.commit()
-
-
-    print(
-        "=========================================="
-    )
-
-    print(
-        "✅ PRODUIT SUPPRIMÉ"
-    )
-
-    print(
-        "PRODUIT ID :",
-        product_id
-    )
-
-    print(
-        "BOUTIQUE ID :",
-        boutique.id
-    )
-
-    print(
-        "UTILISATEUR ID :",
-        user_id
-    )
-
-    print(
-        "=========================================="
-    )
-
-
-    request.session["message"] = (
-        "Le produit a été supprimé avec succès."
-    )
-
 
     return RedirectResponse(
         url="/ma-boutique",
@@ -1562,7 +1301,6 @@ async def boutique_detail(
         .first()
     )
 
-
     if not boutique:
 
         return RedirectResponse(
@@ -1570,22 +1308,25 @@ async def boutique_detail(
             status_code=303,
         )
 
-
     # --------------------------------------------------------
-    # PRODUITS
+    # PRODUITS ACTIFS
+    #
+    # IMPORTANT :
+    # Les produits désactivés ne doivent pas être visibles
+    # publiquement dans la boutique.
     # --------------------------------------------------------
 
     products = (
         db.query(Product)
         .filter(
-            Product.boutique_id == boutique.id
+            Product.boutique_id == boutique.id,
+            Product.is_active == True
         )
         .order_by(
             Product.id.desc()
         )
         .all()
     )
-
 
     # --------------------------------------------------------
     # CONTEXTE
@@ -1610,7 +1351,6 @@ async def boutique_detail(
         "produits":
             products,
     })
-
 
     return templates.TemplateResponse(
 
