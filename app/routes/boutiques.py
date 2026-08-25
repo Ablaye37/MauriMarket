@@ -238,7 +238,8 @@ async def page_creer_boutique(
         )
 
     # --------------------------------------------------------
-    # VÉRIFIER SI L'UTILISATEUR A DÉJÀ UNE BOUTIQUE
+    # IMPORTANT :
+    # VÉRIFIER D'ABORD SI UNE BOUTIQUE EXISTE
     # --------------------------------------------------------
 
     boutique = (
@@ -249,6 +250,10 @@ async def page_creer_boutique(
         .first()
     )
 
+    # --------------------------------------------------------
+    # SI BOUTIQUE EXISTE
+    # --------------------------------------------------------
+
     if boutique:
 
         return RedirectResponse(
@@ -257,14 +262,13 @@ async def page_creer_boutique(
         )
 
     # --------------------------------------------------------
-    # VÉRIFIER UNE DEMANDE EN ATTENTE
+    # RÉCUPÉRER LA DERNIÈRE DEMANDE
     # --------------------------------------------------------
 
     demande = (
         db.query(BoutiqueRequest)
         .filter(
-            BoutiqueRequest.user_id == user_id,
-            BoutiqueRequest.status == "pending",
+            BoutiqueRequest.user_id == user_id
         )
         .order_by(
             BoutiqueRequest.id.desc()
@@ -272,7 +276,11 @@ async def page_creer_boutique(
         .first()
     )
 
-    if demande:
+    # --------------------------------------------------------
+    # DEMANDE EN ATTENTE
+    # --------------------------------------------------------
+
+    if demande and demande.status == "pending":
 
         return RedirectResponse(
             url="/boutique/demande",
@@ -280,7 +288,51 @@ async def page_creer_boutique(
         )
 
     # --------------------------------------------------------
-    # AFFICHER LA PAGE
+    # DEMANDE ACCEPTÉE MAIS BOUTIQUE ABSENTE
+    # --------------------------------------------------------
+    #
+    # Normalement l'admin crée déjà la boutique.
+    #
+    # Cette sécurité permet toutefois de créer la boutique
+    # si la demande est "approved" mais que la boutique
+    # n'existe pas encore.
+    #
+    # --------------------------------------------------------
+
+    if demande and demande.status == "approved":
+
+        boutique = (
+            db.query(Boutique)
+            .filter(
+                Boutique.user_id == user_id
+            )
+            .first()
+        )
+
+        if not boutique:
+
+            boutique = Boutique(
+                name=demande.name,
+                category=demande.category,
+                sale_type=demande.sale_type,
+                user_id=user_id,
+            )
+
+            db.add(boutique)
+            db.commit()
+            db.refresh(boutique)
+
+        return RedirectResponse(
+            url="/ma-boutique",
+            status_code=303,
+        )
+
+    # --------------------------------------------------------
+    # DEMANDE REFUSÉE OU AUCUNE DEMANDE
+    # --------------------------------------------------------
+    #
+    # L'utilisateur peut faire une nouvelle demande.
+    #
     # --------------------------------------------------------
 
     context = contexte_global(
@@ -330,7 +382,7 @@ async def creer_boutique(
         )
 
     # --------------------------------------------------------
-    # DÉJÀ UNE BOUTIQUE
+    # VÉRIFIER SI UNE BOUTIQUE EXISTE
     # --------------------------------------------------------
 
     boutique = (
@@ -349,19 +401,28 @@ async def creer_boutique(
         )
 
     # --------------------------------------------------------
-    # DEMANDE DÉJÀ EN ATTENTE
+    # RÉCUPÉRER LA DERNIÈRE DEMANDE
     # --------------------------------------------------------
 
-    demande_existante = (
+    derniere_demande = (
         db.query(BoutiqueRequest)
         .filter(
-            BoutiqueRequest.user_id == user_id,
-            BoutiqueRequest.status == "pending",
+            BoutiqueRequest.user_id == user_id
+        )
+        .order_by(
+            BoutiqueRequest.id.desc()
         )
         .first()
     )
 
-    if demande_existante:
+    # --------------------------------------------------------
+    # DEMANDE EN ATTENTE
+    # --------------------------------------------------------
+
+    if (
+        derniere_demande
+        and derniere_demande.status == "pending"
+    ):
 
         return RedirectResponse(
             url="/boutique/demande",
@@ -369,7 +430,47 @@ async def creer_boutique(
         )
 
     # --------------------------------------------------------
-    # CRÉER LA DEMANDE
+    # DEMANDE ACCEPTÉE
+    # --------------------------------------------------------
+    #
+    # Si la demande est déjà approved mais que la boutique
+    # n'existe pas, on la crée ici.
+    #
+    # --------------------------------------------------------
+
+    if (
+        derniere_demande
+        and derniere_demande.status == "approved"
+    ):
+
+        boutique = (
+            db.query(Boutique)
+            .filter(
+                Boutique.user_id == user_id
+            )
+            .first()
+        )
+
+        if not boutique:
+
+            boutique = Boutique(
+                name=derniere_demande.name,
+                category=derniere_demande.category,
+                sale_type=derniere_demande.sale_type,
+                user_id=user_id,
+            )
+
+            db.add(boutique)
+            db.commit()
+            db.refresh(boutique)
+
+        return RedirectResponse(
+            url="/ma-boutique",
+            status_code=303,
+        )
+
+    # --------------------------------------------------------
+    # CRÉER UNE NOUVELLE DEMANDE
     # --------------------------------------------------------
 
     demande = BoutiqueRequest(
@@ -381,6 +482,7 @@ async def creer_boutique(
     )
 
     db.add(demande)
+
     db.commit()
 
     # --------------------------------------------------------
@@ -423,6 +525,25 @@ async def statut_demande(
         )
 
     # --------------------------------------------------------
+    # VÉRIFIER D'ABORD SI UNE BOUTIQUE EXISTE
+    # --------------------------------------------------------
+
+    boutique = (
+        db.query(Boutique)
+        .filter(
+            Boutique.user_id == user_id
+        )
+        .first()
+    )
+
+    if boutique:
+
+        return RedirectResponse(
+            url="/ma-boutique",
+            status_code=303,
+        )
+
+    # --------------------------------------------------------
     # DERNIÈRE DEMANDE
     # --------------------------------------------------------
 
@@ -436,6 +557,28 @@ async def statut_demande(
         )
         .first()
     )
+
+    # --------------------------------------------------------
+    # SI DEMANDE ACCEPTÉE MAIS BOUTIQUE ABSENTE
+    # --------------------------------------------------------
+
+    if demande and demande.status == "approved":
+
+        boutique = Boutique(
+            name=demande.name,
+            category=demande.category,
+            sale_type=demande.sale_type,
+            user_id=user_id,
+        )
+
+        db.add(boutique)
+
+        db.commit()
+
+        return RedirectResponse(
+            url="/ma-boutique",
+            status_code=303,
+        )
 
     # --------------------------------------------------------
     # CONTEXTE
@@ -484,7 +627,7 @@ async def ma_boutique(
         )
 
     # --------------------------------------------------------
-    # RÉCUPÉRER LA BOUTIQUE DU PROPRIÉTAIRE
+    # RÉCUPÉRER SA BOUTIQUE
     # --------------------------------------------------------
 
     boutique = (
@@ -507,7 +650,7 @@ async def ma_boutique(
         )
 
     # --------------------------------------------------------
-    # PRODUITS DE CETTE BOUTIQUE UNIQUEMENT
+    # PRODUITS DE SA BOUTIQUE
     # --------------------------------------------------------
 
     products = (
@@ -569,7 +712,7 @@ async def page_modifier_boutique(
         )
 
     # --------------------------------------------------------
-    # RÉCUPÉRER UNIQUEMENT SA BOUTIQUE
+    # RÉCUPÉRER SA BOUTIQUE
     # --------------------------------------------------------
 
     boutique = (
@@ -649,7 +792,7 @@ async def modifier_boutique(
         )
 
     # --------------------------------------------------------
-    # RÉCUPÉRER UNIQUEMENT SA BOUTIQUE
+    # RÉCUPÉRER SA BOUTIQUE
     # --------------------------------------------------------
 
     boutique = (
@@ -673,9 +816,6 @@ async def modifier_boutique(
 
     boutique.name = name.strip()
 
-    # On conserve category pour compatibilité avec
-    # la base actuelle, mais on ne développe pas cette
-    # fonctionnalité pour l'instant.
     boutique.category = category.strip()
 
     boutique.sale_type = sale_type.strip()
@@ -768,6 +908,7 @@ async def modifier_boutique(
     # --------------------------------------------------------
 
     db.commit()
+
     db.refresh(boutique)
 
     request.session["message"] = (
@@ -811,7 +952,7 @@ async def boutique_detail(
         )
 
     # --------------------------------------------------------
-    # PRODUITS DE LA BOUTIQUE
+    # PRODUITS
     # --------------------------------------------------------
 
     products = (
@@ -835,11 +976,12 @@ async def boutique_detail(
     )
 
     context.update({
-    "request": request,             
-    "boutique": boutique,
-    "products": products,
-    "produits": products,
+        "request": request,
+        "boutique": boutique,
+        "products": products,
+        "produits": products,
     })
+
     return templates.TemplateResponse(
         request=request,
         name="boutique_detail.html",
@@ -849,18 +991,6 @@ async def boutique_detail(
 
 # ============================================================
 # COMPATIBILITÉ AVEC L'ANCIEN LIEN
-# ============================================================
-#
-# Ancienne URL :
-#
-#     /boutique/5
-#
-# Nouvelle URL :
-#
-#     /boutique/detail/5
-#
-# On garde l'ancienne route pour éviter de casser
-# d'anciens liens.
 # ============================================================
 
 @router.get("/boutique/{boutique_id}")

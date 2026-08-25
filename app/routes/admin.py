@@ -34,7 +34,9 @@ def get_admin(request: Request, db):
 
     user = (
         db.query(User)
-        .filter(User.id == user_id)
+        .filter(
+            User.id == user_id
+        )
         .first()
     )
 
@@ -52,7 +54,9 @@ def get_admin(request: Request, db):
 # =====================================================
 
 @router.get("/admin")
-async def admin_page(request: Request):
+async def admin_page(
+    request: Request
+):
 
     db = SessionLocal()
 
@@ -126,7 +130,10 @@ async def admin_page(request: Request):
             .all()
         )
 
-        # Nombre de messages non lus
+        # =================================================
+        # NOMBRE DE MESSAGES NON LUS
+        # =================================================
+
         contact_message_count = (
             db.query(ContactMessage)
             .filter(
@@ -217,7 +224,7 @@ async def admin_page(request: Request):
 
         print(
             "ERREUR PAGE ADMIN :",
-            e
+            repr(e)
         )
 
         request.session["message"] = (
@@ -250,6 +257,10 @@ async def supprimer_utilisateur(
     db = SessionLocal()
 
     try:
+
+        # -------------------------------------------------
+        # VÉRIFIER ADMIN
+        # -------------------------------------------------
 
         admin = get_admin(
             request,
@@ -317,6 +328,7 @@ async def supprimer_utilisateur(
         )
 
         for product in products:
+
             db.delete(product)
 
         # -------------------------------------------------
@@ -332,6 +344,7 @@ async def supprimer_utilisateur(
         )
 
         for boutique in boutiques:
+
             db.delete(boutique)
 
         # -------------------------------------------------
@@ -347,6 +360,7 @@ async def supprimer_utilisateur(
         )
 
         for boutique_request in boutique_requests:
+
             db.delete(boutique_request)
 
         # -------------------------------------------------
@@ -373,7 +387,7 @@ async def supprimer_utilisateur(
 
         print(
             "ERREUR SUPPRESSION UTILISATEUR :",
-            e
+            repr(e)
         )
 
         request.session["message"] = (
@@ -406,6 +420,10 @@ async def changer_role(
     db = SessionLocal()
 
     try:
+
+        # -------------------------------------------------
+        # VÉRIFIER ADMIN
+        # -------------------------------------------------
 
         admin = get_admin(
             request,
@@ -495,7 +513,7 @@ async def changer_role(
 
         print(
             "ERREUR CHANGEMENT ROLE :",
-            e
+            repr(e)
         )
 
         request.session["message"] = (
@@ -527,6 +545,10 @@ async def supprimer_annonce(
     db = SessionLocal()
 
     try:
+
+        # -------------------------------------------------
+        # VÉRIFIER ADMIN
+        # -------------------------------------------------
 
         admin = get_admin(
             request,
@@ -589,7 +611,7 @@ async def supprimer_annonce(
 
         print(
             "ERREUR SUPPRESSION ANNONCE :",
-            e
+            repr(e)
         )
 
         request.session["message"] = (
@@ -622,6 +644,10 @@ async def accepter_boutique(
     db = SessionLocal()
 
     try:
+
+        # -------------------------------------------------
+        # VÉRIFIER ADMIN
+        # -------------------------------------------------
 
         admin = get_admin(
             request,
@@ -690,6 +716,9 @@ async def accepter_boutique(
 
         if boutique_existante:
 
+            # La boutique existe déjà.
+            # On met simplement la demande en approved.
+
             boutique_request.status = "approved"
 
             db.commit()
@@ -704,29 +733,35 @@ async def accepter_boutique(
                 status_code=303
             )
 
-            # =====================================================
-            #       CRÉER LA BOUTIQUE
-            # =====================================================
+        # =================================================
+        # CRÉER LA BOUTIQUE
+        # =================================================
 
-            boutique = Boutique(
+        boutique = Boutique(
             name=boutique_request.name,
             category=boutique_request.category,
             sale_type=boutique_request.sale_type,
-             user_id=boutique_request.user_id
-              )
+            user_id=boutique_request.user_id
+        )
 
-            db.add(boutique)
+        db.add(boutique)
+
         # -------------------------------------------------
-        # APPROUVER
+        # APPROUVER LA DEMANDE
         # -------------------------------------------------
 
         boutique_request.status = "approved"
+
+        # -------------------------------------------------
+        # SAUVEGARDER BOUTIQUE + DEMANDE
+        # -------------------------------------------------
 
         db.commit()
 
         request.session["message"] = (
             "✅ Demande de boutique "
-            "acceptée avec succès."
+            "acceptée et boutique créée "
+            "avec succès."
         )
 
         return RedirectResponse(
@@ -740,7 +775,7 @@ async def accepter_boutique(
 
         print(
             "ERREUR ACCEPTATION BOUTIQUE :",
-            e
+            repr(e)
         )
 
         request.session["message"] = (
@@ -773,6 +808,10 @@ async def refuser_boutique(
     db = SessionLocal()
 
     try:
+
+        # -------------------------------------------------
+        # VÉRIFIER ADMIN
+        # -------------------------------------------------
 
         admin = get_admin(
             request,
@@ -849,7 +888,7 @@ async def refuser_boutique(
 
         print(
             "ERREUR REFUS BOUTIQUE :",
-            e
+            repr(e)
         )
 
         request.session["message"] = (
@@ -882,6 +921,10 @@ async def lire_message_contact(
     db = SessionLocal()
 
     try:
+
+        # -------------------------------------------------
+        # VÉRIFIER ADMIN
+        # -------------------------------------------------
 
         admin = get_admin(
             request,
@@ -941,7 +984,7 @@ async def lire_message_contact(
 
         print(
             "ERREUR LECTURE MESSAGE CONTACT :",
-            e
+            repr(e)
         )
 
         request.session["message"] = (
@@ -974,6 +1017,10 @@ async def message_contact_non_lu(
     db = SessionLocal()
 
     try:
+
+        # -------------------------------------------------
+        # VÉRIFIER ADMIN
+        # -------------------------------------------------
 
         admin = get_admin(
             request,
@@ -1033,7 +1080,7 @@ async def message_contact_non_lu(
 
         print(
             "ERREUR MESSAGE NON LU :",
-            e
+            repr(e)
         )
 
         request.session["message"] = (
@@ -1066,6 +1113,10 @@ async def supprimer_message_contact(
     db = SessionLocal()
 
     try:
+
+        # -------------------------------------------------
+        # VÉRIFIER ADMIN
+        # -------------------------------------------------
 
         admin = get_admin(
             request,
@@ -1128,7 +1179,7 @@ async def supprimer_message_contact(
 
         print(
             "ERREUR SUPPRESSION MESSAGE CONTACT :",
-            e
+            repr(e)
         )
 
         request.session["message"] = (

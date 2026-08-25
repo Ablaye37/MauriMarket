@@ -1,3 +1,4 @@
+```html
 {% extends "base.html" %}
 
 {% block title %}
@@ -21,7 +22,6 @@ Publier un produit - MauriMarket
             Publier un produit
 
         </h2>
-
 
         {% if boutique and is_boutique_publish %}
 
@@ -396,17 +396,18 @@ Publier un produit - MauriMarket
                 id="subcategory_id"
                 class="form-select"
                 required
+                disabled
             >
 
                 <option value="">
-                    -- Choisir une sous-catégorie --
+                    -- Choisir d'abord une catégorie --
                 </option>
 
                 {% for subcategory in subcategories %}
 
                     <option
                         value="{{ subcategory.id }}"
-                        data-category="{{ subcategory.category_id }}"
+                        data-category-id="{{ subcategory.category_id }}"
                     >
                         {{ subcategory.name }}
                     </option>
@@ -446,7 +447,7 @@ Publier un produit - MauriMarket
 
 <!-- =========================================================
      JAVASCRIPT
-     - FILTRE SOUS-CATÉGORIES
+     - SOUS-CATÉGORIES DYNAMIQUES
      - PROTECTION DOUBLE CLIC
 ========================================================== -->
 
@@ -492,92 +493,202 @@ document.addEventListener(
 
 
         /* =====================================================
-           FILTRE SOUS-CATÉGORIES
+           SAUVEGARDER LES SOUS-CATÉGORIES
         ====================================================== */
 
-        if (
-            categorySelect &&
-            subcategorySelect
-        ) {
+        const allSubcategories =
+            Array.from(
+                subcategorySelect.querySelectorAll(
+                    "option[data-category-id]"
+                )
+            ).map(
+                function (option) {
 
-            const options =
-                Array.from(
-                    subcategorySelect.options
+                    return {
+
+                        value:
+                            option.value,
+
+                        text:
+                            option.textContent.trim(),
+
+                        categoryId:
+                            option.dataset.categoryId
+
+                    };
+
+                }
+            );
+
+
+        /* =====================================================
+           AFFICHER LES SOUS-CATÉGORIES
+        ====================================================== */
+
+        function updateSubcategories() {
+
+            const categoryId =
+                categorySelect.value;
+
+
+            /*
+             * Vider complètement
+             * le sélecteur.
+             */
+
+            subcategorySelect.innerHTML = "";
+
+
+            /*
+             * Aucune catégorie sélectionnée.
+             */
+
+            if (!categoryId) {
+
+                const defaultOption =
+                    document.createElement(
+                        "option"
+                    );
+
+                defaultOption.value = "";
+
+                defaultOption.textContent =
+                    "-- Choisir d'abord une catégorie --";
+
+                subcategorySelect.appendChild(
+                    defaultOption
                 );
 
+                subcategorySelect.disabled =
+                    true;
 
-            function filtrerSousCategories() {
-
-                const categoryId =
-                    categorySelect.value;
-
-
-                /*
-                 * Remettre la sélection
-                 * à zéro quand la catégorie change.
-                 */
-
-                subcategorySelect.value = "";
-
-
-                options.forEach(
-                    function (option) {
-
-                        /*
-                         * Option par défaut.
-                         */
-
-                        if (!option.value) {
-
-                            option.hidden = false;
-
-                            return;
-
-                        }
-
-
-                        /*
-                         * Afficher uniquement
-                         * les sous-catégories
-                         * de la catégorie sélectionnée.
-                         */
-
-                        if (
-                            option.dataset.category ===
-                            categoryId
-                        ) {
-
-                            option.hidden = false;
-
-                        } else {
-
-                            option.hidden = true;
-
-                        }
-
-                    }
-                );
-
+                return;
             }
 
 
-            categorySelect.addEventListener(
-                "change",
-                filtrerSousCategories
+            /*
+             * Option par défaut.
+             */
+
+            const defaultOption =
+                document.createElement(
+                    "option"
+                );
+
+            defaultOption.value = "";
+
+            defaultOption.textContent =
+                "-- Choisir une sous-catégorie --";
+
+            subcategorySelect.appendChild(
+                defaultOption
             );
 
 
             /*
-             * Initialisation.
+             * Trouver uniquement
+             * les sous-catégories
+             * de la catégorie choisie.
              */
 
-            filtrerSousCategories();
+            const filtered =
+                allSubcategories.filter(
+                    function (subcategory) {
+
+                        return (
+                            String(
+                                subcategory.categoryId
+                            ) ===
+                            String(
+                                categoryId
+                            )
+                        );
+
+                    }
+                );
+
+
+            /*
+             * Ajouter les sous-catégories.
+             */
+
+            filtered.forEach(
+                function (subcategory) {
+
+                    const option =
+                        document.createElement(
+                            "option"
+                        );
+
+                    option.value =
+                        subcategory.value;
+
+                    option.textContent =
+                        subcategory.text;
+
+                    subcategorySelect.appendChild(
+                        option
+                    );
+
+                }
+            );
+
+
+            /*
+             * Activer le sélecteur.
+             */
+
+            subcategorySelect.disabled =
+                filtered.length === 0;
+
+
+            /*
+             * S'il n'y a aucune
+             * sous-catégorie.
+             */
+
+            if (filtered.length === 0) {
+
+                subcategorySelect.innerHTML = "";
+
+                const emptyOption =
+                    document.createElement(
+                        "option"
+                    );
+
+                emptyOption.value = "";
+
+                emptyOption.textContent =
+                    "-- Aucune sous-catégorie disponible --";
+
+                subcategorySelect.appendChild(
+                    emptyOption
+                );
+
+            }
 
         }
 
 
         /* =====================================================
-           PROTECTION CONTRE DOUBLE PUBLICATION
+           CHANGEMENT DE CATÉGORIE
+        ====================================================== */
+
+        categorySelect.addEventListener(
+            "change",
+            updateSubcategories
+        );
+
+
+        /*
+         * Initialisation.
+         */
+
+        updateSubcategories();
+
+
+        /* =====================================================
+           PROTECTION DOUBLE PUBLICATION
         ====================================================== */
 
         if (
@@ -593,13 +704,49 @@ document.addEventListener(
                 function (event) {
 
                     /*
-                     * Si le formulaire a déjà été envoyé,
-                     * on bloque toute nouvelle soumission.
+                     * Si déjà envoyé,
+                     * empêcher une deuxième publication.
                      */
 
                     if (submitting) {
 
                         event.preventDefault();
+
+                        return false;
+
+                    }
+
+
+                    /*
+                     * Vérifier catégorie.
+                     */
+
+                    if (!categorySelect.value) {
+
+                        event.preventDefault();
+
+                        alert(
+                            "Veuillez choisir une catégorie."
+                        );
+
+                        return false;
+
+                    }
+
+
+                    /*
+                     * Vérifier sous-catégorie.
+                     */
+
+                    if (
+                        !subcategorySelect.value
+                    ) {
+
+                        event.preventDefault();
+
+                        alert(
+                            "Veuillez choisir une sous-catégorie."
+                        );
 
                         return false;
 
@@ -614,22 +761,18 @@ document.addEventListener(
 
 
                     /*
-                     * Désactiver le bouton immédiatement.
+                     * Désactiver le bouton.
                      */
 
                     button.disabled = true;
 
-
-                    /*
-                     * Empêcher les clics suivants.
-                     */
 
                     button.style.pointerEvents =
                         "none";
 
 
                     /*
-                     * Modifier le texte.
+                     * Texte.
                      */
 
                     if (buttonText) {
@@ -641,7 +784,7 @@ document.addEventListener(
 
 
                     /*
-                     * Modifier l'icône.
+                     * Icône.
                      */
 
                     if (buttonIcon) {
@@ -653,8 +796,7 @@ document.addEventListener(
 
 
                     /*
-                     * Changer légèrement
-                     * l'apparence du bouton.
+                     * Apparence.
                      */
 
                     button.classList.add(
@@ -673,7 +815,7 @@ document.addEventListener(
 
 
 <!-- =========================================================
-     STYLE BOUTON
+     STYLE
 ========================================================== -->
 
 <style>
@@ -711,7 +853,17 @@ document.addEventListener(
 
 }
 
+
+#subcategory_id:disabled {
+
+    background-color: #f8f9fa;
+
+    cursor: not-allowed;
+
+}
+
 </style>
 
 
 {% endblock %}
+```
