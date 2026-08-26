@@ -12,6 +12,7 @@ from app.models.category import Category
 from app.models.boutique import Boutique
 from app.models.boutique_request import BoutiqueRequest
 from app.models.contact_message import ContactMessage
+from app.models.order_item import OrderItem
 
 
 router = APIRouter()
@@ -21,9 +22,9 @@ templates = Jinja2Templates(
 )
 
 
-# =====================================================
+# ============================================================
 # VÉRIFIER ADMIN
-# =====================================================
+# ============================================================
 
 def get_admin(request: Request, db):
 
@@ -34,9 +35,7 @@ def get_admin(request: Request, db):
 
     user = (
         db.query(User)
-        .filter(
-            User.id == user_id
-        )
+        .filter(User.id == user_id)
         .first()
     )
 
@@ -49,9 +48,21 @@ def get_admin(request: Request, db):
     return user
 
 
-# =====================================================
+# ============================================================
+# REDIRECTION ADMIN
+# ============================================================
+
+def admin_redirect():
+
+    return RedirectResponse(
+        "/admin",
+        status_code=303
+    )
+
+
+# ============================================================
 # PAGE ADMIN
-# =====================================================
+# ============================================================
 
 @router.get("/admin")
 async def admin_page(
@@ -62,9 +73,9 @@ async def admin_page(
 
     try:
 
-        # =================================================
+        # ----------------------------------------------------
         # VÉRIFIER ADMIN
-        # =================================================
+        # ----------------------------------------------------
 
         admin = get_admin(
             request,
@@ -78,9 +89,9 @@ async def admin_page(
                 status_code=303
             )
 
-        # =================================================
+        # ====================================================
         # UTILISATEURS
-        # =================================================
+        # ====================================================
 
         users = (
             db.query(User)
@@ -90,25 +101,55 @@ async def admin_page(
             .all()
         )
 
-        # =================================================
+        # ====================================================
         # ANNONCES
-        # =================================================
-
+        #
+        # IMPORTANT :
+        # On récupère TOUTES les annonces.
+        #
+        # Même :
+        # - is_active = True
+        # - is_active = False
+        # - annonces indépendantes
+        # - annonces de boutique
+        #
+        # Donc une annonce présente en base ne sera pas
+        # cachée de l'administration.
+        # ====================================================
         products = (
-            db.query(Product)
+        db.query(Product)
+        .options(
+         joinedload(Product.user),
+        joinedload(Product.category),
+        joinedload(Product.subcategory),
+        joinedload(Product.boutique)
+    )
+    .filter(
+        Product.is_active == True
+    )
+    .order_by(
+        Product.id.desc()
+    )
+    .all()
+)
+        # ====================================================
+        # BOUTIQUES
+        # ====================================================
+
+        boutiques = (
+            db.query(Boutique)
             .options(
-                joinedload(Product.user),
-                joinedload(Product.category)
+                joinedload(Boutique.user)
             )
             .order_by(
-                Product.id.desc()
+                Boutique.id.desc()
             )
             .all()
         )
 
-        # =================================================
+        # ====================================================
         # DEMANDES DE BOUTIQUES
-        # =================================================
+        # ====================================================
 
         boutique_requests = (
             db.query(BoutiqueRequest)
@@ -118,9 +159,9 @@ async def admin_page(
             .all()
         )
 
-        # =================================================
+        # ====================================================
         # MESSAGES CONTACT
-        # =================================================
+        # ====================================================
 
         contact_messages = (
             db.query(ContactMessage)
@@ -130,29 +171,36 @@ async def admin_page(
             .all()
         )
 
-        # =================================================
-        # NOMBRE DE MESSAGES NON LUS
-        # =================================================
-
-        contact_message_count = (
-            db.query(ContactMessage)
-            .filter(
-                ContactMessage.status == "new"
-            )
-            .count()
-        )
-
-        # =================================================
+        # ====================================================
         # STATISTIQUES
-        # =================================================
+        # ====================================================
 
         user_count = (
             db.query(User)
             .count()
         )
 
+        # Toutes les annonces
         product_count = (
             db.query(Product)
+            .count()
+        )
+
+        # Annonces actuellement visibles
+        active_product_count = (
+            db.query(Product)
+            .filter(
+                Product.is_active == True
+            )
+            .count()
+        )
+
+        # Annonces désactivées
+        inactive_product_count = (
+            db.query(Product)
+            .filter(
+                Product.is_active == False
+            )
             .count()
         )
 
@@ -174,56 +222,82 @@ async def admin_page(
             .count()
         )
 
-        # =================================================
+        contact_message_count = (
+            db.query(ContactMessage)
+            .filter(
+                ContactMessage.status == "new"
+            )
+            .count()
+        )
+
+        # ====================================================
         # MESSAGE FLASH
-        # =================================================
+        # ====================================================
 
         message = request.session.pop(
             "message",
             None
         )
 
-        # =================================================
-        # AFFICHER PAGE ADMIN
-        # =================================================
+        # ====================================================
+        # AFFICHER ADMIN
+        # ====================================================
 
         return templates.TemplateResponse(
+
             request=request,
+
             name="admin.html",
+
             context={
 
-                # ADMIN
                 "user": admin,
 
-                # UTILISATEURS
                 "users": users,
 
-                # PRODUITS
                 "products": products,
 
-                # BOUTIQUES
-                "boutique_requests": boutique_requests,
+                "boutiques": boutiques,
 
-                # CONTACT
-                "contact_messages": contact_messages,
+                "boutique_requests":
+                    boutique_requests,
 
-                # STATISTIQUES
-                "user_count": user_count,
-                "product_count": product_count,
-                "category_count": category_count,
-                "boutique_count": boutique_count,
-                "boutique_request_count": boutique_request_count,
-                "contact_message_count": contact_message_count,
+                "contact_messages":
+                    contact_messages,
 
-                # MESSAGE
-                "message": message
+                "user_count":
+                    user_count,
+
+                "product_count":
+                    product_count,
+
+                "active_product_count":
+                    active_product_count,
+
+                "inactive_product_count":
+                    inactive_product_count,
+
+                "category_count":
+                    category_count,
+
+                "boutique_count":
+                    boutique_count,
+
+                "boutique_request_count":
+                    boutique_request_count,
+
+                "contact_message_count":
+                    contact_message_count,
+
+                "message":
+                    message
             }
         )
 
     except Exception as e:
 
         print(
-            "ERREUR PAGE ADMIN :",
+            "❌ ERREUR PAGE ADMIN :",
             repr(e)
         )
 
@@ -242,25 +316,23 @@ async def admin_page(
         db.close()
 
 
-# =====================================================
+# ============================================================
 # SUPPRIMER UN UTILISATEUR
-# =====================================================
+# ============================================================
 
 @router.post(
     "/admin/utilisateur/supprimer/{user_id}"
 )
 async def supprimer_utilisateur(
+
     request: Request,
+
     user_id: int
 ):
 
     db = SessionLocal()
 
     try:
-
-        # -------------------------------------------------
-        # VÉRIFIER ADMIN
-        # -------------------------------------------------
 
         admin = get_admin(
             request,
@@ -274,9 +346,9 @@ async def supprimer_utilisateur(
                 status_code=303
             )
 
-        # -------------------------------------------------
+        # ----------------------------------------------------
         # EMPÊCHER L'ADMIN DE SE SUPPRIMER
-        # -------------------------------------------------
+        # ----------------------------------------------------
 
         if user_id == admin.id:
 
@@ -285,14 +357,11 @@ async def supprimer_utilisateur(
                 "votre propre compte."
             )
 
-            return RedirectResponse(
-                "/admin",
-                status_code=303
-            )
+            return admin_redirect()
 
-        # -------------------------------------------------
-        # CHERCHER UTILISATEUR
-        # -------------------------------------------------
+        # ----------------------------------------------------
+        # UTILISATEUR
+        # ----------------------------------------------------
 
         user = (
             db.query(User)
@@ -308,16 +377,13 @@ async def supprimer_utilisateur(
                 "❌ Utilisateur introuvable."
             )
 
-            return RedirectResponse(
-                "/admin",
-                status_code=303
-            )
+            return admin_redirect()
 
         user_name = user.full_name
 
-        # -------------------------------------------------
+        # ----------------------------------------------------
         # SUPPRIMER SES PRODUITS
-        # -------------------------------------------------
+        # ----------------------------------------------------
 
         products = (
             db.query(Product)
@@ -331,9 +397,9 @@ async def supprimer_utilisateur(
 
             db.delete(product)
 
-        # -------------------------------------------------
+        # ----------------------------------------------------
         # SUPPRIMER SES BOUTIQUES
-        # -------------------------------------------------
+        # ----------------------------------------------------
 
         boutiques = (
             db.query(Boutique)
@@ -347,11 +413,11 @@ async def supprimer_utilisateur(
 
             db.delete(boutique)
 
-        # -------------------------------------------------
-        # SUPPRIMER SES DEMANDES DE BOUTIQUE
-        # -------------------------------------------------
+        # ----------------------------------------------------
+        # SUPPRIMER SES DEMANDES
+        # ----------------------------------------------------
 
-        boutique_requests = (
+        requests_list = (
             db.query(BoutiqueRequest)
             .filter(
                 BoutiqueRequest.user_id == user.id
@@ -359,13 +425,13 @@ async def supprimer_utilisateur(
             .all()
         )
 
-        for boutique_request in boutique_requests:
+        for boutique_request in requests_list:
 
             db.delete(boutique_request)
 
-        # -------------------------------------------------
+        # ----------------------------------------------------
         # SUPPRIMER UTILISATEUR
-        # -------------------------------------------------
+        # ----------------------------------------------------
 
         db.delete(user)
 
@@ -373,57 +439,50 @@ async def supprimer_utilisateur(
 
         request.session["message"] = (
             f"✅ Utilisateur {user_name} "
-            "supprimé avec succès."
+            "et toutes ses données ont été supprimés."
         )
 
-        return RedirectResponse(
-            "/admin",
-            status_code=303
-        )
+        return admin_redirect()
 
     except Exception as e:
 
         db.rollback()
 
         print(
-            "ERREUR SUPPRESSION UTILISATEUR :",
+            "❌ ERREUR SUPPRESSION UTILISATEUR :",
             repr(e)
         )
 
         request.session["message"] = (
             "❌ Impossible de supprimer "
-            "cet utilisateur."
+            "cet utilisateur. "
+            "Vérifiez les relations de la base."
         )
 
-        return RedirectResponse(
-            "/admin",
-            status_code=303
-        )
+        return admin_redirect()
 
     finally:
 
         db.close()
 
 
-# =====================================================
-# CHANGER LE RÔLE D'UN UTILISATEUR
-# =====================================================
+# ============================================================
+# CHANGER LE RÔLE
+# ============================================================
 
 @router.post(
     "/admin/utilisateur/role/{user_id}"
 )
 async def changer_role(
+
     request: Request,
+
     user_id: int
 ):
 
     db = SessionLocal()
 
     try:
-
-        # -------------------------------------------------
-        # VÉRIFIER ADMIN
-        # -------------------------------------------------
 
         admin = get_admin(
             request,
@@ -437,10 +496,6 @@ async def changer_role(
                 status_code=303
             )
 
-        # -------------------------------------------------
-        # EMPÊCHER LA MODIFICATION DE SON PROPRE RÔLE
-        # -------------------------------------------------
-
         if user_id == admin.id:
 
             request.session["message"] = (
@@ -448,14 +503,7 @@ async def changer_role(
                 "votre propre rôle."
             )
 
-            return RedirectResponse(
-                "/admin",
-                status_code=303
-            )
-
-        # -------------------------------------------------
-        # CHERCHER UTILISATEUR
-        # -------------------------------------------------
+            return admin_redirect()
 
         user = (
             db.query(User)
@@ -471,14 +519,7 @@ async def changer_role(
                 "❌ Utilisateur introuvable."
             )
 
-            return RedirectResponse(
-                "/admin",
-                status_code=303
-            )
-
-        # -------------------------------------------------
-        # CHANGER RÔLE
-        # -------------------------------------------------
+            return admin_redirect()
 
         if user.role == "admin":
 
@@ -502,28 +543,23 @@ async def changer_role(
 
         request.session["message"] = message
 
-        return RedirectResponse(
-            "/admin",
-            status_code=303
-        )
+        return admin_redirect()
 
     except Exception as e:
 
         db.rollback()
 
         print(
-            "ERREUR CHANGEMENT ROLE :",
+            "❌ ERREUR CHANGEMENT ROLE :",
             repr(e)
         )
 
         request.session["message"] = (
-            "❌ Impossible de modifier le rôle."
+            "❌ Impossible de modifier "
+            "le rôle."
         )
 
-        return RedirectResponse(
-            "/admin",
-            status_code=303
-        )
+        return admin_redirect()
 
     finally:
 
@@ -563,7 +599,7 @@ async def supprimer_annonce(
             )
 
         # -------------------------------------------------
-        # CHERCHER PRODUIT
+        # CHERCHER L'ANNONCE
         # -------------------------------------------------
 
         product = (
@@ -587,17 +623,73 @@ async def supprimer_annonce(
 
         product_title = product.title
 
+        print(
+            f"🗑️ Tentative suppression : "
+            f"{product.id} {product.title}"
+        )
+
         # -------------------------------------------------
-        # SUPPRIMER
+        # VÉRIFIER SI LE PRODUIT EST UTILISÉ
+        # DANS UNE COMMANDE
+        # -------------------------------------------------
+
+        order_item = (
+            db.query(OrderItem)
+            .filter(
+                OrderItem.product_id == product.id
+            )
+            .first()
+        )
+
+        # -------------------------------------------------
+        # CAS 1 :
+        # PRODUIT UTILISÉ DANS UNE COMMANDE
+        # -------------------------------------------------
+
+        if order_item:
+
+            # On ne peut pas supprimer physiquement
+            # le produit car order_items.product_id
+            # pointe encore vers products.id.
+
+            product.is_active = False
+
+            db.commit()
+
+            print(
+                f"⚠️ Produit #{product.id} conservé "
+                "car il est utilisé dans une commande."
+            )
+
+            request.session["message"] = (
+                f"⛔ Annonce « {product_title} » "
+                "désactivée. Elle est conservée dans "
+                "la base afin de préserver l'historique "
+                "des commandes."
+            )
+
+            return RedirectResponse(
+                "/admin",
+                status_code=303
+            )
+
+        # -------------------------------------------------
+        # CAS 2 :
+        # PRODUIT JAMAIS UTILISÉ DANS UNE COMMANDE
         # -------------------------------------------------
 
         db.delete(product)
 
         db.commit()
 
+        print(
+            f"✅ Produit #{product.id} "
+            "supprimé définitivement."
+        )
+
         request.session["message"] = (
-            f"✅ Annonce « {product_title} » "
-            "supprimée avec succès."
+            f"🗑️ Annonce « {product_title} » "
+            "supprimée définitivement."
         )
 
         return RedirectResponse(
@@ -610,7 +702,7 @@ async def supprimer_annonce(
         db.rollback()
 
         print(
-            "ERREUR SUPPRESSION ANNONCE :",
+            "❌ ERREUR SUPPRESSION ANNONCE ADMIN :",
             repr(e)
         )
 
@@ -628,26 +720,23 @@ async def supprimer_annonce(
 
         db.close()
 
-
-# =====================================================
-# ACCEPTER UNE DEMANDE DE BOUTIQUE
-# =====================================================
+# ============================================================
+# RÉACTIVER UNE ANNONCE
+# ============================================================
 
 @router.post(
-    "/admin/boutique/accepter/{request_id}"
+    "/admin/annonce/reactiver/{product_id}"
 )
-async def accepter_boutique(
+async def reactiver_annonce(
+
     request: Request,
-    request_id: int
+
+    product_id: int
 ):
 
     db = SessionLocal()
 
     try:
-
-        # -------------------------------------------------
-        # VÉRIFIER ADMIN
-        # -------------------------------------------------
 
         admin = get_admin(
             request,
@@ -661,9 +750,260 @@ async def accepter_boutique(
                 status_code=303
             )
 
-        # -------------------------------------------------
-        # CHERCHER LA DEMANDE
-        # -------------------------------------------------
+        product = (
+            db.query(Product)
+            .filter(
+                Product.id == product_id
+            )
+            .first()
+        )
+
+        if not product:
+
+            request.session["message"] = (
+                "❌ Annonce introuvable."
+            )
+
+            return admin_redirect()
+
+        product.is_active = True
+
+        db.commit()
+
+        request.session["message"] = (
+            f"✅ Annonce « {product.title} » "
+            "réactivée."
+        )
+
+        return admin_redirect()
+
+    except Exception as e:
+
+        db.rollback()
+
+        print(
+            "❌ ERREUR RÉACTIVATION :",
+            repr(e)
+        )
+
+        request.session["message"] = (
+            "❌ Impossible de réactiver "
+            "cette annonce."
+        )
+
+        return admin_redirect()
+
+    finally:
+
+        db.close()
+
+
+# ============================================================
+# DÉSACTIVER UNE ANNONCE
+# ============================================================
+
+@router.post(
+    "/admin/annonce/desactiver/{product_id}"
+)
+async def desactiver_annonce(
+
+    request: Request,
+
+    product_id: int
+):
+
+    db = SessionLocal()
+
+    try:
+
+        admin = get_admin(
+            request,
+            db
+        )
+
+        if not admin:
+
+            return RedirectResponse(
+                "/login",
+                status_code=303
+            )
+
+        product = (
+            db.query(Product)
+            .filter(
+                Product.id == product_id
+            )
+            .first()
+        )
+
+        if not product:
+
+            request.session["message"] = (
+                "❌ Annonce introuvable."
+            )
+
+            return admin_redirect()
+
+            product_title = product.title
+
+            db.delete(product)
+            db.commit()
+            request.session["message"] = (
+            f"🗑️ Annonce « {product_title} » "
+            "supprimée définitivement."
+          )
+        return admin_redirect()
+
+    except Exception as e:
+
+        db.rollback()
+
+        print(
+            "❌ ERREUR DÉSACTIVATION :",
+            repr(e)
+        )
+
+        request.session["message"] = (
+            "❌ Impossible de désactiver "
+            "cette annonce."
+        )
+
+        return admin_redirect()
+
+    finally:
+
+        db.close()
+
+
+# ============================================================
+# SUPPRIMER UNE BOUTIQUE
+# ============================================================
+
+@router.post(
+    "/admin/boutique/supprimer/{boutique_id}"
+)
+async def supprimer_boutique(
+
+    request: Request,
+
+    boutique_id: int
+):
+
+    db = SessionLocal()
+
+    try:
+
+        admin = get_admin(
+            request,
+            db
+        )
+
+        if not admin:
+
+            return RedirectResponse(
+                "/login",
+                status_code=303
+            )
+
+        boutique = (
+            db.query(Boutique)
+            .filter(
+                Boutique.id == boutique_id
+            )
+            .first()
+        )
+
+        if not boutique:
+
+            request.session["message"] = (
+                "❌ Boutique introuvable."
+            )
+
+            return admin_redirect()
+
+        boutique_name = boutique.name
+
+        # ----------------------------------------------------
+        # PRODUITS DE LA BOUTIQUE
+        # ----------------------------------------------------
+
+        products = (
+            db.query(Product)
+            .filter(
+                Product.boutique_id == boutique.id
+            )
+            .all()
+        )
+
+        for product in products:
+
+            db.delete(product)
+
+        # ----------------------------------------------------
+        # SUPPRIMER BOUTIQUE
+        # ----------------------------------------------------
+
+        db.delete(boutique)
+
+        db.commit()
+
+        request.session["message"] = (
+            f"🗑️ Boutique « {boutique_name} » "
+            "et ses annonces ont été supprimées."
+        )
+
+        return admin_redirect()
+
+    except Exception as e:
+
+        db.rollback()
+
+        print(
+            "❌ ERREUR SUPPRESSION BOUTIQUE :",
+            repr(e)
+        )
+
+        request.session["message"] = (
+            "❌ Impossible de supprimer "
+            "cette boutique."
+        )
+
+        return admin_redirect()
+
+    finally:
+
+        db.close()
+
+
+# ============================================================
+# ACCEPTER UNE DEMANDE DE BOUTIQUE
+# ============================================================
+
+@router.post(
+    "/admin/boutique/accepter/{request_id}"
+)
+async def accepter_boutique(
+
+    request: Request,
+
+    request_id: int
+):
+
+    db = SessionLocal()
+
+    try:
+
+        admin = get_admin(
+            request,
+            db
+        )
+
+        if not admin:
+
+            return RedirectResponse(
+                "/login",
+                status_code=303
+            )
 
         boutique_request = (
             db.query(BoutiqueRequest)
@@ -680,14 +1020,7 @@ async def accepter_boutique(
                 "introuvable."
             )
 
-            return RedirectResponse(
-                "/admin",
-                status_code=303
-            )
-
-        # -------------------------------------------------
-        # VÉRIFIER STATUT
-        # -------------------------------------------------
+            return admin_redirect()
 
         if boutique_request.status != "pending":
 
@@ -696,14 +1029,7 @@ async def accepter_boutique(
                 "été traitée."
             )
 
-            return RedirectResponse(
-                "/admin",
-                status_code=303
-            )
-
-        # -------------------------------------------------
-        # VÉRIFIER SI L'UTILISATEUR A DÉJÀ UNE BOUTIQUE
-        # -------------------------------------------------
+            return admin_redirect()
 
         boutique_existante = (
             db.query(Boutique)
@@ -716,9 +1042,6 @@ async def accepter_boutique(
 
         if boutique_existante:
 
-            # La boutique existe déjà.
-            # On met simplement la demande en approved.
-
             boutique_request.status = "approved"
 
             db.commit()
@@ -728,53 +1051,36 @@ async def accepter_boutique(
                 "déjà une boutique."
             )
 
-            return RedirectResponse(
-                "/admin",
-                status_code=303
-            )
-
-        # =================================================
-        # CRÉER LA BOUTIQUE
-        # =================================================
+            return admin_redirect()
 
         boutique = Boutique(
+
             name=boutique_request.name,
-            category=boutique_request.category,
+
             sale_type=boutique_request.sale_type,
+
             user_id=boutique_request.user_id
         )
 
         db.add(boutique)
 
-        # -------------------------------------------------
-        # APPROUVER LA DEMANDE
-        # -------------------------------------------------
-
         boutique_request.status = "approved"
-
-        # -------------------------------------------------
-        # SAUVEGARDER BOUTIQUE + DEMANDE
-        # -------------------------------------------------
 
         db.commit()
 
         request.session["message"] = (
             "✅ Demande de boutique "
-            "acceptée et boutique créée "
-            "avec succès."
+            "acceptée et boutique créée."
         )
 
-        return RedirectResponse(
-            "/admin",
-            status_code=303
-        )
+        return admin_redirect()
 
     except Exception as e:
 
         db.rollback()
 
         print(
-            "ERREUR ACCEPTATION BOUTIQUE :",
+            "❌ ERREUR ACCEPTATION BOUTIQUE :",
             repr(e)
         )
 
@@ -783,35 +1089,30 @@ async def accepter_boutique(
             "cette demande."
         )
 
-        return RedirectResponse(
-            "/admin",
-            status_code=303
-        )
+        return admin_redirect()
 
     finally:
 
         db.close()
 
 
-# =====================================================
+# ============================================================
 # REFUSER UNE DEMANDE DE BOUTIQUE
-# =====================================================
+# ============================================================
 
 @router.post(
     "/admin/boutique/refuser/{request_id}"
 )
 async def refuser_boutique(
+
     request: Request,
+
     request_id: int
 ):
 
     db = SessionLocal()
 
     try:
-
-        # -------------------------------------------------
-        # VÉRIFIER ADMIN
-        # -------------------------------------------------
 
         admin = get_admin(
             request,
@@ -824,10 +1125,6 @@ async def refuser_boutique(
                 "/login",
                 status_code=303
             )
-
-        # -------------------------------------------------
-        # CHERCHER LA DEMANDE
-        # -------------------------------------------------
 
         boutique_request = (
             db.query(BoutiqueRequest)
@@ -844,14 +1141,7 @@ async def refuser_boutique(
                 "introuvable."
             )
 
-            return RedirectResponse(
-                "/admin",
-                status_code=303
-            )
-
-        # -------------------------------------------------
-        # VÉRIFIER STATUT
-        # -------------------------------------------------
+            return admin_redirect()
 
         if boutique_request.status != "pending":
 
@@ -860,14 +1150,7 @@ async def refuser_boutique(
                 "été traitée."
             )
 
-            return RedirectResponse(
-                "/admin",
-                status_code=303
-            )
-
-        # -------------------------------------------------
-        # REFUSER
-        # -------------------------------------------------
+            return admin_redirect()
 
         boutique_request.status = "rejected"
 
@@ -877,17 +1160,14 @@ async def refuser_boutique(
             "❌ Demande de boutique refusée."
         )
 
-        return RedirectResponse(
-            "/admin",
-            status_code=303
-        )
+        return admin_redirect()
 
     except Exception as e:
 
         db.rollback()
 
         print(
-            "ERREUR REFUS BOUTIQUE :",
+            "❌ ERREUR REFUS BOUTIQUE :",
             repr(e)
         )
 
@@ -896,35 +1176,30 @@ async def refuser_boutique(
             "cette demande."
         )
 
-        return RedirectResponse(
-            "/admin",
-            status_code=303
-        )
+        return admin_redirect()
 
     finally:
 
         db.close()
 
 
-# =====================================================
-# MARQUER UN MESSAGE CONTACT COMME LU
-# =====================================================
+# ============================================================
+# SUPPRIMER UNE DEMANDE DE BOUTIQUE
+# ============================================================
 
 @router.post(
-    "/admin/contact/lire/{message_id}"
+    "/admin/boutique/demande/supprimer/{request_id}"
 )
-async def lire_message_contact(
+async def supprimer_demande_boutique(
+
     request: Request,
-    message_id: int
+
+    request_id: int
 ):
 
     db = SessionLocal()
 
     try:
-
-        # -------------------------------------------------
-        # VÉRIFIER ADMIN
-        # -------------------------------------------------
 
         admin = get_admin(
             request,
@@ -938,9 +1213,85 @@ async def lire_message_contact(
                 status_code=303
             )
 
-        # -------------------------------------------------
-        # CHERCHER MESSAGE
-        # -------------------------------------------------
+        boutique_request = (
+            db.query(BoutiqueRequest)
+            .filter(
+                BoutiqueRequest.id == request_id
+            )
+            .first()
+        )
+
+        if not boutique_request:
+
+            request.session["message"] = (
+                "❌ Demande introuvable."
+            )
+
+            return admin_redirect()
+
+        db.delete(
+            boutique_request
+        )
+
+        db.commit()
+
+        request.session["message"] = (
+            "🗑️ Demande de boutique "
+            "supprimée définitivement."
+        )
+
+        return admin_redirect()
+
+    except Exception as e:
+
+        db.rollback()
+
+        print(
+            "❌ ERREUR SUPPRESSION DEMANDE :",
+            repr(e)
+        )
+
+        request.session["message"] = (
+            "❌ Impossible de supprimer "
+            "cette demande."
+        )
+
+        return admin_redirect()
+
+    finally:
+
+        db.close()
+
+
+# ============================================================
+# MARQUER MESSAGE COMME LU
+# ============================================================
+
+@router.post(
+    "/admin/contact/lire/{message_id}"
+)
+async def lire_message_contact(
+
+    request: Request,
+
+    message_id: int
+):
+
+    db = SessionLocal()
+
+    try:
+
+        admin = get_admin(
+            request,
+            db
+        )
+
+        if not admin:
+
+            return RedirectResponse(
+                "/login",
+                status_code=303
+            )
 
         contact_message = (
             db.query(ContactMessage)
@@ -956,14 +1307,7 @@ async def lire_message_contact(
                 "❌ Message introuvable."
             )
 
-            return RedirectResponse(
-                "/admin",
-                status_code=303
-            )
-
-        # -------------------------------------------------
-        # MARQUER COMME LU
-        # -------------------------------------------------
+            return admin_redirect()
 
         contact_message.status = "read"
 
@@ -973,17 +1317,14 @@ async def lire_message_contact(
             "✅ Message marqué comme lu."
         )
 
-        return RedirectResponse(
-            "/admin",
-            status_code=303
-        )
+        return admin_redirect()
 
     except Exception as e:
 
         db.rollback()
 
         print(
-            "ERREUR LECTURE MESSAGE CONTACT :",
+            "❌ ERREUR LECTURE MESSAGE :",
             repr(e)
         )
 
@@ -992,35 +1333,30 @@ async def lire_message_contact(
             "le message."
         )
 
-        return RedirectResponse(
-            "/admin",
-            status_code=303
-        )
+        return admin_redirect()
 
     finally:
 
         db.close()
 
 
-# =====================================================
-# REMETTRE UN MESSAGE COMME NON LU
-# =====================================================
+# ============================================================
+# REMETTRE MESSAGE COMME NON LU
+# ============================================================
 
 @router.post(
     "/admin/contact/non-lu/{message_id}"
 )
 async def message_contact_non_lu(
+
     request: Request,
+
     message_id: int
 ):
 
     db = SessionLocal()
 
     try:
-
-        # -------------------------------------------------
-        # VÉRIFIER ADMIN
-        # -------------------------------------------------
 
         admin = get_admin(
             request,
@@ -1033,10 +1369,6 @@ async def message_contact_non_lu(
                 "/login",
                 status_code=303
             )
-
-        # -------------------------------------------------
-        # CHERCHER MESSAGE
-        # -------------------------------------------------
 
         contact_message = (
             db.query(ContactMessage)
@@ -1052,14 +1384,7 @@ async def message_contact_non_lu(
                 "❌ Message introuvable."
             )
 
-            return RedirectResponse(
-                "/admin",
-                status_code=303
-            )
-
-        # -------------------------------------------------
-        # MARQUER COMME NON LU
-        # -------------------------------------------------
+            return admin_redirect()
 
         contact_message.status = "new"
 
@@ -1069,17 +1394,14 @@ async def message_contact_non_lu(
             "📩 Message marqué comme non lu."
         )
 
-        return RedirectResponse(
-            "/admin",
-            status_code=303
-        )
+        return admin_redirect()
 
     except Exception as e:
 
         db.rollback()
 
         print(
-            "ERREUR MESSAGE NON LU :",
+            "❌ ERREUR MESSAGE NON LU :",
             repr(e)
         )
 
@@ -1088,35 +1410,30 @@ async def message_contact_non_lu(
             "le message."
         )
 
-        return RedirectResponse(
-            "/admin",
-            status_code=303
-        )
+        return admin_redirect()
 
     finally:
 
         db.close()
 
 
-# =====================================================
-# SUPPRIMER UN MESSAGE CONTACT
-# =====================================================
+# ============================================================
+# SUPPRIMER MESSAGE CONTACT
+# ============================================================
 
 @router.post(
     "/admin/contact/supprimer/{message_id}"
 )
 async def supprimer_message_contact(
+
     request: Request,
+
     message_id: int
 ):
 
     db = SessionLocal()
 
     try:
-
-        # -------------------------------------------------
-        # VÉRIFIER ADMIN
-        # -------------------------------------------------
 
         admin = get_admin(
             request,
@@ -1129,10 +1446,6 @@ async def supprimer_message_contact(
                 "/login",
                 status_code=303
             )
-
-        # -------------------------------------------------
-        # CHERCHER MESSAGE
-        # -------------------------------------------------
 
         contact_message = (
             db.query(ContactMessage)
@@ -1148,18 +1461,15 @@ async def supprimer_message_contact(
                 "❌ Message introuvable."
             )
 
-            return RedirectResponse(
-                "/admin",
-                status_code=303
-            )
+            return admin_redirect()
 
-        message_name = contact_message.name
+        message_name = (
+            contact_message.name
+        )
 
-        # -------------------------------------------------
-        # SUPPRIMER
-        # -------------------------------------------------
-
-        db.delete(contact_message)
+        db.delete(
+            contact_message
+        )
 
         db.commit()
 
@@ -1168,17 +1478,14 @@ async def supprimer_message_contact(
             "supprimé avec succès."
         )
 
-        return RedirectResponse(
-            "/admin",
-            status_code=303
-        )
+        return admin_redirect()
 
     except Exception as e:
 
         db.rollback()
 
         print(
-            "ERREUR SUPPRESSION MESSAGE CONTACT :",
+            "❌ ERREUR SUPPRESSION MESSAGE :",
             repr(e)
         )
 
@@ -1187,10 +1494,7 @@ async def supprimer_message_contact(
             "ce message."
         )
 
-        return RedirectResponse(
-            "/admin",
-            status_code=303
-        )
+        return admin_redirect()
 
     finally:
 

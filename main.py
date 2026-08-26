@@ -120,28 +120,29 @@ async def home(
         # -------------------------------------------------
         # RECHERCHE DES PRODUITS
         # -------------------------------------------------
-
         if q:
 
-            products = (
-                db.query(Product)
-                .filter(
-                    (Product.title.ilike(f"%{q}%")) |
-                    (Product.description.ilike(f"%{q}%")) |
-                    (Product.city.ilike(f"%{q}%"))
-                )
-                .order_by(Product.id.desc())
-                .all()
-            )
-
+         products = (
+        db.query(Product)
+        .filter(
+            Product.is_active == True,
+            (Product.title.ilike(f"%{q}%")) |
+            (Product.description.ilike(f"%{q}%")) |
+            (Product.city.ilike(f"%{q}%"))
+        )
+        .order_by(Product.id.desc())
+        .all()
+    )
         else:
 
-            products = (
-                db.query(Product)
-                .order_by(Product.id.desc())
-                .all()
-            )
-
+         products = (
+        db.query(Product)
+        .filter(
+            Product.is_active == True
+        )
+        .order_by(Product.id.desc())
+        .all()
+    )
 
         # -------------------------------------------------
         # UTILISATEUR CONNECTÉ
