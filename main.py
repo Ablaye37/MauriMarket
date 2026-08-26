@@ -76,7 +76,8 @@ templates = Jinja2Templates(
 @app.get("/")
 async def home(
     request: Request,
-    q: str = Query(default="")
+    q: str = Query(default=""),
+    page: int = Query(default=1, ge=1)
 ):
 
     db = SessionLocal()
@@ -118,31 +119,84 @@ async def home(
 
 
         # -------------------------------------------------
-        # RECHERCHE DES PRODUITS
+        # PRODUITS + PAGINATION
         # -------------------------------------------------
+
+        PRODUCTS_PER_PAGE = 30
+
+        # Base de la requête :
+        # seules les annonces actives sont visibles
+        product_query = (
+            db.query(Product)
+            .filter(
+                Product.is_active == True
+            )
+        )
+
+
+        # -------------------------------------------------
+        # RECHERCHE
+        # -------------------------------------------------
+
         if q:
 
-         products = (
-        db.query(Product)
-        .filter(
-            Product.is_active == True,
-            (Product.title.ilike(f"%{q}%")) |
-            (Product.description.ilike(f"%{q}%")) |
-            (Product.city.ilike(f"%{q}%"))
-        )
-        .order_by(Product.id.desc())
-        .all()
-    )
-        else:
+            product_query = product_query.filter(
+                (Product.title.ilike(f"%{q}%")) |
+                (Product.description.ilike(f"%{q}%")) |
+                (Product.city.ilike(f"%{q}%"))
+            )
 
-         products = (
-        db.query(Product)
-        .filter(
-            Product.is_active == True
+
+        # -------------------------------------------------
+        # NOMBRE TOTAL DE PRODUITS
+        # -------------------------------------------------
+
+        total_products = product_query.count()
+
+
+        # -------------------------------------------------
+        # NOMBRE TOTAL DE PAGES
+        # -------------------------------------------------
+
+        total_pages = (
+            (total_products + PRODUCTS_PER_PAGE - 1)
+            // PRODUCTS_PER_PAGE
         )
-        .order_by(Product.id.desc())
-        .all()
-    )
+
+
+        # -------------------------------------------------
+        # SÉCURITÉ PAGE
+        # -------------------------------------------------
+
+        if total_pages > 0 and page > total_pages:
+
+            page = total_pages
+
+
+        # -------------------------------------------------
+        # CALCUL OFFSET
+        # -------------------------------------------------
+
+        offset = (
+            (page - 1)
+            * PRODUCTS_PER_PAGE
+        )
+
+
+        # -------------------------------------------------
+        # PRODUITS DE LA PAGE ACTUELLE
+        # -------------------------------------------------
+
+        products = (
+            product_query
+            .order_by(
+                Product.id.desc()
+            )
+            .offset(offset)
+            .limit(PRODUCTS_PER_PAGE)
+            .all()
+        )
+
 
         # -------------------------------------------------
         # UTILISATEUR CONNECTÉ
@@ -195,11 +249,29 @@ async def home(
             context={
                 "categories": categories,
                 "categories_data": categories_data,
+
+                # Produits de la page actuelle
                 "products": products,
+
+                # Recherche
                 "q": q,
+
+                # Pagination
+                "page": page,
+                "total_pages": total_pages,
+                "total_products": total_products,
+                "products_per_page": PRODUCTS_PER_PAGE,
+
+                # Utilisateur
                 "user_name": user_name,
+
+                # Message
                 "message": message,
+
+                # Panier
                 "panier_count": panier_count,
+
+                # Langue
                 "lang": lang
             }
         )
@@ -240,7 +312,11 @@ app.include_router(
 app.include_router(
     admin.router
 )
+
 app.include_router(
     contact.router
 )
-app.include_router(boutiques_router)
+
+app.include_router(
+    boutiques_router
+)

@@ -248,15 +248,6 @@
 
                             <!-- =================================================
                                  LIEN PRODUIT
-                            ==================================================
-
-                                 IMPORTANT :
-
-                                 Produit de boutique :
-                                 → ouvre la boutique
-
-                                 Produit indépendant :
-                                 → ouvre la fiche produit
                             ================================================== -->
 
                             {% if product.boutique_id and product.boutique %}
@@ -337,26 +328,15 @@
 
                                 <div class="product-info">
 
-
-                                    <!-- NOM -->
-
                                     <h3 class="product-title">
-
                                         {{ product.title }}
-
                                     </h3>
 
 
-                                    <!-- PRIX -->
-
                                     <div class="product-price">
-
                                         {{ product.price }} MRU
-
                                     </div>
 
-
-                                    <!-- VILLE -->
 
                                     {% if product.city %}
 
@@ -370,17 +350,6 @@
 
                                     {% endif %}
 
-
-                                    <!-- =================================================
-                                         BOUTIQUE
-                                    ==================================================
-
-                                         Si le produit appartient à une boutique,
-                                         on affiche le nom de celle-ci.
-
-                                         Produit indépendant :
-                                         rien n'est affiché.
-                                    ================================================== -->
 
                                     {% if product.boutique_id and product.boutique %}
 
@@ -399,9 +368,7 @@
 
                                     {% endif %}
 
-
                                 </div>
-
 
                             </a>
 
@@ -476,6 +443,127 @@
 
             </div>
 
+
+            <!-- =================================================
+                 PAGINATION
+            ================================================== -->
+
+            {% if total_pages > 1 %}
+
+                <nav
+                    class="products-pagination"
+                    aria-label="Pagination des produits"
+                >
+
+                    <div class="pagination-info">
+
+                        Page {{ page }} sur {{ total_pages }}
+
+                    </div>
+
+
+                    <div class="pagination-buttons">
+
+
+                        <!-- PRÉCÉDENT -->
+
+                        {% if page > 1 %}
+
+                            <a
+                                href="/?page={{ page - 1 }}{% if q %}&q={{ q | urlencode }}{% endif %}&lang={{ lang }}"
+                                class="pagination-button pagination-prev"
+                            >
+
+                                <i class="bi bi-chevron-left"></i>
+
+                                <span>
+                                    Précédent
+                                </span>
+
+                            </a>
+
+                        {% else %}
+
+                            <span
+                                class="pagination-button pagination-disabled"
+                            >
+
+                                <i class="bi bi-chevron-left"></i>
+
+                                <span>
+                                    Précédent
+                                </span>
+
+                            </span>
+
+                        {% endif %}
+
+
+                        <!-- NUMÉROS DES PAGES -->
+
+                        {% for page_number in range(1, total_pages + 1) %}
+
+                            {% if page_number == page %}
+
+                                <span
+                                    class="pagination-button pagination-active"
+                                >
+                                    {{ page_number }}
+                                </span>
+
+                            {% else %}
+
+                                <a
+                                    href="/?page={{ page_number }}{% if q %}&q={{ q | urlencode }}{% endif %}&lang={{ lang }}"
+                                    class="pagination-button"
+                                >
+                                    {{ page_number }}
+                                </a>
+
+                            {% endif %}
+
+                        {% endfor %}
+
+
+                        <!-- SUIVANT -->
+
+                        {% if page < total_pages %}
+
+                            <a
+                                href="/?page={{ page + 1 }}{% if q %}&q={{ q | urlencode }}{% endif %}&lang={{ lang }}"
+                                class="pagination-button pagination-next"
+                            >
+
+                                <span>
+                                    Suivant
+                                </span>
+
+                                <i class="bi bi-chevron-right"></i>
+
+                            </a>
+
+                        {% else %}
+
+                            <span
+                                class="pagination-button pagination-disabled"
+                            >
+
+                                <span>
+                                    Suivant
+                                </span>
+
+                                <i class="bi bi-chevron-right"></i>
+
+                            </span>
+
+                        {% endif %}
+
+                    </div>
+
+                </nav>
+
+            {% endif %}
+
         </section>
 
     </div>
@@ -498,6 +586,165 @@
     color: #6c757d;
 
     font-size: 14px;
+
+}
+
+
+/* ============================================================
+   PAGINATION
+============================================================ */
+
+.products-pagination {
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 12px;
+
+    margin-top: 35px;
+
+    margin-bottom: 25px;
+
+}
+
+
+.pagination-info {
+
+    color: #6c757d;
+
+    font-size: 14px;
+
+    font-weight: 500;
+
+}
+
+
+.pagination-buttons {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    flex-wrap: wrap;
+
+    gap: 6px;
+
+}
+
+
+.pagination-button {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    min-width: 40px;
+
+    height: 40px;
+
+    padding: 0 12px;
+
+    color: #198754;
+
+    background: #ffffff;
+
+    border: 1px solid #d9e8df;
+
+    border-radius: 8px;
+
+    text-decoration: none;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    transition:
+        background-color 0.2s ease,
+        color 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
+
+}
+
+
+.pagination-button:hover {
+
+    color: #ffffff;
+
+    background: #198754;
+
+    border-color: #198754;
+
+    transform: translateY(-1px);
+
+}
+
+
+.pagination-active {
+
+    color: #ffffff;
+
+    background: #198754;
+
+    border-color: #198754;
+
+    cursor: default;
+
+}
+
+
+.pagination-active:hover {
+
+    color: #ffffff;
+
+    background: #198754;
+
+    border-color: #198754;
+
+    transform: none;
+
+}
+
+
+.pagination-disabled {
+
+    color: #adb5bd;
+
+    background: #f8f9fa;
+
+    border-color: #e9ecef;
+
+    cursor: not-allowed;
+
+}
+
+
+.pagination-disabled:hover {
+
+    color: #adb5bd;
+
+    background: #f8f9fa;
+
+    border-color: #e9ecef;
+
+    transform: none;
+
+}
+
+
+.pagination-prev,
+.pagination-next {
+
+    gap: 6px;
 
 }
 
@@ -537,10 +784,6 @@
 }
 
 
-/* ============================================================
-   ICÔNE BOUTIQUE
-============================================================ */
-
 .product-boutique-badge i {
 
     flex-shrink: 0;
@@ -549,10 +792,6 @@
 
 }
 
-
-/* ============================================================
-   NOM BOUTIQUE
-============================================================ */
 
 .product-boutique-badge span {
 
@@ -568,10 +807,6 @@
 
 }
 
-
-/* ============================================================
-   HOVER
-============================================================ */
 
 .product-card:hover
 .product-boutique-badge {
@@ -594,6 +829,45 @@
     .products-search-info {
 
         font-size: 12px;
+
+    }
+
+
+    .products-pagination {
+
+        margin-top: 25px;
+
+        margin-bottom: 20px;
+
+        gap: 10px;
+
+    }
+
+
+    .pagination-buttons {
+
+        gap: 4px;
+
+    }
+
+
+    .pagination-button {
+
+        min-width: 36px;
+
+        height: 36px;
+
+        padding: 0 9px;
+
+        font-size: 13px;
+
+    }
+
+
+    .pagination-prev span,
+    .pagination-next span {
+
+        display: none;
 
     }
 
