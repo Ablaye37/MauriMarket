@@ -17,6 +17,7 @@ from app.routes import cart
 from app.routes import contact
 from app.routes import admin
 from app.routes.boutiques import router as boutiques_router
+from app.routes import favorites
 
 from startup import init_database
 
@@ -319,4 +320,8 @@ app.include_router(
 
 app.include_router(
     boutiques_router
+)
+
+app.include_router(
+    favorites.router
 )

@@ -292,21 +292,21 @@
 
                                     {% endif %}
 
-
-                                    <!-- FAVORIS -->
-
-                                    <button
-                                        class="favorite-button"
-                                        type="button"
-                                        onclick="event.preventDefault();"
-                                        aria-label="Ajouter aux favoris"
-                                    >
-
-                                        <i class="bi bi-heart"></i>
-
-                                    </button>
-
-
+<form
+    action="/favorites/toggle/{{ product.id }}"
+    method="post"
+    class="favorite-form"
+    onclick="event.stopPropagation();"
+>
+    <button
+        class="favorite-button"
+        type="submit"
+        aria-label="Ajouter ou retirer des favoris"
+        onclick="event.stopPropagation();"
+    >
+        <i class="bi bi-heart"></i>
+    </button>
+</form>
                                     <!-- ÉTAT -->
 
                                     {% if product.condition %}
@@ -915,13 +915,9 @@ function toggleCategories() {
     const arrow =
         document.getElementById("categories-arrow");
 
-
     if (!list || !arrow) {
-
         return;
-
     }
-
 
     if (list.style.display === "none") {
 
@@ -946,9 +942,7 @@ function toggleCategories() {
         arrow.classList.add(
             "bi-chevron-down"
         );
-
     }
-
 }
 
 
@@ -959,13 +953,9 @@ function toggleSubcategories(categoryId) {
             "subcategories-" + categoryId
         );
 
-
     if (!list) {
-
         return;
-
     }
-
 
     if (list.style.display === "none") {
 
@@ -976,8 +966,13 @@ function toggleSubcategories(categoryId) {
         list.style.display = "none";
 
     }
-
 }
+
+
+// =====================================================
+// FAVORIS
+// =====================================================
+
 
 </script>
 

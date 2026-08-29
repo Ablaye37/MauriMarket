@@ -1,0 +1,209 @@
+{% extends "base.html" %}
+
+{% block title %}Mes favoris - MauriMarket{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid marketplace-content">
+
+    <div class="products-header">
+        <div>
+            <h1>❤️ Mes favoris</h1>
+
+            {% if favorites %}
+                <p class="products-search-info">
+                    {{ favorites|length }} produit{% if favorites|length > 1 %}s{% endif %} enregistré{% if favorites|length > 1 %}s{% endif %}
+                </p>
+            {% else %}
+                <p class="products-search-info">
+                    Retrouvez ici les produits que vous aimez.
+                </p>
+            {% endif %}
+        </div>
+    </div>
+
+
+    {% if favorites %}
+
+        <div class="row products-grid">
+
+            {% for favorite in favorites %}
+
+                {% set product = favorite.product %}
+
+                <div class="product-column">
+
+                    <article class="product-card">
+
+                        <a
+                            href="/produit/{{ product.id }}"
+                            class="product-image-link"
+                        >
+
+                            <div class="product-image-wrapper">
+
+                                {% if product.image %}
+
+                                    <img
+                                        src="{{ product.image }}"
+                                        alt="{{ product.title }}"
+                                        class="product-image"
+                                        loading="lazy"
+                                    >
+
+                                {% else %}
+
+                                    <div class="product-no-image">
+                                        <i class="bi bi-image"></i>
+                                    </div>
+
+                                {% endif %}
+
+
+                                <!-- RETIRER DES FAVORIS -->
+
+                                <form
+                                    method="POST"
+                                    action="/favorites/toggle/{{ product.id }}"
+                                    class="favorite-form"
+                                    onclick="event.stopPropagation();"
+                                >
+
+                                    <button
+                                        class="favorite-button favorite-active"
+                                        type="submit"
+                                        aria-label="Retirer des favoris"
+                                    >
+
+                                        <i class="bi bi-heart-fill"></i>
+
+                                    </button>
+
+                                </form>
+
+
+                                {% if product.condition %}
+
+                                    <span class="condition-badge">
+                                        {{ product.condition }}
+                                    </span>
+
+                                {% endif %}
+
+                            </div>
+
+
+                            <div class="product-info">
+
+                                <h3 class="product-title">
+                                    {{ product.title }}
+                                </h3>
+
+                                <div class="product-price">
+                                    {{ product.price }} MRU
+                                </div>
+
+
+                                {% if product.city %}
+
+                                    <div class="product-location">
+
+                                        <i class="bi bi-geo-alt"></i>
+
+                                        {{ product.city }}
+
+                                    </div>
+
+                                {% endif %}
+
+
+                                {% if product.boutique_id and product.boutique %}
+
+                                    <div
+                                        class="product-boutique-badge"
+                                        title="Produit vendu par {{ product.boutique.name }}"
+                                    >
+
+                                        <i class="bi bi-shop"></i>
+
+                                        <span>
+                                            {{ product.boutique.name }}
+                                        </span>
+
+                                    </div>
+
+                                {% endif %}
+
+                            </div>
+
+                        </a>
+
+                    </article>
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    {% else %}
+
+        <!-- =====================================================
+             AUCUN FAVORI
+        ====================================================== -->
+
+        <div class="empty-products">
+
+            <div class="empty-icon">
+                ❤️
+            </div>
+
+            <h3>
+                Vous n'avez aucun favori
+            </h3>
+
+            <p>
+                Ajoutez des produits à vos favoris pour les retrouver facilement.
+            </p>
+
+            <a
+                href="/"
+                class="btn btn-success"
+            >
+                Découvrir les produits
+            </a>
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+
+<style>
+
+.favorite-active {
+    color: #dc3545;
+}
+
+
+.favorite-active:hover {
+    color: #bb2d3b;
+}
+
+
+.empty-products {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+
+.empty-icon {
+    font-size: 55px;
+    margin-bottom: 15px;
+}
+
+
+</style>
+
+{% endblock %}
