@@ -92,7 +92,7 @@ Modifier le produit - MauriMarket
                 {% if from_boutique %}
                 action="/boutique/modifier-produit/{{ product.id }}"
                 {% else %}
-                action="/modifier-produit/{{ product.id }}"
+                action="/annonce/modifier/{{ product.id }}"
                 {% endif %}
                 method="POST"
                 enctype="multipart/form-data"

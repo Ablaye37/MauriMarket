@@ -1386,3 +1386,231 @@ async def boutique_detail_ancien_lien(
 
         db=db,
     )
+
+
+
+# ============================================================
+# MODIFIER UN PRODUIT DE MA BOUTIQUE — PAGE
+# ============================================================
+
+@router.get("/boutique/modifier-produit/{product_id}")
+async def page_modifier_produit_boutique(
+    product_id: int,
+    request: Request,
+    db: Session = Depends(get_db),
+):
+
+    # --------------------------------------------------------
+    # UTILISATEUR CONNECTÉ
+    # --------------------------------------------------------
+
+    user_id = request.session.get("user_id")
+
+    if not user_id:
+        return RedirectResponse(
+            url="/login",
+            status_code=303,
+        )
+
+    # --------------------------------------------------------
+    # SA BOUTIQUE
+    # --------------------------------------------------------
+
+    boutique = (
+        db.query(Boutique)
+        .filter(
+            Boutique.user_id == user_id
+        )
+        .first()
+    )
+
+    if not boutique:
+        return RedirectResponse(
+            url="/boutique/creer",
+            status_code=303,
+        )
+
+    # --------------------------------------------------------
+    # PRODUIT DE SA BOUTIQUE UNIQUEMENT
+    # --------------------------------------------------------
+
+    product = (
+        db.query(Product)
+        .filter(
+            Product.id == product_id,
+            Product.boutique_id == boutique.id,
+        )
+        .first()
+    )
+
+    if not product:
+        return RedirectResponse(
+            url="/ma-boutique",
+            status_code=303,
+        )
+
+    # --------------------------------------------------------
+    # CONTEXTE
+    # --------------------------------------------------------
+
+    context = contexte_global(
+        request,
+        db
+    )
+
+    context.update({
+        "request": request,
+        "product": product,
+        "boutique": boutique,
+        "from_boutique": True,
+    })
+
+    return templates.TemplateResponse(
+        request=request,
+        name="modifier_produit.html",
+        context=context,
+    )
+
+
+# ============================================================
+# MODIFIER UN PRODUIT DE MA BOUTIQUE — ENREGISTRER
+# ============================================================
+
+@router.post("/boutique/modifier-produit/{product_id}")
+async def modifier_produit_boutique(
+    product_id: int,
+    request: Request,
+
+    title: str = Form(...),
+    description: str = Form(...),
+    price: float = Form(...),
+    city: str = Form(...),
+    condition: str = Form(...),
+
+    photo: UploadFile | None = File(None),
+
+    db: Session = Depends(get_db),
+):
+
+    # --------------------------------------------------------
+    # UTILISATEUR CONNECTÉ
+    # --------------------------------------------------------
+
+    user_id = request.session.get("user_id")
+
+    if not user_id:
+        return RedirectResponse(
+            url="/login",
+            status_code=303,
+        )
+
+    # --------------------------------------------------------
+    # SA BOUTIQUE
+    # --------------------------------------------------------
+
+    boutique = (
+        db.query(Boutique)
+        .filter(
+            Boutique.user_id == user_id
+        )
+        .first()
+    )
+
+    if not boutique:
+        return RedirectResponse(
+            url="/boutique/creer",
+            status_code=303,
+        )
+
+    # --------------------------------------------------------
+    # PRODUIT DE SA BOUTIQUE UNIQUEMENT
+    # --------------------------------------------------------
+
+    product = (
+        db.query(Product)
+        .filter(
+            Product.id == product_id,
+            Product.boutique_id == boutique.id,
+        )
+        .first()
+    )
+
+    if not product:
+        return RedirectResponse(
+            url="/ma-boutique",
+            status_code=303,
+        )
+
+    # --------------------------------------------------------
+    # INFORMATIONS
+    # --------------------------------------------------------
+
+    product.title = title.strip()
+    product.description = description.strip()
+    product.price = price
+    product.city = city.strip()
+    product.condition = condition.strip()
+
+    # --------------------------------------------------------
+    # NOUVELLE IMAGE
+    # --------------------------------------------------------
+
+    if photo and photo.filename:
+
+        old_image = product.image
+
+        image_url = await upload_boutique_image(
+            photo,
+            f"product_{product.id}"
+        )
+
+        if image_url:
+
+            product.image = image_url
+
+            delete_supabase_image(
+                old_image
+            )
+
+    # --------------------------------------------------------
+    # SAUVEGARDER
+    # --------------------------------------------------------
+
+    db.commit()
+    db.refresh(product)
+
+    request.session["message"] = (
+        "Votre produit a été modifié avec succès."
+    )
+
+    print(
+        "=========================================="
+    )
+
+    print(
+        "✅ PRODUIT BOUTIQUE MODIFIÉ"
+    )
+
+    print(
+        "PRODUIT ID :",
+        product.id
+    )
+
+    print(
+        "BOUTIQUE ID :",
+        boutique.id
+    )
+
+    print(
+        "IMAGE :",
+        product.image
+    )
+
+    print(
+        "=========================================="
+    )
+
+    return RedirectResponse(
+        url="/ma-boutique",
+        status_code=303,
+    )
