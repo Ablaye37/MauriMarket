@@ -1,0 +1,257 @@
+﻿{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container" style="max-width:1100px;margin:40px auto;padding:20px;">
+
+    <h1 style="margin-bottom:10px;">
+        📦 Mes commandes
+    </h1>
+
+    <p style="color:#666;margin-bottom:30px;">
+        Retrouvez ici les commandes concernant vos produits.
+    </p>
+
+
+    {% if commandes %}
+
+        {% for commande in commandes %}
+
+        <div style="
+            background:#fff;
+            border:1px solid #ddd;
+            border-radius:14px;
+            padding:20px;
+            margin-bottom:25px;
+            box-shadow:0 3px 10px rgba(0,0,0,.05);
+        ">
+
+            <!-- EN-TÊTE COMMANDE -->
+
+            <div style="
+                display:flex;
+                justify-content:space-between;
+                align-items:center;
+                gap:15px;
+                flex-wrap:wrap;
+                margin-bottom:15px;
+            ">
+
+                <div>
+
+                    <h2 style="margin:0;">
+                        Commande #{{ commande.order.order_number }}
+                    </h2>
+
+                    <small style="color:#777;">
+                        {{ commande.order.created_at }}
+                    </small>
+
+                </div>
+
+
+                <div style="
+                    padding:8px 14px;
+                    border-radius:20px;
+                    background:#f1f3f5;
+                    font-weight:600;
+                ">
+
+                    {% if commande.order.status == "pending" %}
+                        ⏳ En attente
+                    {% elif commande.order.status == "confirmed" %}
+                        ✅ Confirmée
+                    {% elif commande.order.status == "cancelled" %}
+                        ❌ Annulée
+                    {% elif commande.order.status == "delivered" %}
+                        📦 Livrée
+                    {% else %}
+                        {{ commande.order.status }}
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+
+            <!-- CLIENT -->
+
+            <div style="
+                background:#f8f9fa;
+                border-radius:10px;
+                padding:15px;
+                margin-bottom:18px;
+            ">
+
+                <strong>👤 Client</strong>
+
+                <div style="margin-top:8px;">
+                    {{ commande.order.customer_name }}
+                </div>
+
+                <div>
+                    📞 {{ commande.order.customer_phone }}
+                </div>
+
+                <div>
+                    📍 {{ commande.order.city }}
+                </div>
+
+                {% if commande.order.delivery_address %}
+
+                <div>
+                    🏠 {{ commande.order.delivery_address }}
+                </div>
+
+                {% endif %}
+
+            </div>
+
+
+            <!-- PRODUITS DU VENDEUR -->
+
+            <h3 style="margin-bottom:12px;">
+                🛍️ Vos produits
+            </h3>
+
+
+            {% for item in commande.items %}
+
+            <div style="
+                display:flex;
+                justify-content:space-between;
+                align-items:center;
+                gap:15px;
+                padding:14px 0;
+                border-bottom:1px solid #eee;
+            ">
+
+                <div>
+
+                    <strong>
+                        {{ item.product_title }}
+                    </strong>
+
+                    <div style="
+                        color:#777;
+                        margin-top:4px;
+                    ">
+                        {{ item.price }} MRU × {{ item.quantity }}
+                    </div>
+
+                </div>
+
+
+                <strong>
+                    {{ item.subtotal }} MRU
+                </strong>
+
+            </div>
+
+            {% endfor %}
+
+
+            <!-- TOTAL VENDEUR -->
+
+            <div style="
+                display:flex;
+                justify-content:space-between;
+                margin-top:18px;
+                padding-top:15px;
+                border-top:2px solid #eee;
+                font-size:18px;
+            ">
+
+                <strong>
+                    Total de vos produits
+                </strong>
+
+                <strong>
+                    {{ commande.total_vendeur }} MRU
+                </strong>
+
+            </div>
+
+
+            <!-- LIVRAISON -->
+
+            <div style="
+                margin-top:15px;
+                color:#666;
+            ">
+
+                🚚 Livraison :
+                <strong>
+                    {{ commande.order.delivery_status }}
+                </strong>
+
+            </div>
+
+
+            <!-- PAIEMENT -->
+
+            <div style="
+                margin-top:8px;
+                color:#666;
+            ">
+
+                💳 Paiement :
+                <strong>
+                    {{ commande.order.payment_status }}
+                </strong>
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+
+    {% else %}
+
+        <div style="
+            text-align:center;
+            padding:60px 20px;
+            background:#fff;
+            border:1px solid #ddd;
+            border-radius:14px;
+        ">
+
+            <div style="font-size:50px;">
+                📦
+            </div>
+
+            <h2>
+                Aucune commande
+            </h2>
+
+            <p style="color:#777;">
+                Vous n'avez encore reçu aucune commande.
+            </p>
+
+        </div>
+
+    {% endif %}
+
+
+    <div style="margin-top:25px;">
+
+        <a
+            href="/ma-boutique"
+            style="
+                display:inline-block;
+                padding:12px 20px;
+                background:#222;
+                color:white;
+                text-decoration:none;
+                border-radius:8px;
+            "
+        >
+            ← Retour à ma boutique
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}

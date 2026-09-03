@@ -1,0 +1,718 @@
+{% extends "base.html" %}
+
+{% block title %}
+Livraison - MauriMarket
+{% endblock %}
+
+{% block content %}
+
+<div class="delivery-page">
+
+<!-- =================================================
+     EN-TÊTE
+================================================== -->
+
+<section class="delivery-hero">
+
+    <div class="delivery-hero-icon">
+        <i class="bi bi-truck"></i>
+    </div>
+
+    <h1>
+        Livraison MauriMarket
+    </h1>
+
+    <p>
+        Achetez facilement sur MauriMarket et recevez
+        vos produits à l'endroit qui vous convient.
+    </p>
+
+</section>
+
+
+<!-- =================================================
+     COMMENT ÇA MARCHE
+================================================== -->
+
+<section class="delivery-section">
+
+    <h2>
+        Comment fonctionne la livraison ?
+    </h2>
+
+    <div class="delivery-steps">
+
+        <div class="delivery-step">
+
+            <div class="step-icon">
+                <i class="bi bi-cart-plus"></i>
+            </div>
+
+            <div>
+
+                <h3>
+                    1. Choisissez votre produit
+                </h3>
+
+                <p>
+                    Consultez les annonces disponibles et
+                    choisissez un produit proposant la livraison.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="delivery-step">
+
+            <div class="step-icon">
+                <i class="bi bi-geo-alt"></i>
+            </div>
+
+            <div>
+
+                <h3>
+                    2. Indiquez votre lieu
+                </h3>
+
+                <p>
+                    Lors de votre commande, indiquez votre
+                    adresse ou votre lieu de livraison.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="delivery-step">
+
+            <div class="step-icon">
+                <i class="bi bi-box-seam"></i>
+            </div>
+
+            <div>
+
+                <h3>
+                    3. Votre commande est préparée
+                </h3>
+
+                <p>
+                    Le vendeur prépare votre commande et
+                    celle-ci est prise en charge pour la livraison.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="delivery-step">
+
+            <div class="step-icon">
+                <i class="bi bi-house-check"></i>
+            </div>
+
+            <div>
+
+                <h3>
+                    4. Recevez votre commande
+                </h3>
+
+                <p>
+                    Votre commande vous est livrée au lieu
+                    indiqué lors de votre achat.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =================================================
+     PAIEMENT
+================================================== -->
+
+<section class="delivery-payment">
+
+    <div class="payment-icon">
+
+        <i class="bi bi-cash-coin"></i>
+
+    </div>
+
+    <div>
+
+        <h2>
+            Paiement à la livraison
+        </h2>
+
+        <p>
+            Pour les commandes concernées, vous pouvez
+            payer directement lors de la réception de votre
+            commande.
+        </p>
+
+    </div>
+
+</section>
+
+
+<!-- =================================================
+     INFORMATIONS
+================================================== -->
+
+<section class="delivery-info">
+
+    <div class="info-card">
+
+        <i class="bi bi-truck"></i>
+
+        <h3>
+            Livraison disponible
+        </h3>
+
+        <p>
+            La disponibilité de la livraison dépend du
+            produit et du vendeur.
+        </p>
+
+    </div>
+
+
+    <div class="info-card">
+
+        <i class="bi bi-geo-alt"></i>
+
+        <h3>
+            Adresse de livraison
+        </h3>
+
+        <p>
+            Indiquez clairement votre quartier, votre zone
+            ou votre point de rendez-vous.
+        </p>
+
+    </div>
+
+
+    <div class="info-card">
+
+        <i class="bi bi-telephone"></i>
+
+        <h3>
+            Besoin d'aide ?
+        </h3>
+
+        <p>
+            Contactez MauriMarket si vous avez une question
+            concernant votre commande.
+        </p>
+
+    </div>
+
+</section>
+
+
+<!-- =================================================
+     CTA
+================================================== -->
+
+<section class="delivery-cta">
+
+    <h2>
+        Trouvez votre prochain produit
+    </h2>
+
+    <p>
+        Découvrez les annonces disponibles sur MauriMarket.
+    </p>
+
+    <a
+        href="/?lang={{ lang }}"
+        class="delivery-button">
+
+        <i class="bi bi-search"></i>
+
+        Découvrir les produits
+
+    </a>
+
+</section>
+
+
+</div>
+
+<style>
+
+/* =====================================================
+   PAGE
+===================================================== */
+
+.delivery-page {
+
+    max-width: 1100px;
+
+    margin: 0 auto;
+
+    padding: 40px 20px 60px;
+
+}
+
+
+/* =====================================================
+   HERO
+===================================================== */
+
+.delivery-hero {
+
+    text-align: center;
+
+    padding: 45px 20px;
+
+}
+
+
+.delivery-hero-icon {
+
+    width: 70px;
+
+    height: 70px;
+
+    margin: 0 auto 18px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background: #eaf7f0;
+
+    color: #198754;
+
+    border-radius: 50%;
+
+    font-size: 30px;
+
+}
+
+
+.delivery-hero h1 {
+
+    margin: 0 0 12px;
+
+    color: #172033;
+
+    font-size: 34px;
+
+    font-weight: 800;
+
+}
+
+
+.delivery-hero p {
+
+    max-width: 650px;
+
+    margin: 0 auto;
+
+    color: #6c757d;
+
+    font-size: 16px;
+
+    line-height: 1.7;
+
+}
+
+
+/* =====================================================
+   SECTION
+===================================================== */
+
+.delivery-section {
+
+    margin-top: 25px;
+
+}
+
+
+.delivery-section h2 {
+
+    text-align: center;
+
+    color: #172033;
+
+    font-size: 25px;
+
+    font-weight: 750;
+
+    margin-bottom: 30px;
+
+}
+
+
+/* =====================================================
+   ÉTAPES
+===================================================== */
+
+.delivery-steps {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 20px;
+
+}
+
+
+.delivery-step {
+
+    display: flex;
+
+    gap: 15px;
+
+    padding: 22px;
+
+    background: #ffffff;
+
+    border: 1px solid #e9ecef;
+
+    border-radius: 12px;
+
+    box-shadow:
+        0 4px 15px rgba(0, 0, 0, 0.05);
+
+}
+
+
+.step-icon {
+
+    min-width: 45px;
+
+    height: 45px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background: #eaf7f0;
+
+    color: #198754;
+
+    border-radius: 10px;
+
+    font-size: 20px;
+
+}
+
+
+.delivery-step h3 {
+
+    margin: 0 0 7px;
+
+    color: #172033;
+
+    font-size: 16px;
+
+    font-weight: 700;
+
+}
+
+
+.delivery-step p {
+
+    margin: 0;
+
+    color: #6c757d;
+
+    font-size: 13px;
+
+    line-height: 1.6;
+
+}
+
+
+/* =====================================================
+   PAIEMENT
+===================================================== */
+
+.delivery-payment {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 20px;
+
+    margin-top: 35px;
+
+    padding: 25px;
+
+    background: #f8f9fa;
+
+    border-radius: 12px;
+
+    border: 1px solid #e9ecef;
+
+}
+
+
+.payment-icon {
+
+    min-width: 55px;
+
+    height: 55px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background: #198754;
+
+    color: white;
+
+    border-radius: 50%;
+
+    font-size: 25px;
+
+}
+
+
+.delivery-payment h2 {
+
+    margin: 0 0 7px;
+
+    color: #172033;
+
+    font-size: 20px;
+
+    font-weight: 750;
+
+}
+
+
+.delivery-payment p {
+
+    margin: 0;
+
+    color: #6c757d;
+
+    font-size: 14px;
+
+    line-height: 1.6;
+
+}
+
+
+/* =====================================================
+   CARTES INFORMATIONS
+===================================================== */
+
+.delivery-info {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap: 20px;
+
+    margin-top: 35px;
+
+}
+
+
+.info-card {
+
+    text-align: center;
+
+    padding: 25px 20px;
+
+    background: #ffffff;
+
+    border: 1px solid #e9ecef;
+
+    border-radius: 12px;
+
+}
+
+
+.info-card > i {
+
+    display: block;
+
+    margin-bottom: 12px;
+
+    color: #198754;
+
+    font-size: 27px;
+
+}
+
+
+.info-card h3 {
+
+    margin: 0 0 8px;
+
+    color: #172033;
+
+    font-size: 16px;
+
+    font-weight: 700;
+
+}
+
+
+.info-card p {
+
+    margin: 0;
+
+    color: #6c757d;
+
+    font-size: 13px;
+
+    line-height: 1.6;
+
+}
+
+
+/* =====================================================
+   CTA
+===================================================== */
+
+.delivery-cta {
+
+    margin-top: 40px;
+
+    padding: 40px 20px;
+
+    text-align: center;
+
+    background: #f0f8f4;
+
+    border-radius: 14px;
+
+}
+
+
+.delivery-cta h2 {
+
+    margin: 0 0 10px;
+
+    color: #172033;
+
+    font-size: 24px;
+
+    font-weight: 800;
+
+}
+
+
+.delivery-cta p {
+
+    margin: 0 0 20px;
+
+    color: #6c757d;
+
+}
+
+
+.delivery-button {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    padding: 11px 20px;
+
+    background: #198754;
+
+    color: white;
+
+    border-radius: 8px;
+
+    text-decoration: none;
+
+    font-size: 14px;
+
+    font-weight: 700;
+
+}
+
+
+.delivery-button:hover {
+
+    background: #146c43;
+
+    color: white;
+
+}
+
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media (max-width: 768px) {
+
+    .delivery-page {
+
+        padding:
+            25px 15px 40px;
+
+    }
+
+
+    .delivery-hero {
+
+        padding: 25px 10px;
+
+    }
+
+
+    .delivery-hero h1 {
+
+        font-size: 27px;
+
+    }
+
+
+    .delivery-steps {
+
+        grid-template-columns: 1fr;
+
+    }
+
+
+    .delivery-info {
+
+        grid-template-columns: 1fr;
+
+    }
+
+
+    .delivery-payment {
+
+        align-items: flex-start;
+
+    }
+
+}
+
+</style>
+
+{% endblock %}

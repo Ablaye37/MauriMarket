@@ -1,3 +1,4 @@
+
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import relationship
 
@@ -5,6 +6,7 @@ from app.database.database import Base
 
 
 class User(Base):
+
     __tablename__ = "users"
 
     # =====================================================
@@ -59,8 +61,6 @@ class User(Base):
     # BOUTIQUE
     #
     # Un utilisateur peut avoir au maximum une boutique.
-    # La vérification métier est également faite dans
-    # les routes.
     # =====================================================
 
     boutique = relationship(
@@ -86,4 +86,24 @@ class User(Base):
         "BoutiqueRequest",
         back_populates="user",
         cascade="all, delete-orphan"
+    )
+
+    # =====================================================
+    # COMMANDES
+    #
+    # IMPORTANT :
+    # orders.user_id doit pouvoir devenir NULL lorsque
+    # l'utilisateur est supprimé.
+    #
+    # La base de données possède déjà :
+    #
+    # orders_user_id_fkey -> SET NULL
+    #
+    # On ne met PAS cascade="all, delete-orphan" ici,
+    # car nous voulons conserver l'historique des commandes.
+    # =====================================================
+
+    orders = relationship(
+        "Order",
+        back_populates="user"
     )

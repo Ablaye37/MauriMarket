@@ -15,31 +15,21 @@ Publier un produit - MauriMarket
     <div class="mb-4">
 
         <h2 class="fw-bold">
-
             <i class="bi bi-plus-circle"></i>
-
             Publier un produit
-
         </h2>
 
         {% if boutique and is_boutique_publish %}
 
             <p class="text-muted mb-0">
-
                 Votre produit sera publié dans :
-
-                <strong>
-                    {{ boutique.name }}
-                </strong>
-
+                <strong>{{ boutique.name }}</strong>
             </p>
 
         {% elif not is_boutique_publish %}
 
             <p class="text-muted mb-0">
-
                 Votre annonce sera publiée sur MauriMarket.
-
             </p>
 
         {% endif %}
@@ -80,9 +70,7 @@ Publier un produit - MauriMarket
             >
 
             <div class="form-text">
-
                 Formats acceptés : JPG, PNG, WEBP.
-
             </div>
 
         </div>
@@ -163,6 +151,10 @@ Publier un produit - MauriMarket
                 placeholder="Ex : 25000"
                 required
             >
+
+            <div class="form-text">
+                Prix en MRU.
+            </div>
 
         </div>
 
@@ -302,6 +294,42 @@ Publier un produit - MauriMarket
 
 
         <!-- =================================================
+     LIVRAISON
+================================================== -->
+
+<div class="mb-4">
+
+    <label class="form-label fw-semibold">
+        Livraison
+    </label>
+
+    <div class="form-check form-switch">
+
+        <input
+            class="form-check-input"
+            type="checkbox"
+            id="delivery_available"
+            name="delivery_available"
+            value="true"
+        >
+
+        <label
+            class="form-check-label"
+            for="delivery_available"
+        >
+            <strong>Livraison disponible</strong>
+        </label>
+
+    </div>
+
+    <div class="form-text">
+        Les acheteurs pourront voir que ce produit peut être livré.
+    </div>
+
+</div>
+
+
+        <!-- =================================================
              TYPE DE PUBLICATION
         ================================================== -->
 
@@ -364,9 +392,7 @@ Publier un produit - MauriMarket
 
                 {% for category in categories %}
 
-                    <option
-                        value="{{ category.id }}"
-                    >
+                    <option value="{{ category.id }}">
                         {{ category.name }}
                     </option>
 
@@ -448,6 +474,7 @@ Publier un produit - MauriMarket
      JAVASCRIPT
      - SOUS-CATÉGORIES DYNAMIQUES
      - PROTECTION DOUBLE CLIC
+     - LECTURE RÉELLE DU FORMULAIRE
 ========================================================== -->
 
 <script>
@@ -489,6 +516,25 @@ document.addEventListener(
             document.getElementById(
                 "subcategory_id"
             );
+
+
+        /* =====================================================
+           VÉRIFICATION DES ÉLÉMENTS
+        ====================================================== */
+
+        if (
+            !form ||
+            !button ||
+            !categorySelect ||
+            !subcategorySelect
+        ) {
+
+            console.error(
+                "❌ Éléments du formulaire introuvables."
+            );
+
+            return;
+        }
 
 
         /* =====================================================
@@ -634,7 +680,9 @@ document.addEventListener(
 
 
             /*
-             * Activer le sélecteur.
+             * Activer le sélecteur
+             * uniquement s'il existe
+             * des sous-catégories.
              */
 
             subcategorySelect.disabled =
@@ -642,8 +690,7 @@ document.addEventListener(
 
 
             /*
-             * S'il n'y a aucune
-             * sous-catégorie.
+             * Aucune sous-catégorie.
              */
 
             if (filtered.length === 0) {
@@ -690,120 +737,227 @@ document.addEventListener(
            PROTECTION DOUBLE PUBLICATION
         ====================================================== */
 
-        if (
-            form &&
-            button
-        ) {
-
-            let submitting = false;
+        let submitting = false;
 
 
-            form.addEventListener(
-                "submit",
-                function (event) {
+        form.addEventListener(
+            "submit",
+            async function (event) {
 
-                    /*
-                     * Si déjà envoyé,
-                     * empêcher une deuxième publication.
-                     */
+                /*
+                 * Si déjà envoyé,
+                 * empêcher une deuxième publication.
+                 */
 
-                    if (submitting) {
+                if (submitting) {
 
-                        event.preventDefault();
+                    event.preventDefault();
 
-                        return false;
-
-                    }
-
-
-                    /*
-                     * Vérifier catégorie.
-                     */
-
-                    if (!categorySelect.value) {
-
-                        event.preventDefault();
-
-                        alert(
-                            "Veuillez choisir une catégorie."
-                        );
-
-                        return false;
-
-                    }
-
-
-                    /*
-                     * Vérifier sous-catégorie.
-                     */
-
-                    if (
-                        !subcategorySelect.value
-                    ) {
-
-                        event.preventDefault();
-
-                        alert(
-                            "Veuillez choisir une sous-catégorie."
-                        );
-
-                        return false;
-
-                    }
-
-
-                    /*
-                     * Première soumission.
-                     */
-
-                    submitting = true;
-
-
-                    /*
-                     * Désactiver le bouton.
-                     */
-
-                    button.disabled = true;
-
-
-                    button.style.pointerEvents =
-                        "none";
-
-
-                    /*
-                     * Texte.
-                     */
-
-                    if (buttonText) {
-
-                        buttonText.textContent =
-                            "Publication en cours...";
-
-                    }
-
-
-                    /*
-                     * Icône.
-                     */
-
-                    if (buttonIcon) {
-
-                        buttonIcon.className =
-                            "bi bi-hourglass-split";
-
-                    }
-
-
-                    /*
-                     * Apparence.
-                     */
-
-                    button.classList.add(
-                        "disabled"
+                    console.log(
+                        "⚠️ Publication déjà en cours."
                     );
 
+                    return false;
                 }
-            );
+
+
+                /* =================================================
+                   VÉRIFICATION CATÉGORIE
+                ================================================== */
+
+                if (!categorySelect.value) {
+
+                    event.preventDefault();
+
+                    alert(
+                        "Veuillez choisir une catégorie."
+                    );
+
+                    categorySelect.focus();
+
+                    return false;
+                }
+
+
+                /* =================================================
+                   VÉRIFICATION SOUS-CATÉGORIE
+                ================================================== */
+
+                if (!subcategorySelect.value) {
+
+                    event.preventDefault();
+
+                    alert(
+                        "Veuillez choisir une sous-catégorie."
+                    );
+
+                    subcategorySelect.focus();
+
+                    return false;
+                }
+
+
+                /* =================================================
+                   PREMIÈRE SOUMISSION
+                ================================================== */
+
+                submitting = true;
+
+
+                /* =================================================
+                   LECTURE RÉELLE DU FORMULAIRE
+                ================================================== */
+
+                const formData =
+                    new FormData(form);
+
+
+                console.log(
+                    "=========================================="
+                );
+
+                console.log(
+                    "📋 FORMULAIRE REÇU :"
+                );
+
+
+                for (
+                    const [
+                        key,
+                        value
+                    ] of formData.entries()
+                ) {
+
+                    if (
+                        value instanceof File
+                    ) {
+
+                        console.log(
+                            key + " :",
+                            value.name,
+                            value.type,
+                            value.size
+                        );
+
+                    } else {
+
+                        console.log(
+                            key + " :",
+                            value
+                        );
+
+                    }
+
+                }
+
+
+                console.log(
+                    "=========================================="
+                );
+
+
+                /* =================================================
+                   LECTURE LIVRAISON
+                ================================================== */
+
+                const rawDelivery =
+                    formData.get(
+                        "delivery_available"
+                    );
+
+
+                console.log(
+                    "📦 DELIVERY BRUT :",
+                    reprValue(rawDelivery)
+                );
+
+
+                const deliveryValue =
+                    rawDelivery !== null;
+
+
+                console.log(
+                    "📦 DELIVERY FINAL :",
+                    deliveryValue
+                );
+
+                console.log(
+                    "📦 TYPE :",
+                    typeof deliveryValue
+                );
+
+                console.log(
+                    "=========================================="
+                );
+
+
+                /* =================================================
+                   DÉSACTIVER LE BOUTON
+                ================================================== */
+
+                button.disabled = true;
+
+                button.style.pointerEvents =
+                    "none";
+
+
+                /* =================================================
+                   TEXTE DU BOUTON
+                ================================================== */
+
+                if (buttonText) {
+
+                    buttonText.textContent =
+                        "Publication en cours...";
+
+                }
+
+
+                /* =================================================
+                   ICÔNE
+                ================================================== */
+
+                if (buttonIcon) {
+
+                    buttonIcon.className =
+                        "bi bi-hourglass-split";
+
+                }
+
+
+                /* =================================================
+                   APPARENCE
+                ================================================== */
+
+                button.classList.add(
+                    "disabled"
+                );
+
+            }
+        );
+
+
+        /* =====================================================
+           FONCTION AFFICHAGE VALEUR
+        ====================================================== */
+
+        function reprValue(value) {
+
+            if (value === null) {
+
+                return "null";
+
+            }
+
+            if (
+                typeof value === "string"
+            ) {
+
+                return '"' + value + '"';
+
+            }
+
+            return String(value);
 
         }
 
@@ -832,7 +986,8 @@ document.addEventListener(
 
 #publish-button:not(:disabled):hover {
 
-    transform: translateY(-1px);
+    transform:
+        translateY(-1px);
 
 }
 
@@ -865,4 +1020,3 @@ document.addEventListener(
 
 
 {% endblock %}
-

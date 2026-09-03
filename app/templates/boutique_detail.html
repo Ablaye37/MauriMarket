@@ -2,11 +2,18 @@
 
 {% block title %}
 {{ boutique.name }} - MauriMarket
+
+
+
+
+
 {% endblock %}
+
 
 {% block content %}
 
 <div class="boutique-detail-page">
+
 
     <!-- =====================================================
          COUVERTURE
@@ -15,10 +22,12 @@
     {% if boutique.cover_image %}
 
     <div class="boutique-public-cover">
+
         <img
             src="{{ boutique.cover_image }}"
             alt="Couverture de {{ boutique.name }}"
         >
+
     </div>
 
     {% endif %}
@@ -30,42 +39,66 @@
 
     <div class="boutique-detail-header">
 
+
+        <!-- LOGO -->
+
         <div class="boutique-detail-icon">
+
             {% if boutique.logo %}
+
                 <img
                     src="{{ boutique.logo }}"
                     alt="{{ boutique.name }}"
                 >
+
             {% else %}
+
                 <i class="bi bi-shop"></i>
+
             {% endif %}
+
         </div>
 
 
+        <!-- INFORMATIONS -->
+
         <div class="boutique-detail-info">
 
-            <h1>{{ boutique.name }}</h1>
+            <h1>
+                {{ boutique.name }}
+            </h1>
+
 
             {% if boutique.sale_type %}
+
             <p>
+
                 <i class="bi bi-tag"></i>
+
                 {{ boutique.sale_type }}
+
             </p>
+
             {% endif %}
 
+
             {% if boutique.city %}
+
             <p>
+
                 <i class="bi bi-geo-alt"></i>
+
                 {{ boutique.city }}
+
             </p>
+
             {% endif %}
 
         </div>
 
 
         <!-- =================================================
-             ACTION BOUTIQUE
-             UNIQUEMENT LE PROPRIÉTAIRE
+             MODIFIER BOUTIQUE
         ================================================== -->
 
         {% if request.session.get("user_id") == boutique.user_id %}
@@ -74,19 +107,31 @@
             href="/ma-boutique/modifier"
             class="edit-boutique-btn"
         >
+
             <i class="bi bi-pencil"></i>
-            <span>Modifier ma boutique</span>
+
+            <span>
+                Modifier ma boutique
+            </span>
+
         </a>
 
         {% endif %}
 
 
+        <!-- RETOUR -->
+
         <a
             href="/boutiques"
             class="back-boutiques"
         >
+
             <i class="bi bi-arrow-left"></i>
-            <span>Boutiques</span>
+
+            <span>
+                Boutiques
+            </span>
+
         </a>
 
     </div>
@@ -99,27 +144,47 @@
     <div class="boutique-products-header">
 
         <div>
-            <h2>Produits</h2>
+
+            <h2>
+                Produits
+            </h2>
 
             <span>
-                {{ produits|length }} produit(s)
+
+                {{ products|length }}
+
+                produit{% if products|length != 1 %}s{% endif %}
+
             </span>
+
         </div>
 
 
-        <!-- =================================================
-             PUBLIER UN PRODUIT
-        ================================================== -->
+        <!-- PUBLIER -->
 
         {% if request.session.get("user_id") == boutique.user_id %}
 
-        <a
-            href="/ma-boutique/publier"
-            class="publish-product-btn"
+        <div class="boutique-products-actions">
+
+    <a
+        href="/ma-boutique/publier"
+        class="publish-product-btn"
+    >
+        <i class="bi bi-plus-circle"></i>
+        <span>Publier un produit</span>
+    </a>
+
+    
+        <button
+            type="button"
+            class="share-boutique-btn"
+            onclick="shareBoutique()"
+            title="Partager ma boutique"
         >
-            <i class="bi bi-plus-circle"></i>
-            <span>Publier un produit</span>
-        </a>
+            <i class="bi bi-share"></i>
+            <span>Partager</span>
+        </button>
+</div>
 
         {% endif %}
 
@@ -130,15 +195,21 @@
          PRODUITS
     ====================================================== -->
 
-    {% if produits %}
+    {% if products %}
+
 
     <div class="boutique-products-grid">
 
-        {% for produit in produits %}
 
-        <div class="boutique-product-card">
+        {% for produit in products %}
 
-            <!-- IMAGE -->
+
+        <article class="boutique-product-card">
+
+
+            <!-- =================================================
+                 IMAGE
+            ================================================== -->
 
             <a
                 href="/produit/{{ produit.id }}"
@@ -150,12 +221,15 @@
                 <img
                     src="{{ produit.image }}"
                     alt="{{ produit.title }}"
+                    loading="lazy"
                 >
 
                 {% else %}
 
                 <div class="no-product-image">
+
                     <i class="bi bi-image"></i>
+
                 </div>
 
                 {% endif %}
@@ -164,7 +238,9 @@
                 {% if produit.condition %}
 
                 <span class="product-condition">
+
                     {{ produit.condition }}
+
                 </span>
 
                 {% endif %}
@@ -172,19 +248,30 @@
             </a>
 
 
-            <!-- INFORMATIONS -->
+            <!-- =================================================
+                 INFORMATIONS
+            ================================================== -->
 
             <div class="boutique-product-info">
 
+
                 <h3>
+
                     {{ produit.title }}
+
                 </h3>
 
 
+                <!-- PRIX -->
+
                 <div class="boutique-product-price">
+
                     {{ produit.price }} MRU
+
                 </div>
 
+
+                <!-- VILLE -->
 
                 {% if produit.city %}
 
@@ -201,69 +288,102 @@
                 {% endif %}
 
 
-                <!-- ACTIONS -->
+                <!-- =================================================
+                     ACTIONS
+                ================================================== -->
 
                 <div class="boutique-product-actions">
+
+
+                    <!-- VOIR -->
 
                     <a
                         href="/produit/{{ produit.id }}"
                         class="boutique-product-link"
                     >
+
                         Voir le produit
+
                         <i class="bi bi-arrow-right"></i>
+
                     </a>
 
 
                     <!-- =================================================
-                         IMPORTANT :
-                         CES BOUTONS CONCERNENT LE PRODUIT
-                         ET NON LA BOUTIQUE
+                         ACTIONS PROPRIÉTAIRE
                     ================================================== -->
 
                     {% if request.session.get("user_id") == boutique.user_id %}
 
+
                     <div class="product-owner-actions">
 
-                        <!-- MODIFIER LE PRODUIT -->
+
+                        <!-- MODIFIER -->
 
                         <a
-                            href="/boutique/modifier-produit/{{ produit.id }}"
+                            href="/annonce/modifier/{{ produit.id }}"
                             class="product-edit-btn"
                             title="Modifier ce produit"
                         >
+
                             <i class="bi bi-pencil"></i>
-                            <span>Modifier</span>
+
+                            <span>
+                                Modifier
+                            </span>
+
                         </a>
 
 
-                        <!-- SUPPRIMER LE PRODUIT -->
+                        <!-- SUPPRIMER -->
 
-                        <a
-                            href="/boutique/supprimer-produit/{{ produit.id }}"
-                            class="product-delete-btn"
-                            title="Supprimer ce produit"
-                            onclick="return confirm('Voulez-vous vraiment supprimer ce produit ?');"
+                        <form
+                            method="post"
+                            action="/annonce/supprimer/{{ produit.id }}"
+                            class="delete-product-form"
+                            onsubmit="return confirm('Voulez-vous vraiment supprimer ce produit ?');"
                         >
-                            <i class="bi bi-trash"></i>
-                            <span>Supprimer</span>
-                        </a>
+
+                            <button
+                                type="submit"
+                                class="product-delete-btn"
+                                title="Supprimer ce produit"
+                            >
+
+                                <i class="bi bi-trash"></i>
+
+                                <span>
+                                    Supprimer
+                                </span>
+
+                            </button>
+
+                        </form>
+
 
                     </div>
 
                     {% endif %}
 
+
                 </div>
+
 
             </div>
 
-        </div>
+
+        </article>
+
 
         {% endfor %}
+
 
     </div>
 
 
     {% else %}
+
 
     <!-- =====================================================
          BOUTIQUE VIDE
@@ -271,11 +391,14 @@
 
     <div class="empty-boutique-products">
 
+
         <i class="bi bi-box-seam"></i>
+
 
         <h2>
             Aucun produit
         </h2>
+
 
         <p>
             Cette boutique n'a pas encore publié de produit.
@@ -284,88 +407,128 @@
 
         {% if request.session.get("user_id") == boutique.user_id %}
 
-        <a
-            href="/ma-boutique/publier"
-            class="publish-product-btn empty-publish-btn"
-        >
-            <i class="bi bi-plus-circle"></i>
-            Publier un produit
-        </a>
+        <div class="boutique-products-actions">
+
+    <a
+        href="/ma-boutique/publier"
+        class="publish-product-btn"
+    >
+        <i class="bi bi-plus-circle"></i>
+        <span>Publier un produit</span>
+    </a>
+
+    <button
+        type="button"
+        class="share-boutique-btn"
+        onclick="shareBoutique()"
+        title="Partager ma boutique"
+    >
+        <i class="bi bi-share"></i>
+        <span>Partager</span>
+    </button>
+
+</div>
 
         {% endif %}
 
+
     </div>
 
+
     {% endif %}
+
 
 </div>
 
 
 <style>
 
-/* =====================================================
+/* ============================================================
    PAGE
-===================================================== */
+============================================================ */
 
 .boutique-detail-page {
+
     width: 100%;
+
     padding: 10px 10px 30px;
+
 }
 
 
-/* =====================================================
-   COVER
-===================================================== */
+/* ============================================================
+   COUVERTURE
+============================================================ */
 
 .boutique-public-cover {
+
     width: 100%;
+
     height: 280px;
+
     overflow: hidden;
+
     border-radius: 14px;
+
     margin-bottom: 15px;
+
     background: #f1f3f5;
+
 }
+
 
 .boutique-public-cover img {
+
     width: 100%;
     height: 100%;
+
     display: block;
+
     object-fit: cover;
+
 }
 
 
-/* =====================================================
-   HEADER BOUTIQUE
-===================================================== */
+/* ============================================================
+   HEADER
+============================================================ */
 
 .boutique-detail-header {
+
     min-height: 70px;
 
     display: flex;
+
     align-items: center;
 
     gap: 12px;
 
     padding: 10px 12px;
+
     margin-bottom: 15px;
 
     background: #ffffff;
 
     border: 1px solid #e5e7eb;
+
     border-radius: 9px;
+
 }
 
 
-/* =====================================================
-   LOGO / ICON
-===================================================== */
+/* ============================================================
+   LOGO
+============================================================ */
 
 .boutique-detail-icon {
+
     width: 46px;
     height: 46px;
+
     min-width: 46px;
 
     display: flex;
+
     align-items: center;
     justify-content: center;
 
@@ -374,55 +537,78 @@
     border-radius: 50%;
 
     background: #e8f5ee;
+
     color: #198754;
+
 }
 
+
 .boutique-detail-icon img {
+
     width: 100%;
     height: 100%;
 
     object-fit: cover;
+
 }
+
 
 .boutique-detail-icon i {
+
     font-size: 20px;
+
 }
 
 
-/* =====================================================
+/* ============================================================
    INFOS
-===================================================== */
+============================================================ */
 
 .boutique-detail-info {
+
     flex: 1;
+
     min-width: 0;
+
 }
 
+
 .boutique-detail-info h1 {
+
     margin: 0 0 3px;
 
     font-size: 19px;
+
     font-weight: 800;
 
     color: #172033;
+
 }
 
+
 .boutique-detail-info p {
+
     margin: 2px 0;
 
     font-size: 11px;
+
     color: #7b8492;
+
 }
+
 
 .boutique-detail-info p i {
+
     margin-right: 3px;
+
     color: #198754;
+
 }
 
 
-/* =====================================================
-   MODIFIER MA BOUTIQUE
-===================================================== */
+/* ============================================================
+   MODIFIER BOUTIQUE
+============================================================ */
 
 .edit-boutique-btn {
 
@@ -436,6 +622,7 @@
     padding: 8px 11px;
 
     color: #198754;
+
     background: #eaf7f0;
 
     border: 1px solid #cfe9dc;
@@ -443,6 +630,7 @@
     border-radius: 6px;
 
     font-size: 10px;
+
     font-weight: 700;
 
     white-space: nowrap;
@@ -450,17 +638,22 @@
     text-decoration: none;
 
     transition: 0.2s ease;
+
 }
+
 
 .edit-boutique-btn:hover {
+
     color: #ffffff;
+
     background: #198754;
+
 }
 
 
-/* =====================================================
+/* ============================================================
    RETOUR
-===================================================== */
+============================================================ */
 
 .back-boutiques {
 
@@ -474,50 +667,64 @@
     padding: 7px 9px;
 
     border: 1px solid #dfe3e8;
+
     border-radius: 6px;
 
     color: #667085;
 
     font-size: 10px;
+
     font-weight: 700;
 
     white-space: nowrap;
 
     text-decoration: none;
+
 }
+
 
 .back-boutiques:hover {
+
     color: #198754;
+
     border-color: #198754;
+
     background: #f0f8f4;
+
 }
 
 
-/* =====================================================
+/* ============================================================
    HEADER PRODUITS
-===================================================== */
+============================================================ */
 
 .boutique-products-header {
 
     display: flex;
 
     align-items: center;
+
     justify-content: space-between;
 
     gap: 12px;
 
     margin-bottom: 10px;
+
 }
+
 
 .boutique-products-header h2 {
 
     margin: 0;
 
     font-size: 18px;
+
     font-weight: 800;
 
-    color: #172033;
+    color: #f9f9fa;
+
 }
+
 
 .boutique-products-header span {
 
@@ -525,15 +732,16 @@
 
     margin-top: 2px;
 
-    color: #7b8492;
+    color: #f6f7f8;
 
     font-size: 10px;
+
 }
 
 
-/* =====================================================
-   PUBLIER
-===================================================== */
+/* ============================================================
+   BOUTON PUBLIER
+============================================================ */
 
 .publish-product-btn {
 
@@ -547,11 +755,13 @@
     padding: 7px 10px;
 
     background: #198754;
+
     color: #ffffff;
 
     border-radius: 6px;
 
     font-size: 10px;
+
     font-weight: 700;
 
     white-space: nowrap;
@@ -559,20 +769,72 @@
     text-decoration: none;
 
     transition: 0.2s ease;
+
 }
+
 
 .publish-product-btn:hover {
 
     background: #157347;
+
     color: #ffffff;
 
     transform: translateY(-1px);
+
 }
 
 
-/* =====================================================
+/* ============================================================
+   BOUTON PARTAGER
+============================================================ */
+
+.share-boutique-btn {
+
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 6px;
+
+    padding: 7px 10px;
+
+    background: #198754;
+
+    color: #ffffff;
+
+    border: none;
+
+    border-radius: 6px;
+
+    font-size: 10px;
+
+    font-weight: 700;
+
+    white-space: nowrap;
+
+    cursor: pointer;
+
+    transition: 0.2s ease;
+
+}
+
+
+.share-boutique-btn:hover {
+
+    background: #157347;
+
+    color: #ffffff;
+
+    transform: translateY(-1px);
+
+}
+
+
+
+/* ============================================================
    GRILLE
-===================================================== */
+============================================================ */
 
 .boutique-products-grid {
 
@@ -582,12 +844,13 @@
         repeat(5, minmax(0, 1fr));
 
     gap: 10px;
+
 }
 
 
-/* =====================================================
-   CARTE PRODUIT
-===================================================== */
+/* ============================================================
+   CARTE
+============================================================ */
 
 .boutique-product-card {
 
@@ -602,7 +865,9 @@
     overflow: hidden;
 
     transition: 0.2s ease;
+
 }
+
 
 .boutique-product-card:hover {
 
@@ -610,12 +875,13 @@
 
     box-shadow:
         0 5px 15px rgba(0,0,0,0.07);
+
 }
 
 
-/* =====================================================
+/* ============================================================
    IMAGE
-===================================================== */
+============================================================ */
 
 .boutique-product-image {
 
@@ -624,12 +890,15 @@
     display: block;
 
     width: 100%;
+
     height: 135px;
 
     background: #f1f3f5;
 
     overflow: hidden;
+
 }
+
 
 .boutique-product-image img {
 
@@ -641,18 +910,21 @@
     display: block;
 
     transition: 0.2s ease;
+
 }
+
 
 .boutique-product-card:hover
 .boutique-product-image img {
 
     transform: scale(1.03);
+
 }
 
 
-/* =====================================================
-   PAS D'IMAGE
-===================================================== */
+/* ============================================================
+   SANS IMAGE
+============================================================ */
 
 .no-product-image {
 
@@ -665,16 +937,20 @@
     justify-content: center;
 
     color: #adb5bd;
+
 }
+
 
 .no-product-image i {
+
     font-size: 35px;
+
 }
 
 
-/* =====================================================
+/* ============================================================
    CONDITION
-===================================================== */
+============================================================ */
 
 .product-condition {
 
@@ -688,20 +964,26 @@
     border-radius: 4px;
 
     background: #198754;
+
     color: #ffffff;
 
     font-size: 8px;
+
     font-weight: 700;
+
 }
 
 
-/* =====================================================
+/* ============================================================
    INFORMATIONS
-===================================================== */
+============================================================ */
 
 .boutique-product-info {
+
     padding: 8px;
+
 }
+
 
 .boutique-product-info h3 {
 
@@ -712,6 +994,7 @@
     color: #172033;
 
     font-size: 12px;
+
     font-weight: 700;
 
     line-height: 1.25;
@@ -719,15 +1002,17 @@
     display: -webkit-box;
 
     -webkit-line-clamp: 2;
+
     -webkit-box-orient: vertical;
 
     overflow: hidden;
+
 }
 
 
-/* =====================================================
+/* ============================================================
    PRIX
-===================================================== */
+============================================================ */
 
 .boutique-product-price {
 
@@ -736,13 +1021,15 @@
     color: #198754;
 
     font-size: 13px;
+
     font-weight: 800;
+
 }
 
 
-/* =====================================================
+/* ============================================================
    VILLE
-===================================================== */
+============================================================ */
 
 .boutique-product-city {
 
@@ -757,19 +1044,22 @@
     color: #7b8492;
 
     font-size: 9px;
+
 }
+
 
 .boutique-product-city i {
 
     color: #198754;
 
     font-size: 10px;
+
 }
 
 
-/* =====================================================
+/* ============================================================
    ACTIONS
-===================================================== */
+============================================================ */
 
 .boutique-product-actions {
 
@@ -780,12 +1070,13 @@
     gap: 6px;
 
     margin-top: 7px;
+
 }
 
 
-/* =====================================================
+/* ============================================================
    VOIR
-===================================================== */
+============================================================ */
 
 .boutique-product-link {
 
@@ -794,19 +1085,24 @@
     color: #198754;
 
     font-size: 9px;
+
     font-weight: 700;
 
     text-decoration: none;
+
 }
+
 
 .boutique-product-link:hover {
+
     text-decoration: underline;
+
 }
 
 
-/* =====================================================
+/* ============================================================
    ACTIONS PROPRIÉTAIRE
-===================================================== */
+============================================================ */
 
 .product-owner-actions {
 
@@ -819,12 +1115,26 @@
     padding-top: 7px;
 
     border-top: 1px solid #edf0f2;
+
 }
 
 
-/* =====================================================
-   MODIFIER PRODUIT
-===================================================== */
+/* ============================================================
+   FORMULAIRE SUPPRESSION
+============================================================ */
+
+.delete-product-form {
+
+    flex: 1;
+
+    margin: 0;
+
+}
+
+
+/* ============================================================
+   MODIFIER
+============================================================ */
 
 .product-edit-btn {
 
@@ -842,6 +1152,7 @@
     padding: 4px 6px;
 
     color: #198754;
+
     background: #eaf7f0;
 
     border: 1px solid #cfe9dc;
@@ -849,25 +1160,34 @@
     border-radius: 5px;
 
     font-size: 8px;
+
     font-weight: 700;
 
     text-decoration: none;
+
 }
+
 
 .product-edit-btn:hover {
 
     color: #ffffff;
+
     background: #198754;
+
 }
 
 
-/* =====================================================
-   SUPPRIMER PRODUIT
-===================================================== */
+/* ============================================================
+   SUPPRIMER
+============================================================ */
 
 .product-delete-btn {
 
-    flex: 1;
+    width: 100%;
+
+    min-height: 28px;
+
+    padding: 4px 6px;
 
     display: inline-flex;
 
@@ -876,33 +1196,37 @@
 
     gap: 4px;
 
-    min-height: 28px;
-
-    padding: 4px 6px;
-
     color: #dc3545;
+
     background: #fff5f5;
 
     border: 1px solid #f1c7cb;
 
     border-radius: 5px;
 
+    font-family: inherit;
+
     font-size: 8px;
+
     font-weight: 700;
 
-    text-decoration: none;
+    cursor: pointer;
+
 }
+
 
 .product-delete-btn:hover {
 
     color: #ffffff;
+
     background: #dc3545;
+
 }
 
 
-/* =====================================================
-   VIDE
-===================================================== */
+/* ============================================================
+   BOUTIQUE VIDE
+============================================================ */
 
 .empty-boutique-products {
 
@@ -915,7 +1239,9 @@
     border: 1px solid #e5e7eb;
 
     border-radius: 9px;
+
 }
+
 
 .empty-boutique-products > i {
 
@@ -926,15 +1252,20 @@
     color: #adb5bd;
 
     font-size: 40px;
+
 }
+
 
 .empty-boutique-products h2 {
 
     margin: 0 0 4px;
 
     font-size: 17px;
+
     font-weight: 700;
+
 }
+
 
 .empty-boutique-products p {
 
@@ -943,12 +1274,13 @@
     color: #7b8492;
 
     font-size: 11px;
+
 }
 
 
-/* =====================================================
+/* ============================================================
    TABLETTE
-===================================================== */
+============================================================ */
 
 @media (max-width: 1200px) {
 
@@ -956,19 +1288,24 @@
 
         grid-template-columns:
             repeat(4, minmax(0, 1fr));
+
     }
+
 }
 
 
-/* =====================================================
+/* ============================================================
    PETIT ÉCRAN
-===================================================== */
+============================================================ */
 
 @media (max-width: 900px) {
 
     .boutique-detail-page {
+
         padding: 13px 14px 25px;
+
     }
+
 
     .boutique-products-grid {
 
@@ -976,28 +1313,40 @@
             repeat(3, minmax(0, 1fr));
 
         gap: 8px;
+
     }
 
+
     .boutique-product-image {
+
         height: 125px;
+
     }
+
 }
 
 
-/* =====================================================
+/* ============================================================
    MOBILE
-===================================================== */
+============================================================ */
 
 @media (max-width: 600px) {
 
     .boutique-detail-page {
+
         padding: 10px;
+
     }
 
+
     .boutique-public-cover {
+
         height: 180px;
+
         border-radius: 10px;
+
     }
+
 
     .boutique-detail-header {
 
@@ -1008,69 +1357,109 @@
         margin-bottom: 10px;
 
         gap: 8px;
+
     }
+
 
     .boutique-detail-icon {
 
         width: 38px;
+
         height: 38px;
+
         min-width: 38px;
+
     }
+
 
     .boutique-detail-icon i {
+
         font-size: 17px;
+
     }
+
 
     .boutique-detail-info h1 {
+
         font-size: 15px;
+
     }
 
+
     .boutique-detail-info p {
+
         font-size: 9px;
+
     }
+
 
     .edit-boutique-btn {
 
         width: 32px;
+
         height: 32px;
 
         padding: 0;
 
         border-radius: 6px;
+
     }
+
 
     .edit-boutique-btn span {
+
         display: none;
+
     }
 
+
     .back-boutiques span {
+
         display: none;
+
     }
+
 
     .back-boutiques {
 
         width: 30px;
+
         height: 30px;
 
         padding: 0;
+
     }
+
 
     .boutique-products-header h2 {
+
         font-size: 15px;
+
     }
+
 
     .boutique-products-header span {
+
         font-size: 9px;
+
     }
+
 
     .publish-product-btn {
+
         padding: 7px 9px;
+
         font-size: 9px;
+
     }
 
+
     .publish-product-btn span {
+
         display: none;
+
     }
+
 
     .boutique-products-grid {
 
@@ -1078,37 +1467,60 @@
             repeat(2, minmax(0, 1fr));
 
         gap: 7px;
+
     }
+
 
     .boutique-product-image {
+
         height: 115px;
+
     }
 
+
     .boutique-product-info {
+
         padding: 7px;
+
     }
+
 
     .boutique-product-info h3 {
 
         font-size: 11px;
+
         height: 27px;
+
     }
+
 
     .boutique-product-price {
+
         font-size: 12px;
+
     }
+
 
     .boutique-product-city {
+
         font-size: 8px;
+
     }
+
 
     .boutique-product-link {
+
         font-size: 8px;
+
     }
 
+
     .product-owner-actions {
+
         gap: 4px;
+
     }
+
 
     .product-edit-btn,
     .product-delete-btn {
@@ -1118,30 +1530,106 @@
         font-size: 8px;
 
         padding: 4px;
+
     }
+
 }
 
 
-/* =====================================================
+/* ============================================================
    TRÈS PETIT MOBILE
-===================================================== */
+============================================================ */
 
 @media (max-width: 400px) {
 
     .boutique-product-image {
+
         height: 105px;
+
     }
 
+
     .boutique-product-info h3 {
+
         font-size: 10px;
+
     }
+
 
     .product-edit-btn span,
     .product-delete-btn span {
+
         display: none;
+
     }
+
 }
 
 </style>
 
+
+
+
+
+
+
+<script>
+async function shareBoutique() {
+
+    const boutiqueUrl =
+        window.location.origin + "/boutique/detail/{{ boutique.id }}";
+const shareText =
+    "🛍️ Découvrez {{ boutique.name|e }} sur MauriMarket 🇲🇷";
+
+const whatsappText =
+    "🛍️ Découvrez {{ boutique.name|e }} sur MauriMarket 🇲🇷\n\n" +
+    "Découvrez tous les produits de cette boutique 🛒";
+    if (navigator.share) {
+        try {
+
+            await navigator.share({
+                title: shareTitle,
+                text: shareText,
+                url: boutiqueUrl
+            });
+
+            return;
+
+        } catch (error) {
+
+            if (error.name === "AbortError") {
+                return;
+            }
+        }
+    }
+
+    try {
+
+        await navigator.clipboard.writeText(boutiqueUrl);
+
+        alert(" Le lien de la boutique a été copié  !");
+
+    } catch (error) {
+
+        alert("Impossible de copier le lien.");
+    }
+}
+</script>
 {% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

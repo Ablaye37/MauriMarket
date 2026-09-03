@@ -19,9 +19,9 @@ Inscription - MauriMarket
                     Créer un compte
                 </h2>
 
-                {% if error %}
+                {% if message %}
             <div class="alert alert-danger">
-               {{ error }}
+               {{ message }}
                     </div>
                 {% endif %}
 
@@ -86,3 +86,5 @@ Inscription - MauriMarket
 
 
 {% endblock %}
+
+

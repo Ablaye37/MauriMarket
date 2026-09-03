@@ -1,429 +1,593 @@
-{% extends "base.html" %}
+    {% extends "base.html" %}
 
-{% block title %}Administration - MauriMarket{% endblock %}
+    {% block title %}Administration - MauriMarket{% endblock %}
 
-{% block content %}
+    {% block content %}
 
-<style>
-.admin-page {
-    padding-top: 30px;
-    padding-bottom: 50px;
-}
-
-.admin-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 15px;
-    margin-bottom: 30px;
-}
-
-.admin-header h2 {
-    margin-bottom: 5px;
-}
-
-.admin-header p {
-    margin-bottom: 0;
-}
-
-/* STATISTIQUES */
-
-.admin-stat-card {
-    height: 100%;
-    border: 0;
-    border-radius: 14px;
-    transition: transform .2s ease;
-}
-
-.admin-stat-card:hover {
-    transform: translateY(-2px);
-}
-
-.admin-stat-icon {
-    font-size: 42px;
-    flex-shrink: 0;
-}
-
-/* SECTIONS */
-
-.admin-section {
-    border: 0;
-    border-radius: 14px;
-    overflow: hidden;
-}
-
-.admin-section .card-header {
-    border-bottom: 1px solid #eee;
-}
-
-/* TABLEAUX */
-
-.admin-table th {
-    white-space: nowrap;
-    font-size: 14px;
-}
-
-.admin-table td {
-    vertical-align: middle;
-}
-
-.admin-action-buttons {
-    display: flex;
-    gap: 6px;
-    flex-wrap: wrap;
-}
-
-/* MOBILE */
-
-.mobile-admin-list {
-    display: none;
-}
-
-.mobile-admin-card {
-    border: 1px solid #e9ecef;
-    border-radius: 12px;
-    padding: 15px;
-    margin-bottom: 12px;
-    background: #fff;
-}
-
-.mobile-admin-card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 10px;
-    margin-bottom: 12px;
-}
-
-.mobile-admin-name {
-    font-weight: 700;
-    font-size: 16px;
-    word-break: break-word;
-}
-
-.mobile-admin-id {
-    font-size: 12px;
-    color: #6c757d;
-}
-
-.mobile-admin-info {
-    display: grid;
-    gap: 7px;
-    margin-bottom: 14px;
-}
-
-.mobile-admin-info-row {
-    display: flex;
-    justify-content: space-between;
-    gap: 15px;
-    font-size: 14px;
-}
-
-.mobile-admin-label {
-    color: #6c757d;
-}
-
-.mobile-admin-value {
-    font-weight: 600;
-    text-align: right;
-    word-break: break-word;
-}
-
-.mobile-admin-actions {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-}
-
-.mobile-admin-actions form,
-.mobile-admin-actions a {
-    width: 100%;
-}
-
-.mobile-admin-actions button,
-.mobile-admin-actions a {
-    width: 100%;
-    min-height: 42px;
-}
-
-/* MOBILE */
-
-@media (max-width: 767.98px) {
+    <style>
 
     .admin-page {
-        padding-top: 18px;
-        padding-bottom: 30px;
+        padding-top: 30px;
+        padding-bottom: 50px;
     }
 
     .admin-header {
-        align-items: flex-start;
-        margin-bottom: 22px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 30px;
     }
 
     .admin-header h2 {
-        font-size: 23px;
+        margin-bottom: 5px;
     }
 
     .admin-header p {
-        font-size: 13px;
+        margin-bottom: 0;
     }
 
-    .admin-header .badge {
-        font-size: 12px !important;
-        white-space: nowrap;
-        padding: 8px 10px;
-    }
-
-    .admin-stats {
-        --bs-gutter-x: 10px;
-        --bs-gutter-y: 10px;
-    }
-
-    .admin-stats > div {
-        width: 33.333333%;
-    }
+    /* ============================================================
+    STATISTIQUES
+    ============================================================ */
 
     .admin-stat-card {
-        padding: 14px !important;
-        border-radius: 12px;
+        height: 100%;
+        border: 0;
+        border-radius: 14px;
+        transition: transform .2s ease;
+    }
+
+    .admin-stat-card:hover {
+        transform: translateY(-2px);
     }
 
     .admin-stat-icon {
-        font-size: 27px;
-        margin-right: 8px !important;
+        font-size: 42px;
+        flex-shrink: 0;
     }
 
-    .admin-stat-card h6 {
-        font-size: 11px;
-        line-height: 1.2;
-    }
-
-    .admin-stat-card h3 {
-        font-size: 20px;
-    }
+    /* ============================================================
+    SECTIONS
+    ============================================================ */
 
     .admin-section {
-        border-radius: 12px;
-        margin-bottom: 20px !important;
+        border: 0;
+        border-radius: 14px;
+        overflow: hidden;
     }
 
     .admin-section .card-header {
-        padding: 13px 15px !important;
+        border-bottom: 1px solid #eee;
     }
 
-    .admin-section .card-header h5 {
-        font-size: 16px;
+    /* ============================================================
+    TABLEAUX
+    ============================================================ */
+
+    .admin-table th {
+        white-space: nowrap;
+        font-size: 14px;
     }
 
-    .admin-section .card-body {
-        padding: 12px !important;
+    .admin-table td {
+        vertical-align: middle;
     }
 
-    .desktop-admin-table {
-        display: none !important;
+    .admin-action-buttons {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
     }
+
+    /* ============================================================
+    BOUTON SUPPRESSION DÉFINITIVE
+    ============================================================ */
+
+    .btn-delete-permanent {
+        background-color: #8b0000;
+        border-color: #8b0000;
+        color: #fff;
+    }
+
+    .btn-delete-permanent:hover,
+    .btn-delete-permanent:focus {
+        background-color: #650000;
+        border-color: #650000;
+        color: #fff;
+    }
+
+    /* ============================================================
+    COMMANDES
+    ============================================================ */
+
+    .order-number {
+        font-weight: 700;
+    }
+
+    .order-products {
+        min-width: 220px;
+        max-width: 350px;
+    }
+
+    .order-status {
+        white-space: nowrap;
+    }
+
+    .delivery-status {
+        white-space: nowrap;
+    }
+
+    /* ============================================================
+    MOBILE
+    ============================================================ */
 
     .mobile-admin-list {
-        display: block;
+        display: none;
+    }
+
+    .mobile-admin-card {
+        border: 1px solid #e9ecef;
+        border-radius: 12px;
+        padding: 15px;
+        margin-bottom: 12px;
+        background: #fff;
+    }
+
+    .mobile-admin-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 10px;
+        margin-bottom: 12px;
+    }
+
+    .mobile-admin-name {
+        font-weight: 700;
+        font-size: 16px;
+        word-break: break-word;
+    }
+
+    .mobile-admin-id {
+        font-size: 12px;
+        color: #6c757d;
+    }
+
+    .mobile-admin-info {
+        display: grid;
+        gap: 7px;
+        margin-bottom: 14px;
+    }
+
+    .mobile-admin-info-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 15px;
+        font-size: 14px;
+    }
+
+    .mobile-admin-label {
+        color: #6c757d;
+    }
+
+    .mobile-admin-value {
+        font-weight: 600;
+        text-align: right;
+        word-break: break-word;
     }
 
     .mobile-admin-actions {
-        grid-template-columns: 1fr;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+    }
+
+    .mobile-admin-actions form,
+    .mobile-admin-actions a {
+        width: 100%;
     }
 
     .mobile-admin-actions button,
     .mobile-admin-actions a {
-        font-size: 14px;
-    }
-}
-
-@media (max-width: 380px) {
-
-    .admin-header h2 {
-        font-size: 20px;
+        width: 100%;
+        min-height: 42px;
     }
 
-    .admin-header .badge {
-        font-size: 10px !important;
-        padding: 7px 8px;
+    /* ============================================================
+    MOBILE
+    ============================================================ */
+
+    @media (max-width: 767.98px) {
+
+        .admin-page {
+            padding-top: 18px;
+            padding-bottom: 30px;
+        }
+
+        .admin-header {
+            align-items: flex-start;
+            margin-bottom: 22px;
+        }
+
+        .admin-header h2 {
+            font-size: 23px;
+        }
+
+        .admin-header p {
+            font-size: 13px;
+        }
+
+        .admin-header .badge {
+            font-size: 12px !important;
+            white-space: nowrap;
+            padding: 8px 10px;
+        }
+
+        .admin-stats {
+            --bs-gutter-x: 10px;
+            --bs-gutter-y: 10px;
+        }
+
+        .admin-stats > div {
+            width: 33.333333%;
+        }
+
+        .admin-stat-card {
+            padding: 14px !important;
+            border-radius: 12px;
+        }
+
+        .admin-stat-icon {
+            font-size: 27px;
+            margin-right: 8px !important;
+        }
+
+        .admin-stat-card h6 {
+            font-size: 11px;
+            line-height: 1.2;
+        }
+
+        .admin-stat-card h3 {
+            font-size: 20px;
+        }
+
+        .admin-section {
+            border-radius: 12px;
+            margin-bottom: 20px !important;
+        }
+
+        .admin-section .card-header {
+            padding: 13px 15px !important;
+        }
+
+        .admin-section .card-header h5 {
+            font-size: 16px;
+        }
+
+        .admin-section .card-body {
+            padding: 12px !important;
+        }
+
+        .desktop-admin-table {
+            display: none !important;
+        }
+
+        .mobile-admin-list {
+            display: block;
+        }
+
+        .mobile-admin-actions {
+            grid-template-columns: 1fr;
+        }
+
+        .mobile-admin-actions button,
+        .mobile-admin-actions a {
+            font-size: 14px;
+        }
     }
 
-    .admin-stat-card {
-        padding: 11px !important;
+    @media (max-width: 380px) {
+
+        .admin-header h2 {
+            font-size: 20px;
+        }
+
+        .admin-header .badge {
+            font-size: 10px !important;
+            padding: 7px 8px;
+        }
+
+        .admin-stat-card {
+            padding: 11px !important;
+        }
+
+        .admin-stat-icon {
+            font-size: 23px;
+        }
+
+        .admin-stat-card h6 {
+            font-size: 10px;
+        }
+
+        .admin-stat-card h3 {
+            font-size: 18px;
+        }
+
+        .mobile-admin-card {
+            padding: 13px;
+        }
     }
 
-    .admin-stat-icon {
-        font-size: 23px;
-    }
+    </style>
 
-    .admin-stat-card h6 {
-        font-size: 10px;
-    }
-
-    .admin-stat-card h3 {
-        font-size: 18px;
-    }
-
-    .mobile-admin-card {
-        padding: 13px;
-    }
-}
-</style>
-
-
-<div class="container admin-page">
+    <div class="container admin-page">
 
     <!-- =====================================================
-         EN-TÊTE
+        EN-TÊTE
     ====================================================== -->
 
     <div class="admin-header">
 
-        <div>
-            <h2 class="fw-bold">
-                <i class="bi bi-speedometer2 text-success"></i>
-                Administration
-            </h2>
+    
+    <div>
 
-            <p class="text-muted">
-                Gestion de MauriMarket
-            </p>
-        </div>
+        <h2 class="fw-bold">
 
-        <span class="badge bg-success fs-6">
-            Administrateur
-        </span>
+            <i class="bi bi-speedometer2 text-success"></i>
+
+            Administration
+
+        </h2>
+
+        <p class="text-muted">
+            Gestion de MauriMarket
+        </p>
 
     </div>
 
+    <span class="badge bg-success fs-6">
+        Administrateur
+    </span>
+    
+
+    </div>
 
     <!-- =====================================================
-         MESSAGE FLASH
+        MESSAGE FLASH
     ====================================================== -->
 
     {% if message %}
 
     <div class="alert alert-info alert-dismissible fade show mb-4">
 
-        {{ message }}
+    
+    {{ message }}
 
-        <button
-            type="button"
-            class="btn-close"
-            data-bs-dismiss="alert">
-        </button>
+    <button
+        type="button"
+        class="btn-close"
+        data-bs-dismiss="alert">
+    </button>
+    
 
     </div>
 
     {% endif %}
 
-
     <!-- =====================================================
-         STATISTIQUES
+        STATISTIQUES
     ====================================================== -->
 
     <div class="row g-4 mb-5 admin-stats">
 
-        <div class="col-md-3">
+    <!-- UTILISATEURS -->
 
-            <div class="card shadow-sm p-4 admin-stat-card">
+    <div class="col-md-3">
 
-                <div class="d-flex align-items-center">
+    
+    <div class="card shadow-sm p-4 admin-stat-card">
 
-                    <i class="bi bi-people-fill text-success admin-stat-icon me-3"></i>
+        <div class="d-flex align-items-center">
 
-                    <div>
+            <i class="bi bi-people-fill text-success admin-stat-icon me-3"></i>
 
-                        <h6 class="text-muted mb-1">
-                            Utilisateurs
-                        </h6>
+            <div>
 
-                        <h3 class="fw-bold mb-0">
-                            {{ user_count }}
-                        </h3>
+                <h6 class="text-muted mb-1">
+                    Utilisateurs
+                </h6>
 
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <div class="col-md-3">
-
-            <div class="card shadow-sm p-4 admin-stat-card">
-
-                <div class="d-flex align-items-center">
-
-                    <i class="bi bi-box-seam-fill text-primary admin-stat-icon me-3"></i>
-
-                    <div>
-
-                        <h6 class="text-muted mb-1">
-                            Annonces
-                        </h6>
-
-                        <h3 class="fw-bold mb-0">
-                            {{ product_count }}
-                        </h3>
-
-                    </div>
-
-                </div>
+                <h3 class="fw-bold mb-0">
+                    {{ user_count }}
+                </h3>
 
             </div>
 
         </div>
 
+    </div>
+    
 
-        <div class="col-md-3">
+    </div>
 
-            <div class="card shadow-sm p-4 admin-stat-card">
+    <!-- PRODUITS TOTAL -->
 
-                <div class="d-flex align-items-center">
+    <div class="col-md-3">
 
-                    <i class="bi bi-grid-fill text-warning admin-stat-icon me-3"></i>
+    
+    <div class="card shadow-sm p-4 admin-stat-card">
 
-                    <div>
+        <div class="d-flex align-items-center">
 
-                        <h6 class="text-muted mb-1">
-                            Catégories
-                        </h6>
+            <i class="bi bi-box-seam-fill text-primary admin-stat-icon me-3"></i>
 
-                        <h3 class="fw-bold mb-0">
-                            {{ category_count }}
-                        </h3>
+            <div>
 
-                    </div>
+                <h6 class="text-muted mb-1">
+                    Produits total
+                </h6>
 
-                </div>
+                <h3 class="fw-bold mb-0">
+                    {{ product_count }}
+                </h3>
 
             </div>
 
         </div>
 
+    </div>
+    
 
-        <div class="col-md-3">
+    </div>
 
-            <div class="card shadow-sm p-4 admin-stat-card">
+    <!-- PRODUITS ACTIFS -->
 
-                <div class="d-flex align-items-center">
+    <div class="col-md-3">
 
-                    <i class="bi bi-shop text-danger admin-stat-icon me-3"></i>
+    
+    <div class="card shadow-sm p-4 admin-stat-card">
 
-                    <div>
+        <div class="d-flex align-items-center">
 
-                        <h6 class="text-muted mb-1">
-                            Boutiques
-                        </h6>
+            <i class="bi bi-check-circle-fill text-success admin-stat-icon me-3"></i>
 
-                        <h3 class="fw-bold mb-0">
-                            {{ boutique_count }}
-                        </h3>
+            <div>
 
-                    </div>
+                <h6 class="text-muted mb-1">
+                    Produits actifs
+                </h6>
+
+                <h3 class="fw-bold mb-0">
+                    {{ active_product_count }}
+                </h3>
+
+            </div>
+
+        </div>
+
+    </div>
+    
+
+    </div>
+
+    <!-- PRODUITS INACTIFS -->
+
+    <div class="col-md-3">
+
+    
+    <div class="card shadow-sm p-4 admin-stat-card">
+
+        <div class="d-flex align-items-center">
+
+            <i class="bi bi-x-circle-fill text-danger admin-stat-icon me-3"></i>
+
+            <div>
+
+                <h6 class="text-muted mb-1">
+                    Produits inactifs
+                </h6>
+
+                <h3 class="fw-bold mb-0">
+                    {{ inactive_product_count }}
+                </h3>
+
+            </div>
+
+        </div>
+
+    </div>
+    
+
+    </div>
+
+    <!-- COMMANDES -->
+
+    <div class="col-md-3">
+
+    
+    <div class="card shadow-sm p-4 admin-stat-card">
+
+        <div class="d-flex align-items-center">
+
+            <i class="bi bi-cart-check-fill text-info admin-stat-icon me-3"></i>
+
+            <div>
+
+                <h6 class="text-muted mb-1">
+                    Commandes
+                </h6>
+
+                <h3 class="fw-bold mb-0">
+                    {{ order_count }}
+                </h3>
+
+            </div>
+
+        </div>
+
+    </div>
+    
+
+    </div>
+
+    <!-- COMMANDES EN ATTENTE -->
+
+    <div class="col-md-3">
+
+    
+    <div class="card shadow-sm p-4 admin-stat-card">
+
+        <div class="d-flex align-items-center">
+
+            <i class="bi bi-hourglass-split text-warning admin-stat-icon me-3"></i>
+
+            <div>
+
+                <h6 class="text-muted mb-1">
+                    En attente
+                </h6>
+
+                <h3 class="fw-bold mb-0">
+                    {{ pending_order_count }}
+                </h3>
+
+            </div>
+
+        </div>
+
+    </div>
+    
+
+    </div>
+
+    </div>
+
+    <!-- =====================================================
+        RÉSUMÉ BOUTIQUES / CATÉGORIES
+    ====================================================== -->
+
+    <div class="row g-4 mb-5">
+
+    <div class="col-md-6">
+
+    
+    <div class="card shadow-sm admin-stat-card">
+
+        <div class="card-body p-4">
+
+            <div class="d-flex align-items-center">
+
+                <i class="bi bi-grid-fill text-warning admin-stat-icon me-3"></i>
+
+                <div>
+
+                    <h6 class="text-muted mb-1">
+                        Catégories
+                    </h6>
+
+                    <h3 class="fw-bold mb-0">
+                        {{ category_count }}
+                    </h3>
 
                 </div>
 
@@ -432,1243 +596,2252 @@
         </div>
 
     </div>
+    
 
+    </div>
+
+    <div class="col-md-6">
+
+    
+    <div class="card shadow-sm admin-stat-card">
+
+        <div class="card-body p-4">
+
+            <div class="d-flex align-items-center">
+
+                <i class="bi bi-shop text-danger admin-stat-icon me-3"></i>
+
+                <div>
+
+                    <h6 class="text-muted mb-1">
+                        Boutiques
+                    </h6>
+
+                    <h3 class="fw-bold mb-0">
+                        {{ boutique_count }}
+                    </h3>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+    
+
+    </div>
+
+    </div>
 
     <!-- =====================================================
-         UTILISATEURS
+        COMMANDES
     ====================================================== -->
 
     <div class="card shadow-sm admin-section mb-5">
 
-        <div class="card-header bg-white py-3">
+    <div class="card-header bg-info text-white py-3">
 
-            <h5 class="fw-bold mb-0">
+    
+    <h5 class="fw-bold mb-0">
 
-                <i class="bi bi-people text-success"></i>
+        <i class="bi bi-cart-check-fill"></i>
 
-                Utilisateurs inscrits
+        Commandes
 
-            </h5>
+        {% if pending_order_count > 0 %}
 
-        </div>
+        <span class="badge bg-warning text-dark ms-2">
 
+            {{ pending_order_count }}
+            en attente
 
-        <div class="card-body">
+        </span>
 
-            {% if users %}
+        {% endif %}
 
-            <div class="table-responsive desktop-admin-table">
-
-                <table class="table table-hover align-middle mb-0 admin-table">
-
-                    <thead class="table-light">
-
-                        <tr>
-                            <th>ID</th>
-                            <th>Nom</th>
-                            <th>Téléphone</th>
-                            <th>Rôle</th>
-                            <th>Action</th>
-                        </tr>
-
-                    </thead>
-
-                    <tbody>
-
-                        {% for user_item in users %}
-
-                        <tr>
-
-                            <td>
-                                #{{ user_item.id }}
-                            </td>
-
-                            <td class="fw-semibold">
-                                {{ user_item.full_name }}
-                            </td>
-
-                            <td>
-                                {{ user_item.phone }}
-                            </td>
-
-                            <td>
-
-                                {% if user_item.role == "admin" %}
-
-                                <span class="badge bg-danger">
-                                    Admin
-                                </span>
-
-                                {% else %}
-
-                                <span class="badge bg-secondary">
-                                    Utilisateur
-                                </span>
-
-                                {% endif %}
-
-                            </td>
-
-                            <td>
-
-                                {% if user_item.id != request.session.get("user_id") %}
-
-                                <div class="admin-action-buttons">
-
-                                    <form
-                                        action="/admin/utilisateur/role/{{ user_item.id }}"
-                                        method="post"
-                                    >
-
-                                        {% if user_item.role == "admin" %}
-
-                                        <button
-                                            type="submit"
-                                            class="btn btn-sm btn-outline-warning"
-                                        >
-                                            <i class="bi bi-person-dash"></i>
-                                            Retirer admin
-                                        </button>
-
-                                        {% else %}
-
-                                        <button
-                                            type="submit"
-                                            class="btn btn-sm btn-outline-success"
-                                        >
-                                            <i class="bi bi-person-check"></i>
-                                            Rendre admin
-                                        </button>
-
-                                        {% endif %}
-
-                                    </form>
-
-
-                                    <form
-                                        action="/admin/utilisateur/supprimer/{{ user_item.id }}"
-                                        method="post"
-                                        onsubmit="return confirm('Voulez-vous vraiment supprimer cet utilisateur ?');"
-                                    >
-
-                                        <button
-                                            type="submit"
-                                            class="btn btn-sm btn-outline-danger"
-                                        >
-                                            <i class="bi bi-trash"></i>
-                                            Supprimer
-                                        </button>
-
-                                    </form>
-
-                                </div>
-
-                                {% else %}
-
-                                <span class="badge bg-success">
-                                    Vous
-                                </span>
-
-                                {% endif %}
-
-                            </td>
-
-                        </tr>
-
-                        {% endfor %}
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
-
-            <div class="mobile-admin-list">
-
-                {% for user_item in users %}
-
-                <div class="mobile-admin-card">
-
-                    <div class="mobile-admin-card-header">
-
-                        <div>
-
-                            <div class="mobile-admin-name">
-                                {{ user_item.full_name }}
-                            </div>
-
-                            <div class="mobile-admin-id">
-                                Utilisateur #{{ user_item.id }}
-                            </div>
-
-                        </div>
-
-                        {% if user_item.role == "admin" %}
-
-                        <span class="badge bg-danger">
-                            Admin
-                        </span>
-
-                        {% else %}
-
-                        <span class="badge bg-secondary">
-                            Utilisateur
-                        </span>
-
-                        {% endif %}
-
-                    </div>
-
-
-                    <div class="mobile-admin-info">
-
-                        <div class="mobile-admin-info-row">
-
-                            <span class="mobile-admin-label">
-                                Téléphone
-                            </span>
-
-                            <span class="mobile-admin-value">
-                                {{ user_item.phone }}
-                            </span>
-
-                        </div>
-
-                    </div>
-
-
-                    {% if user_item.id != request.session.get("user_id") %}
-
-                    <div class="mobile-admin-actions">
-
-                        <form
-                            action="/admin/utilisateur/role/{{ user_item.id }}"
-                            method="post"
-                        >
-
-                            {% if user_item.role == "admin" %}
-
-                            <button
-                                type="submit"
-                                class="btn btn-outline-warning"
-                            >
-                                <i class="bi bi-person-dash"></i>
-                                Retirer admin
-                            </button>
-
-                            {% else %}
-
-                            <button
-                                type="submit"
-                                class="btn btn-outline-success"
-                            >
-                                <i class="bi bi-person-check"></i>
-                                Rendre admin
-                            </button>
-
-                            {% endif %}
-
-                        </form>
-
-
-                        <form
-                            action="/admin/utilisateur/supprimer/{{ user_item.id }}"
-                            method="post"
-                            onsubmit="return confirm('Voulez-vous vraiment supprimer cet utilisateur ?');"
-                        >
-
-                            <button
-                                type="submit"
-                                class="btn btn-outline-danger"
-                            >
-                                <i class="bi bi-trash"></i>
-                                Supprimer
-                            </button>
-
-                        </form>
-
-                    </div>
-
-                    {% else %}
-
-                    <span class="badge bg-success">
-                        <i class="bi bi-person-check"></i>
-                        Vous
-                    </span>
-
-                    {% endif %}
-
-                </div>
-
-                {% endfor %}
-
-            </div>
-
-            {% else %}
-
-            <div class="p-5 text-center">
-
-                <i class="bi bi-people fs-1 text-muted"></i>
-
-                <p class="text-muted mt-3 mb-0">
-                    Aucun utilisateur inscrit.
-                </p>
-
-            </div>
-
-            {% endif %}
-
-        </div>
+    </h5>
+    
 
     </div>
 
+    <div class="card-body">
+
+    {% if orders %}
+
+    <!-- =================================================
+        DESKTOP
+    ================================================== -->
+
+    <div class="table-responsive desktop-admin-table">
+
+    <table class="table table-hover align-middle mb-0 admin-table">
+
+    <thead class="table-light">
+
+    <tr>
+
+    
+    <th>ID</th>
+
+    <th>Commande</th>
+
+    <th>Client</th>
+
+    <th>Produits</th>
+
+    <th>Total</th>
+
+    <th>Statut</th>
+
+    <th>Livraison</th>
+
+    <th>Action</th>
+    
+
+    </tr>
+
+    </thead>
+
+    <tbody>
+
+    {% for order in orders %}
+
+    <tr>
+
+    <td>
+        #{{ order.id }}
+    </td>
+
+    <td>
+
+    
+    <span class="order-number">
+        {{ order.order_number }}
+    </span>
+    
+
+    </td>
+
+    <td>
+
+    {% if order.user %}
+
+    
+    {{ order.user.full_name }}
+    
+
+    {% else %}
+
+    
+    <span class="text-muted">
+        Client supprimé
+    </span>
+    
+
+    {% endif %}
+
+    </td>
+
+    <td class="order-products">
+
+    {% if order.items %}
+
+    
+    {% for item in order.items %}
+
+        <div>
+            {{ item.quantity }} ×
+            {% if item.product %}
+                {{ item.product.title }}
+            {% else %}
+                Produit supprimé
+            {% endif %}
+        </div>
+
+    {% endfor %}
+    
+
+    {% else %}
+
+    
+    <span class="text-muted">
+        Aucun produit
+    </span>
+    
+
+    {% endif %}
+
+    </td>
+
+    <td>
+
+    
+    <strong>
+        {{ order.total_amount }} MRU
+    </strong>
+    
+
+    </td>
+
+    <td class="order-status">
+
+    {% if order.status == "pending" %}
+
+    <span class="badge bg-warning text-dark">
+        En attente
+    </span>
+
+    {% elif order.status == "completed" %}
+
+    <span class="badge bg-success">
+        Terminée
+    </span>
+
+    {% elif order.status == "cancelled" %}
+
+    <span class="badge bg-danger">
+        Annulée
+    </span>
+
+    {% else %}
+
+    <span class="badge bg-secondary">
+        {{ order.status }}
+    </span>
+
+    {% endif %}
+
+    </td>
+
+    <td class="delivery-status">
+
+    {% if order.delivery_status == "pending" %}
+
+    <span class="badge bg-secondary">
+        En attente
+    </span>
+
+    {% elif order.delivery_status == "assigned" %}
+
+    <span class="badge bg-primary">
+        Prise en charge
+    </span>
+
+    {% elif order.delivery_status == "in_transit" %}
+
+    <span class="badge bg-warning text-dark">
+        En cours
+    </span>
+
+    {% elif order.delivery_status == "delivered" %}
+
+    <span class="badge bg-success">
+        Livrée
+    </span>
+
+    {% else %}
+
+    <span class="badge bg-secondary">
+        {{ order.delivery_status }}
+    </span>
+
+    {% endif %}
+
+    {% if order.delivery_person %}
+
+    <div class="small text-muted mt-1">
+        👤 {{ order.delivery_person }}
+    </div>
+
+    {% endif %}
+
+    </td>
+
+    <td>
+
+    <div class="admin-action-buttons">
+
+    {% if order.delivery_status == "pending" %}
+
+    <form
+        action="/admin/commande/livraison/{{ order.id }}"
+        method="post"
+    >
+
+    <button
+    type="submit"
+    class="btn btn-sm btn-primary"
+
+    >
+
+    
+    <i class="bi bi-truck"></i>
+
+    Prendre en charge
+    
+
+    </button>
+
+    </form>
+
+    {% elif order.delivery_status == "assigned" %}
+
+    <form
+        action="/admin/commande/livraison/en-cours/{{ order.id }}"
+        method="post"
+    >
+
+    <button
+    type="submit"
+    class="btn btn-sm btn-warning"
+
+    >
+
+    
+    <i class="bi bi-truck"></i>
+
+    Livraison en cours
+    
+
+    </button>
+
+    </form>
+
+    <form
+        action="/admin/commande/livraison/annuler/{{ order.id }}"
+        method="post"
+    >
+
+    <button
+    type="submit"
+    class="btn btn-sm btn-outline-danger"
+
+    >
+
+    
+    Annuler
+    
+
+    </button>
+
+    </form>
+
+    {% elif order.delivery_status == "in_transit" %}
+
+    <form
+        action="/admin/commande/livraison/livree/{{ order.id }}"
+        method="post"
+        onsubmit="return confirm('Confirmer que la commande a été livrée et que le paiement a été reçu ?');"
+    >
+
+    <button
+    type="submit"
+    class="btn btn-sm btn-success"
+
+    >
+
+    
+    <i class="bi bi-check-circle"></i>
+
+    Livrée / Paiement reçu
+    
+
+    </button>
+
+    </form>
+
+    {% elif order.delivery_status == "delivered" %}
+
+    <span class="badge bg-success">
+
+    
+    <i class="bi bi-check-circle-fill"></i>
+
+    Livraison terminée
+    
+
+    </span>
+
+    {% endif %}
+
+    </div>
+
+    </td>
+
+    </tr>
+
+    {% endfor %}
+
+    </tbody>
+
+    </table>
+
+    </div>
+
+    <!-- =================================================
+        MOBILE
+    ================================================== -->
+
+    <div class="mobile-admin-list">
+
+    {% for order in orders %}
+
+    <div class="mobile-admin-card">
+
+    <div class="mobile-admin-card-header">
+
+    <div>
+
+    <div class="mobile-admin-name">
+
+    
+    Commande {{ order.order_number }}
+    
+
+    </div>
+
+    <div class="mobile-admin-id">
+
+    
+    Commande #{{ order.id }}
+    
+
+    </div>
+
+    </div>
+
+    {% if order.delivery_status == "delivered" %}
+
+    <span class="badge bg-success">
+        Livrée
+    </span>
+
+    {% elif order.delivery_status == "in_transit" %}
+
+    <span class="badge bg-warning text-dark">
+        En cours
+    </span>
+
+    {% elif order.delivery_status == "assigned" %}
+
+    <span class="badge bg-primary">
+        Prise en charge
+    </span>
+
+    {% else %}
+
+    <span class="badge bg-secondary">
+        En attente
+    </span>
+
+    {% endif %}
+
+    </div>
+
+    <div class="mobile-admin-info">
+
+    <div class="mobile-admin-info-row">
+
+    <span class="mobile-admin-label">
+        Client
+    </span>
+
+    <span class="mobile-admin-value">
+
+    {% if order.user %}
+
+    
+    {{ order.user.full_name }}
+    
+
+    {% else %}
+
+    
+    Client supprimé
+    
+
+    {% endif %}
+
+    </span>
+
+    </div>
+
+    <div class="mobile-admin-info-row">
+
+    <span class="mobile-admin-label">
+        Total
+    </span>
+
+    <span class="mobile-admin-value">
+
+    
+    {{ order.total_amount }} MRU
+    
+
+    </span>
+
+    </div>
+
+    <div class="mobile-admin-info-row">
+
+    <span class="mobile-admin-label">
+        Statut
+    </span>
+
+    <span class="mobile-admin-value">
+
+    {% if order.status == "pending" %}
+
+    <span class="badge bg-warning text-dark">
+        En attente
+    </span>
+
+    {% elif order.status == "completed" %}
+
+    <span class="badge bg-success">
+        Terminée
+    </span>
+
+    {% elif order.status == "cancelled" %}
+
+    <span class="badge bg-danger">
+        Annulée
+    </span>
+
+    {% else %}
+
+    <span class="badge bg-secondary">
+        {{ order.status }}
+    </span>
+
+    {% endif %}
+
+    </span>
+
+    </div>
+
+    <div class="mobile-admin-info-row">
+
+    <span class="mobile-admin-label">
+        Livraison
+    </span>
+
+    <span class="mobile-admin-value">
+
+    {% if order.delivery_status == "pending" %}
+
+    
+    En attente
+    
+
+    {% elif order.delivery_status == "assigned" %}
+
+    
+    Prise en charge
+    
+
+    {% elif order.delivery_status == "in_transit" %}
+
+    
+    En cours
+    
+
+    {% elif order.delivery_status == "delivered" %}
+
+    
+    Livrée
+    
+
+    {% endif %}
+
+    </span>
+
+    </div>
+
+    {% if order.delivery_person %}
+
+    <div class="mobile-admin-info-row">
+
+    <span class="mobile-admin-label">
+        Livreur
+    </span>
+
+    <span class="mobile-admin-value">
+        {{ order.delivery_person }}
+    </span>
+
+    </div>
+
+    {% endif %}
+
+    <div class="mobile-admin-info-row">
+
+    <span class="mobile-admin-label">
+        Produits
+    </span>
+
+    <span class="mobile-admin-value">
+
+    {% if order.items %}
+
+    
+    {% for item in order.items %}
+
+        <div>
+            {{ item.quantity }} ×
+            {% if item.product %}
+                {{ item.product.title }}
+            {% else %}
+                Produit supprimé
+            {% endif %}
+        </div>
+
+    {% endfor %}
+    
+
+    {% else %}
+
+    
+    Aucun produit
+    
+
+    {% endif %}
+
+    </span>
+
+    </div>
+
+    </div>
+
+    <div class="mobile-admin-actions">
+
+    {% if order.delivery_status == "pending" %}
+
+    <form
+        action="/admin/commande/livraison/{{ order.id }}"
+        method="post"
+    >
+
+    <button
+    type="submit"
+    class="btn btn-primary"
+
+    >
+
+    
+    <i class="bi bi-truck"></i>
+
+    Prendre en charge
+    
+
+    </button>
+
+    </form>
+
+    {% elif order.delivery_status == "assigned" %}
+
+    <form
+        action="/admin/commande/livraison/en-cours/{{ order.id }}"
+        method="post"
+    >
+
+    <button
+    type="submit"
+    class="btn btn-warning"
+
+    >
+
+    
+    <i class="bi bi-truck"></i>
+
+    Livraison en cours
+    
+
+    </button>
+
+    </form>
+
+    <form
+        action="/admin/commande/livraison/annuler/{{ order.id }}"
+        method="post"
+    >
+
+    <button
+    type="submit"
+    class="btn btn-outline-danger"
+
+    >
+
+    
+    Annuler la prise en charge
+    
+
+    </button>
+
+    </form>
+
+    {% elif order.delivery_status == "in_transit" %}
+
+    <form
+        action="/admin/commande/livraison/livree/{{ order.id }}"
+        method="post"
+        onsubmit="return confirm('Confirmer que la commande a été livrée et que le paiement a été reçu ?');"
+    >
+
+    <button
+    type="submit"
+    class="btn btn-success"
+
+    >
+
+    
+    <i class="bi bi-check-circle"></i>
+
+    Livrée / Paiement reçu
+    
+
+    </button>
+
+    </form>
+
+    {% elif order.delivery_status == "delivered" %}
+
+    <div class="alert alert-success mb-0 text-center">
+
+    
+    <i class="bi bi-check-circle-fill"></i>
+
+    Livraison terminée
+    
+
+    </div>
+
+    {% endif %}
+
+    </div>
+
+    </div>
+
+    {% endfor %}
+
+    </div>
+
+    {% else %}
+
+    <div class="p-5 text-center text-muted">
+
+    
+    <i class="bi bi-cart-x fs-1"></i>
+
+    <p class="mt-3 mb-0">
+        Aucune commande pour le moment.
+    </p>
+    
+
+    </div>
+
+    {% endif %}
+
+    </div>
+
+    </div>
 
     <!-- =====================================================
-         DEMANDES DE BOUTIQUES
+        UTILISATEURS
     ====================================================== -->
 
     <div class="card shadow-sm admin-section mb-5">
 
-        <div class="card-header bg-warning py-3">
+    <div class="card-header bg-white py-3">
 
-            <h5 class="fw-bold mb-0">
+    
+    <h5 class="fw-bold mb-0">
 
-                <i class="bi bi-shop"></i>
+        <i class="bi bi-people text-success"></i>
 
-                Demandes de boutiques
+        Utilisateurs inscrits
 
-                {% if boutique_request_count > 0 %}
-
-                <span class="badge bg-danger ms-2">
-                    {{ boutique_request_count }}
-                </span>
-
-                {% endif %}
-
-            </h5>
-
-        </div>
-
-
-        <div class="card-body">
-
-            {% if boutique_requests %}
-
-            <div class="table-responsive desktop-admin-table">
-
-                <table class="table table-hover align-middle mb-0 admin-table">
-
-                    <thead class="table-light">
-
-                        <tr>
-                            <th>ID</th>
-                            <th>Boutique</th>
-                            <th>Type de vente</th>
-                            <th>Utilisateur</th>
-                            <th>Statut</th>
-                            <th>Action</th>
-                        </tr>
-
-                    </thead>
-
-                    <tbody>
-
-                        {% for boutique_request in boutique_requests %}
-
-                        <tr>
-
-                            <td>
-                                #{{ boutique_request.id }}
-                            </td>
-
-                            <td class="fw-semibold">
-                                {{ boutique_request.name }}
-                            </td>
-
-                            <td>
-                                {{ boutique_request.sale_type }}
-                            </td>
-
-                            <td>
-
-                                {% if boutique_request.user %}
-
-                                {{ boutique_request.user.full_name }}
-
-                                {% else %}
-
-                                <span class="text-muted">
-                                    Inconnu
-                                </span>
-
-                                {% endif %}
-
-                            </td>
-
-                            <td>
-
-                                {% if boutique_request.status == "pending" %}
-
-                                <span class="badge bg-warning text-dark">
-                                    En attente
-                                </span>
-
-                                {% elif boutique_request.status == "approved" %}
-
-                                <span class="badge bg-success">
-                                    Acceptée
-                                </span>
-
-                                {% elif boutique_request.status == "rejected" %}
-
-                                <span class="badge bg-danger">
-                                    Refusée
-                                </span>
-
-                                {% endif %}
-
-                            </td>
-
-                            <td>
-
-                                {% if boutique_request.status == "pending" %}
-
-                                <div class="admin-action-buttons">
-
-                                    <form
-                                        action="/admin/boutique/accepter/{{ boutique_request.id }}"
-                                        method="post"
-                                    >
-
-                                        <button
-                                            type="submit"
-                                            class="btn btn-sm btn-success"
-                                            onclick="return confirm('Accepter cette demande ?');"
-                                        >
-                                            <i class="bi bi-check-circle"></i>
-                                            Accepter
-                                        </button>
-
-                                    </form>
-
-
-                                    <form
-                                        action="/admin/boutique/refuser/{{ boutique_request.id }}"
-                                        method="post"
-                                    >
-
-                                        <button
-                                            type="submit"
-                                            class="btn btn-sm btn-outline-danger"
-                                            onclick="return confirm('Refuser cette demande ?');"
-                                        >
-                                            <i class="bi bi-x-circle"></i>
-                                            Refuser
-                                        </button>
-
-                                    </form>
-
-                                </div>
-
-                                {% else %}
-
-                                <span class="text-muted">
-                                    Demande traitée
-                                </span>
-
-                                {% endif %}
-
-                            </td>
-
-                        </tr>
-
-                        {% endfor %}
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
-
-            <div class="mobile-admin-list">
-
-                {% for boutique_request in boutique_requests %}
-
-                <div class="mobile-admin-card">
-
-                    <div class="mobile-admin-card-header">
-
-                        <div>
-
-                            <div class="mobile-admin-name">
-                                {{ boutique_request.name }}
-                            </div>
-
-                            <div class="mobile-admin-id">
-                                Demande #{{ boutique_request.id }}
-                            </div>
-
-                        </div>
-
-                        {% if boutique_request.status == "pending" %}
-
-                        <span class="badge bg-warning text-dark">
-                            En attente
-                        </span>
-
-                        {% elif boutique_request.status == "approved" %}
-
-                        <span class="badge bg-success">
-                            Acceptée
-                        </span>
-
-                        {% else %}
-
-                        <span class="badge bg-danger">
-                            Refusée
-                        </span>
-
-                        {% endif %}
-
-                    </div>
-
-
-                    <div class="mobile-admin-info">
-
-                        <div class="mobile-admin-info-row">
-
-                            <span class="mobile-admin-label">
-                                Type
-                            </span>
-
-                            <span class="mobile-admin-value">
-                                {{ boutique_request.sale_type }}
-                            </span>
-
-                        </div>
-
-
-                        <div class="mobile-admin-info-row">
-
-                            <span class="mobile-admin-label">
-                                Demandeur
-                            </span>
-
-                            <span class="mobile-admin-value">
-
-                                {% if boutique_request.user %}
-                                    {{ boutique_request.user.full_name }}
-                                {% else %}
-                                    Inconnu
-                                {% endif %}
-
-                            </span>
-
-                        </div>
-
-                    </div>
-
-
-                    {% if boutique_request.status == "pending" %}
-
-                    <div class="mobile-admin-actions">
-
-                        <form
-                            action="/admin/boutique/accepter/{{ boutique_request.id }}"
-                            method="post"
-                        >
-
-                            <button
-                                type="submit"
-                                class="btn btn-success"
-                                onclick="return confirm('Accepter cette demande ?');"
-                            >
-                                <i class="bi bi-check-circle"></i>
-                                Accepter
-                            </button>
-
-                        </form>
-
-
-                        <form
-                            action="/admin/boutique/refuser/{{ boutique_request.id }}"
-                            method="post"
-                        >
-
-                            <button
-                                type="submit"
-                                class="btn btn-outline-danger"
-                                onclick="return confirm('Refuser cette demande ?');"
-                            >
-                                <i class="bi bi-x-circle"></i>
-                                Refuser
-                            </button>
-
-                        </form>
-
-                    </div>
-
-                    {% endif %}
-
-                </div>
-
-                {% endfor %}
-
-            </div>
-
-            {% else %}
-
-            <div class="p-5 text-center text-muted">
-
-                <i class="bi bi-shop fs-1"></i>
-
-                <p class="mt-3 mb-0">
-                    Aucune demande de boutique pour le moment.
-                </p>
-
-            </div>
-
-            {% endif %}
-
-        </div>
+    </h5>
+    
 
     </div>
 
+    <div class="card-body">
+
+    {% if users %}
+
+    <div class="table-responsive desktop-admin-table">
+
+    <table class="table table-hover align-middle mb-0 admin-table">
+
+    <thead class="table-light">
+
+    <tr>
+
+    
+    <th>ID</th>
+
+    <th>Nom</th>
+
+    <th>Téléphone</th>
+
+    <th>Rôle</th>
+
+    <th>Action</th>
+    
+
+    </tr>
+
+    </thead>
+
+    <tbody>
+
+    {% for user_item in users %}
+
+    <tr>
+
+    <td>
+        #{{ user_item.id }}
+    </td>
+
+    <td class="fw-semibold">
+        {{ user_item.full_name }}
+    </td>
+
+    <td>
+        {{ user_item.phone }}
+    </td>
+
+    <td>
+
+    {% if user_item.role == "admin" %}
+
+    <span class="badge bg-danger">
+        Admin
+    </span>
+
+    {% else %}
+
+    <span class="badge bg-secondary">
+        Utilisateur
+    </span>
+
+    {% endif %}
+
+    </td>
+
+    <td>
+
+    {% if user_item.id != request.session.get("user_id") %}
+
+    <div class="admin-action-buttons">
+
+    <form
+        action="/admin/utilisateur/role/{{ user_item.id }}"
+        method="post"
+    >
+
+    {% if user_item.role == "admin" %}
+
+    <button
+    type="submit"
+    class="btn btn-sm btn-outline-warning"
+
+    >
+
+    
+    <i class="bi bi-person-dash"></i>
+
+    Retirer admin
+    
+
+    </button>
+
+    {% else %}
+
+    <button
+    type="submit"
+    class="btn btn-sm btn-outline-success"
+
+    >
+
+    
+    <i class="bi bi-person-check"></i>
+
+    Rendre admin
+    
+
+    </button>
+
+    {% endif %}
+
+    </form>
+
+    <form
+        action="/admin/utilisateur/supprimer/{{ user_item.id }}"
+        method="post"
+        onsubmit="return confirm('Voulez-vous vraiment supprimer cet utilisateur ?');"
+    >
+
+    <button
+    type="submit"
+    class="btn btn-sm btn-outline-danger"
+
+    >
+
+    
+    <i class="bi bi-trash"></i>
+
+    Supprimer
+    
+
+    </button>
+
+    </form>
+
+    </div>
+
+    {% else %}
+
+    <span class="badge bg-success">
+        Vous
+    </span>
+
+    {% endif %}
+
+    </td>
+
+    </tr>
+
+    {% endfor %}
+
+    </tbody>
+
+    </table>
+
+    </div>
+
+    <div class="mobile-admin-list">
+
+    {% for user_item in users %}
+
+    <div class="mobile-admin-card">
+
+    <div class="mobile-admin-card-header">
+
+    <div>
+
+    <div class="mobile-admin-name">
+        {{ user_item.full_name }}
+    </div>
+
+    <div class="mobile-admin-id">
+        Utilisateur #{{ user_item.id }}
+    </div>
+
+    </div>
+
+    {% if user_item.role == "admin" %}
+
+    <span class="badge bg-danger">
+        Admin
+    </span>
+
+    {% else %}
+
+    <span class="badge bg-secondary">
+        Utilisateur
+    </span>
+
+    {% endif %}
+
+    </div>
+
+    <div class="mobile-admin-info">
+
+    <div class="mobile-admin-info-row">
+
+    <span class="mobile-admin-label">
+        Téléphone
+    </span>
+
+    <span class="mobile-admin-value">
+        {{ user_item.phone }}
+    </span>
+
+    </div>
+
+    </div>
+
+    {% if user_item.id != request.session.get("user_id") %}
+
+    <div class="mobile-admin-actions">
+
+    <form
+        action="/admin/utilisateur/role/{{ user_item.id }}"
+        method="post"
+    >
+
+    {% if user_item.role == "admin" %}
+
+    <button
+    type="submit"
+    class="btn btn-outline-warning"
+
+    >
+
+    
+    <i class="bi bi-person-dash"></i>
+
+    Retirer admin
+    
+
+    </button>
+
+    {% else %}
+
+    <button
+    type="submit"
+    class="btn btn-outline-success"
+
+    >
+
+    
+    <i class="bi bi-person-check"></i>
+
+    Rendre admin
+    
+
+    </button>
+
+    {% endif %}
+
+    </form>
+
+    <form
+        action="/admin/utilisateur/supprimer/{{ user_item.id }}"
+        method="post"
+        onsubmit="return confirm('Voulez-vous vraiment supprimer cet utilisateur ?');"
+    >
+
+    <button
+    type="submit"
+    class="btn btn-outline-danger"
+
+    >
+
+    
+    <i class="bi bi-trash"></i>
+
+    Supprimer
+    
+
+    </button>
+
+    </form>
+
+    </div>
+
+    {% else %}
+
+    <span class="badge bg-success">
+
+    
+    <i class="bi bi-person-check"></i>
+
+    Vous
+    
+
+    </span>
+
+    {% endif %}
+
+    </div>
+
+    {% endfor %}
+
+    </div>
+
+    {% else %}
+
+    <div class="p-5 text-center">
+
+    <i class="bi bi-people fs-1 text-muted"></i>
+
+    <p class="text-muted mt-3 mb-0">
+        Aucun utilisateur inscrit.
+    </p>
+
+    </div>
+
+    {% endif %}
+
+    </div>
+
+    </div>
 
     <!-- =====================================================
-         MESSAGES CONTACT
+        DEMANDES DE BOUTIQUES
     ====================================================== -->
 
     <div class="card shadow-sm admin-section mb-5">
 
-        <div class="card-header bg-primary text-white py-3">
+    <div class="card-header bg-warning py-3">
 
-            <h5 class="fw-bold mb-0">
+    <h5 class="fw-bold mb-0">
 
-                <i class="bi bi-envelope-fill"></i>
+    <i class="bi bi-shop"></i>
 
-                Messages Contact
+    Demandes de boutiques
 
-                {% if contact_message_count > 0 %}
+    {% if boutique_request_count > 0 %}
 
-                <span class="badge bg-danger ms-2">
+    <span class="badge bg-danger ms-2">
+        {{ boutique_request_count }}
+    </span>
 
-                    {{ contact_message_count }}
-                    nouveau{% if contact_message_count > 1 %}x{% endif %}
+    {% endif %}
 
-                </span>
-
-                {% endif %}
-
-            </h5>
-
-        </div>
-
-
-        <div class="card-body">
-
-            {% if contact_messages %}
-
-            <div class="table-responsive desktop-admin-table">
-
-                <table class="table table-hover align-middle mb-0 admin-table">
-
-                    <thead class="table-light">
-
-                        <tr>
-                            <th>ID</th>
-                            <th>Nom</th>
-                            <th>Téléphone</th>
-                            <th>Email</th>
-                            <th>Sujet</th>
-                            <th>Message</th>
-                            <th>Statut</th>
-                            <th>Action</th>
-                        </tr>
-
-                    </thead>
-
-                    <tbody>
-
-                        {% for contact_message in contact_messages %}
-
-                        <tr>
-
-                            <td>
-                                #{{ contact_message.id }}
-                            </td>
-
-                            <td class="fw-semibold">
-                                {{ contact_message.name }}
-                            </td>
-
-                            <td>
-                                {{ contact_message.phone }}
-                            </td>
-
-                            <td>
-
-                                {% if contact_message.email %}
-
-                                <a href="mailto:{{ contact_message.email }}">
-                                    {{ contact_message.email }}
-                                </a>
-
-                                {% else %}
-
-                                <span class="text-muted">
-                                    Non renseigné
-                                </span>
-
-                                {% endif %}
-
-                            </td>
-
-                            <td>
-                                {{ contact_message.subject }}
-                            </td>
-
-                            <td style="min-width:250px; max-width:350px;">
-
-                                <div style="white-space:normal; word-break:break-word;">
-                                    {{ contact_message.message }}
-                                </div>
-
-                            </td>
-
-                            <td>
-
-                                {% if contact_message.status == "new" %}
-
-                                <span class="badge bg-danger">
-                                    Nouveau
-                                </span>
-
-                                {% else %}
-
-                                <span class="badge bg-success">
-                                    Lu
-                                </span>
-
-                                {% endif %}
-
-                            </td>
-
-                            <td>
-
-                                <div class="admin-action-buttons">
-
-                                    {% if contact_message.status == "new" %}
-
-                                    <form
-                                        action="/admin/contact/lire/{{ contact_message.id }}"
-                                        method="post"
-                                    >
-
-                                        <button
-                                            type="submit"
-                                            class="btn btn-sm btn-outline-success"
-                                        >
-                                            <i class="bi bi-check-circle"></i>
-                                            Lu
-                                        </button>
-
-                                    </form>
-
-                                    {% else %}
-
-                                    <form
-                                        action="/admin/contact/non-lu/{{ contact_message.id }}"
-                                        method="post"
-                                    >
-
-                                        <button
-                                            type="submit"
-                                            class="btn btn-sm btn-outline-warning"
-                                        >
-                                            <i class="bi bi-envelope"></i>
-                                            Non lu
-                                        </button>
-
-                                    </form>
-
-                                    {% endif %}
-
-
-                                    <form
-                                        action="/admin/contact/supprimer/{{ contact_message.id }}"
-                                        method="post"
-                                        onsubmit="return confirm('Supprimer ce message ?');"
-                                    >
-
-                                        <button
-                                            type="submit"
-                                            class="btn btn-sm btn-outline-danger"
-                                        >
-                                            <i class="bi bi-trash"></i>
-                                            Supprimer
-                                        </button>
-
-                                    </form>
-
-                                </div>
-
-                            </td>
-
-                        </tr>
-
-                        {% endfor %}
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
-
-            <div class="mobile-admin-list">
-
-                {% for contact_message in contact_messages %}
-
-                <div class="mobile-admin-card">
-
-                    <div class="mobile-admin-card-header">
-
-                        <div>
-
-                            <div class="mobile-admin-name">
-                                {{ contact_message.name }}
-                            </div>
-
-                            <div class="mobile-admin-id">
-                                Message #{{ contact_message.id }}
-                            </div>
-
-                        </div>
-
-                        {% if contact_message.status == "new" %}
-
-                        <span class="badge bg-danger">
-                            Nouveau
-                        </span>
-
-                        {% else %}
-
-                        <span class="badge bg-success">
-                            Lu
-                        </span>
-
-                        {% endif %}
-
-                    </div>
-
-
-                    <div class="mobile-admin-info">
-
-                        <div class="mobile-admin-info-row">
-
-                            <span class="mobile-admin-label">
-                                Téléphone
-                            </span>
-
-                            <span class="mobile-admin-value">
-                                {{ contact_message.phone }}
-                            </span>
-
-                        </div>
-
-
-                        <div class="mobile-admin-info-row">
-
-                            <span class="mobile-admin-label">
-                                Email
-                            </span>
-
-                            <span class="mobile-admin-value">
-
-                                {% if contact_message.email %}
-
-                                <a href="mailto:{{ contact_message.email }}">
-                                    {{ contact_message.email }}
-                                </a>
-
-                                {% else %}
-
-                                Non renseigné
-
-                                {% endif %}
-
-                            </span>
-
-                        </div>
-
-
-                        <div class="mobile-admin-info-row">
-
-                            <span class="mobile-admin-label">
-                                Sujet
-                            </span>
-
-                            <span class="mobile-admin-value">
-                                {{ contact_message.subject }}
-                            </span>
-
-                        </div>
-
-
-                        <div class="mobile-admin-info-row">
-
-                            <span class="mobile-admin-label">
-                                Message
-                            </span>
-
-                            <span class="mobile-admin-value">
-                                {{ contact_message.message }}
-                            </span>
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="mobile-admin-actions">
-
-                        {% if contact_message.status == "new" %}
-
-                        <form
-                            action="/admin/contact/lire/{{ contact_message.id }}"
-                            method="post"
-                        >
-
-                            <button
-                                type="submit"
-                                class="btn btn-outline-success"
-                            >
-                                <i class="bi bi-check-circle"></i>
-                                Marquer comme lu
-                            </button>
-
-                        </form>
-
-                        {% else %}
-
-                        <form
-                            action="/admin/contact/non-lu/{{ contact_message.id }}"
-                            method="post"
-                        >
-
-                            <button
-                                type="submit"
-                                class="btn btn-outline-warning"
-                            >
-                                <i class="bi bi-envelope"></i>
-                                Remettre non lu
-                            </button>
-
-                        </form>
-
-                        {% endif %}
-
-
-                        <form
-                            action="/admin/contact/supprimer/{{ contact_message.id }}"
-                            method="post"
-                            onsubmit="return confirm('Supprimer ce message ?');"
-                        >
-
-                            <button
-                                type="submit"
-                                class="btn btn-outline-danger"
-                            >
-                                <i class="bi bi-trash"></i>
-                                Supprimer
-                            </button>
-
-                        </form>
-
-                    </div>
-
-                </div>
-
-                {% endfor %}
-
-            </div>
-
-            {% else %}
-
-            <div class="p-5 text-center text-muted">
-
-                <i class="bi bi-envelope-open fs-1"></i>
-
-                <p class="mt-3 mb-0">
-                    Aucun message de contact pour le moment.
-                </p>
-
-            </div>
-
-            {% endif %}
-
-        </div>
+    </h5>
 
     </div>
 
+    <div class="card-body">
+
+    {% if boutique_requests %}
+
+    <div class="table-responsive desktop-admin-table">
+
+    <table class="table table-hover align-middle mb-0 admin-table">
+
+    <thead class="table-light">
+
+    <tr>
+
+    <th>ID</th>
+    <th>Boutique</th>
+    <th>Type de vente</th>
+    <th>Utilisateur</th>
+    <th>Statut</th>
+    <th>Action</th>
+
+    </tr>
+
+    </thead>
+
+    <tbody>
+
+    {% for boutique_request in boutique_requests %}
+
+    <tr>
+
+    <td>
+        #{{ boutique_request.id }}
+    </td>
+
+    <td class="fw-semibold">
+        {{ boutique_request.name }}
+    </td>
+
+    <td>
+        {{ boutique_request.sale_type }}
+    </td>
+
+    <td>
+
+    {% if boutique_request.user %}
+
+    
+    {{ boutique_request.user.full_name }}
+    
+
+    {% else %}
+
+    <span class="text-muted">
+        Inconnu
+    </span>
+
+    {% endif %}
+
+    </td>
+
+    <td>
+
+    {% if boutique_request.status == "pending" %}
+
+    <span class="badge bg-warning text-dark">
+        En attente
+    </span>
+
+    {% elif boutique_request.status == "approved" %}
+
+    <span class="badge bg-success">
+        Acceptée
+    </span>
+
+    {% elif boutique_request.status == "rejected" %}
+
+    <span class="badge bg-danger">
+        Refusée
+    </span>
+
+    {% endif %}
+
+    </td>
+
+    <td>
+
+    {% if boutique_request.status == "pending" %}
+
+    <div class="admin-action-buttons">
+
+    <form
+        action="/admin/boutique/accepter/{{ boutique_request.id }}"
+        method="post"
+    >
+
+    <button
+    type="submit"
+    class="btn btn-sm btn-success"
+    onclick="return confirm('Accepter cette demande ?');"
+
+    >
+
+    
+    <i class="bi bi-check-circle"></i>
+
+    Accepter
+    
+
+    </button>
+
+    </form>
+
+    <form
+        action="/admin/boutique/refuser/{{ boutique_request.id }}"
+        method="post"
+    >
+
+    <button
+    type="submit"
+    class="btn btn-sm btn-outline-danger"
+    onclick="return confirm('Refuser cette demande ?');"
+
+    >
+
+    
+    <i class="bi bi-x-circle"></i>
+
+    Refuser
+    
+
+    </button>
+
+    </form>
+
+    </div>
+
+    {% else %}
+
+    <span class="text-muted">
+        Demande traitée
+    </span>
+
+    {% endif %}
+
+    </td>
+
+    </tr>
+
+    {% endfor %}
+
+    </tbody>
+
+    </table>
+
+    </div>
+
+    <div class="mobile-admin-list">
+
+    {% for boutique_request in boutique_requests %}
+
+    <div class="mobile-admin-card">
+
+    <div class="mobile-admin-card-header">
+
+    <div>
+
+    <div class="mobile-admin-name">
+        {{ boutique_request.name }}
+    </div>
+
+    <div class="mobile-admin-id">
+        Demande #{{ boutique_request.id }}
+    </div>
+
+    </div>
+
+    {% if boutique_request.status == "pending" %}
+
+    <span class="badge bg-warning text-dark">
+        En attente
+    </span>
+
+    {% elif boutique_request.status == "approved" %}
+
+    <span class="badge bg-success">
+        Acceptée
+    </span>
+
+    {% else %}
+
+    <span class="badge bg-danger">
+        Refusée
+    </span>
+
+    {% endif %}
+
+    </div>
+
+    <div class="mobile-admin-info">
+
+    <div class="mobile-admin-info-row">
+
+    <span class="mobile-admin-label">
+        Type
+    </span>
+
+    <span class="mobile-admin-value">
+        {{ boutique_request.sale_type }}
+    </span>
+
+    </div>
+
+    <div class="mobile-admin-info-row">
+
+    <span class="mobile-admin-label">
+        Demandeur
+    </span>
+
+    <span class="mobile-admin-value">
+
+    {% if boutique_request.user %}
+
+    
+    {{ boutique_request.user.full_name }}
+    
+
+    {% else %}
+
+    
+    Inconnu
+    
+
+    {% endif %}
+
+    </span>
+
+    </div>
+
+    </div>
+
+    {% if boutique_request.status == "pending" %}
+
+    <div class="mobile-admin-actions">
+
+    <form
+        action="/admin/boutique/accepter/{{ boutique_request.id }}"
+        method="post"
+    >
+
+    <button
+    type="submit"
+    class="btn btn-success"
+    onclick="return confirm('Accepter cette demande ?');"
+
+    >
+
+    
+    <i class="bi bi-check-circle"></i>
+
+    Accepter
+    
+
+    </button>
+
+    </form>
+
+    <form
+        action="/admin/boutique/refuser/{{ boutique_request.id }}"
+        method="post"
+    >
+
+    <button
+    type="submit"
+    class="btn btn-outline-danger"
+    onclick="return confirm('Refuser cette demande ?');"
+
+    >
+
+    
+    <i class="bi bi-x-circle"></i>
+
+    Refuser
+    
+
+    </button>
+
+    </form>
+
+    </div>
+
+    {% endif %}
+
+    </div>
+
+    {% endfor %}
+
+    </div>
+
+    {% else %}
+
+    <div class="p-5 text-center text-muted">
+
+    <i class="bi bi-shop fs-1"></i>
+
+    <p class="mt-3 mb-0">
+        Aucune demande de boutique pour le moment.
+    </p>
+
+    </div>
+
+    {% endif %}
+
+    </div>
+
+    </div>
 
     <!-- =====================================================
-         ANNONCES
+        MESSAGES CONTACT
     ====================================================== -->
 
     <div class="card shadow-sm admin-section mb-5">
 
-        <div class="card-header bg-success text-white py-3">
+    <div class="card-header bg-primary text-white py-3">
 
-            <h5 class="fw-bold mb-0">
+    <h5 class="fw-bold mb-0">
 
-                <i class="bi bi-box-seam"></i>
+    <i class="bi bi-envelope-fill"></i>
 
-                Toutes les annonces
+    Messages Contact
 
-            </h5>
+    {% if contact_message_count > 0 %}
 
-        </div>
+    <span class="badge bg-danger ms-2">
 
+    
+    {{ contact_message_count }}
 
-        <div class="card-body">
+    nouveau{% if contact_message_count > 1 %}x{% endif %}
+    
 
-            {% if products %}
+    </span>
 
-            <div class="table-responsive desktop-admin-table">
+    {% endif %}
 
-                <table class="table table-hover align-middle mb-0 admin-table">
-
-                    <thead class="table-light">
-
-                        <tr>
-                            <th>ID</th>
-                            <th>Produit</th>
-                            <th>Prix</th>
-                            <th>Ville</th>
-                            <th>Vendeur</th>
-                            <th>Action</th>
-                        </tr>
-
-                    </thead>
-
-                    <tbody>
-
-                        {% for product in products %}
-
-                        <tr>
-
-                            <td>
-                                #{{ product.id }}
-                            </td>
-
-                            <td>
-                                <strong>
-                                    {{ product.title }}
-                                </strong>
-                            </td>
-
-                            <td>
-                                {{ product.price }} MRU
-                            </td>
-
-                            <td>
-                                {{ product.city }}
-                            </td>
-
-                            <td>
-
-                                {% if product.user %}
-                                    {{ product.user.full_name }}
-                                {% else %}
-                                    <span class="text-muted">
-                                        Inconnu
-                                    </span>
-                                {% endif %}
-
-                            </td>
-
-                            <td>
-
-                                <div class="admin-action-buttons">
-
-                                    <a
-                                        href="/produit/{{ product.id }}"
-                                        class="btn btn-sm btn-outline-primary"
-                                    >
-                                        <i class="bi bi-eye"></i>
-                                        Voir
-                                    </a>
-
-
-                                    <form
-                                        action="/admin/annonce/supprimer/{{ product.id }}"
-                                        method="post"
-                                        onsubmit="return confirm('Voulez-vous vraiment supprimer cette annonce ?');"
-                                    >
-
-                                        <button
-                                            type="submit"
-                                            class="btn btn-sm btn-outline-danger"
-                                        >
-                                            <i class="bi bi-trash"></i>
-                                            Supprimer
-                                        </button>
-
-                                    </form>
-
-                                </div>
-
-                            </td>
-
-                        </tr>
-
-                        {% endfor %}
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
-
-            <div class="mobile-admin-list">
-
-                {% for product in products %}
-
-                <div class="mobile-admin-card">
-
-                    <div class="mobile-admin-card-header">
-
-                        <div>
-
-                            <div class="mobile-admin-name">
-                                {{ product.title }}
-                            </div>
-
-                            <div class="mobile-admin-id">
-                                Annonce #{{ product.id }}
-                            </div>
-
-                        </div>
-
-                        <span class="badge bg-success">
-                            {{ product.price }} MRU
-                        </span>
-
-                    </div>
-
-
-                    <div class="mobile-admin-info">
-
-                        <div class="mobile-admin-info-row">
-
-                            <span class="mobile-admin-label">
-                                Ville
-                            </span>
-
-                            <span class="mobile-admin-value">
-                                {{ product.city }}
-                            </span>
-
-                        </div>
-
-
-                        <div class="mobile-admin-info-row">
-
-                            <span class="mobile-admin-label">
-                                Vendeur
-                            </span>
-
-                            <span class="mobile-admin-value">
-
-                                {% if product.user %}
-                                    {{ product.user.full_name }}
-                                {% else %}
-                                    Inconnu
-                                {% endif %}
-
-                            </span>
-
-                        </div>
-
-
-                        {% if product.category %}
-
-                        <div class="mobile-admin-info-row">
-
-                            <span class="mobile-admin-label">
-                                Catégorie
-                            </span>
-
-                            <span class="mobile-admin-value">
-                                {{ product.category.name }}
-                            </span>
-
-                        </div>
-
-                        {% endif %}
-
-                    </div>
-
-
-                    <div class="mobile-admin-actions">
-
-                        <a
-                            href="/produit/{{ product.id }}"
-                            class="btn btn-outline-primary"
-                        >
-                            <i class="bi bi-eye"></i>
-                            Voir l'annonce
-                        </a>
-
-
-                        <form
-                            action="/admin/annonce/supprimer/{{ product.id }}"
-                            method="post"
-                            onsubmit="return confirm('Voulez-vous vraiment supprimer cette annonce ?');"
-                        >
-
-                            <button
-                                type="submit"
-                                class="btn btn-outline-danger"
-                            >
-                                <i class="bi bi-trash"></i>
-                                Supprimer
-                            </button>
-
-                        </form>
-
-                    </div>
-
-                </div>
-
-                {% endfor %}
-
-            </div>
-
-            {% else %}
-
-            <div class="p-5 text-center text-muted">
-
-                <i class="bi bi-box-seam fs-1"></i>
-
-                <p class="mt-3 mb-0">
-                    Aucune annonce pour le moment.
-                </p>
-
-            </div>
-
-            {% endif %}
-
-        </div>
+    </h5>
 
     </div>
 
+    <div class="card-body">
 
-</div>
+    {% if contact_messages %}
 
-{% endblock %}
+    <div class="table-responsive desktop-admin-table">
+
+    <table class="table table-hover align-middle mb-0 admin-table">
+
+    <thead class="table-light">
+
+    <tr>
+
+    <th>ID</th>
+    <th>Nom</th>
+    <th>Téléphone</th>
+    <th>Email</th>
+    <th>Sujet</th>
+    <th>Message</th>
+    <th>Statut</th>
+    <th>Action</th>
+
+    </tr>
+
+    </thead>
+
+    <tbody>
+
+    {% for contact_message in contact_messages %}
+
+    <tr>
+
+    <td>
+        #{{ contact_message.id }}
+    </td>
+
+    <td class="fw-semibold">
+        {{ contact_message.name }}
+    </td>
+
+    <td>
+        {{ contact_message.phone }}
+    </td>
+
+    <td>
+
+    {% if contact_message.email %}
+
+    <a href="mailto:{{ contact_message.email }}">
+        {{ contact_message.email }}
+    </a>
+
+    {% else %}
+
+    <span class="text-muted">
+        Non renseigné
+    </span>
+
+    {% endif %}
+
+    </td>
+
+    <td>
+        {{ contact_message.subject }}
+    </td>
+
+    <td style="min-width:250px; max-width:350px;">
+
+    <div style="white-space:normal; word-break:break-word;">
+        {{ contact_message.message }}
+    </div>
+
+    </td>
+
+    <td>
+
+    {% if contact_message.status == "new" %}
+
+    <span class="badge bg-danger">
+        Nouveau
+    </span>
+
+    {% else %}
+
+    <span class="badge bg-success">
+        Lu
+    </span>
+
+    {% endif %}
+
+    </td>
+
+    <td>
+
+    <div class="admin-action-buttons">
+
+    {% if contact_message.status == "new" %}
+
+    <form
+        action="/admin/contact/lire/{{ contact_message.id }}"
+        method="post"
+    >
+
+    <button
+    type="submit"
+    class="btn btn-sm btn-outline-success"
+
+    >
+
+
+    <i class="bi bi-check-circle"></i>
+
+    Lu
+
+
+    </button>
+
+    </form>
+
+    {% else %}
+
+    <form
+        action="/admin/contact/non-lu/{{ contact_message.id }}"
+        method="post"
+    >
+
+    <button
+    type="submit"
+    class="btn btn-sm btn-outline-warning"
+
+    >
+
+
+    <i class="bi bi-envelope"></i>
+
+    Non lu
+
+
+    </button>
+
+    </form>
+
+    {% endif %}
+
+    <form
+        action="/admin/contact/supprimer/{{ contact_message.id }}"
+        method="post"
+        onsubmit="return confirm('Supprimer ce message ?');"
+    >
+
+    <button
+    type="submit"
+    class="btn btn-sm btn-outline-danger"
+
+    >
+
+
+    <i class="bi bi-trash"></i>
+
+    Supprimer
+
+
+    </button>
+
+    </form>
+
+    </div>
+
+    </td>
+
+    </tr>
+
+    {% endfor %}
+
+    </tbody>
+
+    </table>
+
+    </div>
+
+    <div class="mobile-admin-list">
+
+    {% for contact_message in contact_messages %}
+
+    <div class="mobile-admin-card">
+
+    <div class="mobile-admin-card-header">
+
+    <div>
+
+    <div class="mobile-admin-name">
+        {{ contact_message.name }}
+    </div>
+
+    <div class="mobile-admin-id">
+        Message #{{ contact_message.id }}
+    </div>
+
+    </div>
+
+    {% if contact_message.status == "new" %}
+
+    <span class="badge bg-danger">
+        Nouveau
+    </span>
+
+    {% else %}
+
+    <span class="badge bg-success">
+        Lu
+    </span>
+
+    {% endif %}
+
+    </div>
+
+    <div class="mobile-admin-info">
+
+    <div class="mobile-admin-info-row">
+
+    <span class="mobile-admin-label">
+        Téléphone
+    </span>
+
+    <span class="mobile-admin-value">
+        {{ contact_message.phone }}
+    </span>
+
+    </div>
+
+    <div class="mobile-admin-info-row">
+
+    <span class="mobile-admin-label">
+        Email
+    </span>
+
+    <span class="mobile-admin-value">
+
+    {% if contact_message.email %}
+
+    <a href="mailto:{{ contact_message.email }}">
+        {{ contact_message.email }}
+    </a>
+
+    {% else %}
+
+    Non renseigné
+
+    {% endif %}
+
+    </span>
+
+    </div>
+
+    <div class="mobile-admin-info-row">
+
+    <span class="mobile-admin-label">
+        Sujet
+    </span>
+
+    <span class="mobile-admin-value">
+        {{ contact_message.subject }}
+    </span>
+
+    </div>
+
+    <div class="mobile-admin-info-row">
+
+    <span class="mobile-admin-label">
+        Message
+    </span>
+
+    <span class="mobile-admin-value">
+        {{ contact_message.message }}
+    </span>
+
+    </div>
+
+    </div>
+
+    <div class="mobile-admin-actions">
+
+    {% if contact_message.status == "new" %}
+
+    <form
+        action="/admin/contact/lire/{{ contact_message.id }}"
+        method="post"
+    >
+
+    <button
+    type="submit"
+    class="btn btn-outline-success"
+
+    >
+
+
+    <i class="bi bi-check-circle"></i>
+
+    Marquer comme lu
+
+
+    </button>
+
+    </form>
+
+    {% else %}
+
+    <form
+        action="/admin/contact/non-lu/{{ contact_message.id }}"
+        method="post"
+    >
+
+    <button
+    type="submit"
+    class="btn btn-outline-warning"
+
+    >
+
+
+    <i class="bi bi-envelope"></i>
+
+    Remettre non lu
+
+
+    </button>
+
+    </form>
+
+    {% endif %}
+
+    <form
+        action="/admin/contact/supprimer/{{ contact_message.id }}"
+        method="post"
+        onsubmit="return confirm('Supprimer ce message ?');"
+    >
+
+    <button
+    type="submit"
+    class="btn btn-outline-danger"
+
+    >
+
+
+    <i class="bi bi-trash"></i>
+
+    Supprimer
+
+
+    </button>
+
+    </form>
+
+    </div>
+
+    </div>
+
+    {% endfor %}
+
+    </div>
+
+    {% else %}
+
+    <div class="p-5 text-center text-muted">
+
+    <i class="bi bi-envelope-open fs-1"></i>
+
+    <p class="mt-3 mb-0">
+        Aucun message de contact pour le moment.
+    </p>
+
+    </div>
+
+    {% endif %}
+
+    </div>
+
+    </div>
+
+    <!-- =====================================================
+        ANNONCES
+    ====================================================== -->
+
+    <div class="card shadow-sm admin-section mb-5">
+
+    <div class="card-header bg-success text-white py-3">
+
+    <h5 class="fw-bold mb-0">
+
+    <i class="bi bi-box-seam"></i>
+
+    Toutes les annonces
+
+    </h5>
+
+    </div>
+
+    <div class="card-body">
+
+    {% if products %}
+
+    <!-- DESKTOP -->
+
+    <div class="table-responsive desktop-admin-table">
+
+    <table class="table table-hover align-middle mb-0 admin-table">
+
+    <thead class="table-light">
+
+    <tr>
+
+    <th>ID</th>
+    <th>Produit</th>
+    <th>Prix</th>
+    <th>Ville</th>
+    <th>Vendeur</th>
+    <th>Statut</th>
+    <th>Action</th>
+
+    </tr>
+
+    </thead>
+
+    <tbody>
+
+    {% for product in products %}
+
+    <tr>
+
+    <td>
+        #{{ product.id }}
+    </td>
+
+    <td>
+
+    <strong>
+        {{ product.title }}
+    </strong>
+
+    </td>
+
+    <td>
+        {{ product.price }} MRU
+    </td>
+
+    <td>
+        {{ product.city }}
+    </td>
+
+    <td>
+
+    {% if product.user %}
+
+
+    {{ product.user.full_name }}
+
+
+    {% else %}
+
+    <span class="text-muted">
+        Inconnu
+    </span>
+
+    {% endif %}
+
+    </td>
+
+    <td>
+
+    {% if product.is_active %}
+
+    <span class="badge bg-success">
+
+
+    <i class="bi bi-check-circle"></i>
+
+    Actif
+
+
+    </span>
+
+    {% else %}
+
+    <span class="badge bg-danger">
+
+
+    <i class="bi bi-x-circle"></i>
+
+    Inactif
+
+
+    </span>
+
+    {% endif %}
+
+    </td>
+
+    <td>
+
+    <div class="admin-action-buttons">
+
+    <a
+    href="/produit/{{ product.id }}"
+    class="btn btn-sm btn-outline-primary"
+
+    >
+
+
+    <i class="bi bi-eye"></i>
+
+    Voir
+
+
+    </a>
+
+    <form
+        action="/admin/annonce/supprimer/{{ product.id }}"
+        method="post"
+        onsubmit="return confirm('Voulez-vous vraiment supprimer cette annonce ?');"
+    >
+
+    <button
+    type="submit"
+    class="btn btn-sm btn-outline-danger"
+
+    >
+
+    <i class="bi bi-trash"></i>
+
+    Supprimer
+
+
+    </button>
+
+    </form>
+
+    <form
+        action="/admin/annonce/supprimer-definitivement/{{ product.id }}"
+        method="post"
+        onsubmit="return confirm('⚠️ ATTENTION ! Cette action supprimera définitivement cette annonce de la base de données. Cette action est irréversible. Voulez-vous vraiment continuer ?');"
+    >
+
+    <button
+    type="submit"
+    class="btn btn-sm btn-delete-permanent"
+
+    >
+
+    <i class="bi bi-trash3-fill"></i>
+
+    Supprimer définitivement
+
+
+    </button>
+
+    </form>
+
+    </div>
+
+    </td>
+
+    </tr>
+
+    {% endfor %}
+
+    </tbody>
+
+    </table>
+
+    </div>
+
+    <!-- MOBILE -->
+
+    <div class="mobile-admin-list">
+
+    {% for product in products %}
+
+    <div class="mobile-admin-card">
+
+    <div class="mobile-admin-card-header">
+
+    <div>
+
+    <div class="mobile-admin-name">
+        {{ product.title }}
+    </div>
+
+    <div class="mobile-admin-id">
+        Annonce #{{ product.id }}
+    </div>
+
+    </div>
+
+    {% if product.is_active %}
+
+    <span class="badge bg-success">
+        Actif
+    </span>
+
+    {% else %}
+
+    <span class="badge bg-danger">
+        Inactif
+    </span>
+
+    {% endif %}
+
+    </div>
+
+    <div class="mobile-admin-info">
+
+    <div class="mobile-admin-info-row">
+
+    <span class="mobile-admin-label">
+        Prix
+    </span>
+
+    <span class="mobile-admin-value">
+        {{ product.price }} MRU
+    </span>
+
+    </div>
+
+    <div class="mobile-admin-info-row">
+
+    <span class="mobile-admin-label">
+        Ville
+    </span>
+
+    <span class="mobile-admin-value">
+        {{ product.city }}
+    </span>
+
+    </div>
+
+    <div class="mobile-admin-info-row">
+
+    <span class="mobile-admin-label">
+        Vendeur
+    </span>
+
+    <span class="mobile-admin-value">
+
+    {% if product.user %}
+
+
+    {{ product.user.full_name }}
+
+
+    {% else %}
+
+    Inconnu
+
+
+    {% endif %}
+
+    </span>
+
+    </div>
+
+    {% if product.category %}
+
+    <div class="mobile-admin-info-row">
+
+    <span class="mobile-admin-label">
+        Catégorie
+    </span>
+
+    <span class="mobile-admin-value">
+        {{ product.category.name }}
+    </span>
+
+    </div>
+
+    {% endif %}
+
+    <div class="mobile-admin-info-row">
+
+    <span class="mobile-admin-label">
+        Statut
+    </span>
+
+    <span class="mobile-admin-value">
+
+    {% if product.is_active %}
+
+    <span class="badge bg-success">
+        Actif
+    </span>
+
+    {% else %}
+
+    <span class="badge bg-danger">
+        Inactif
+    </span>
+
+    {% endif %}
+
+    </span>
+
+    </div>
+
+    </div>
+
+    <div class="mobile-admin-actions">
+
+    <a
+    href="/produit/{{ product.id }}"
+    class="btn btn-outline-primary"
+
+    >
+
+
+    <i class="bi bi-eye"></i>
+
+    Voir l'annonce
+
+
+    </a>
+
+    <form
+        action="/admin/annonce/supprimer/{{ product.id }}"
+        method="post"
+        onsubmit="return confirm('Voulez-vous vraiment supprimer cette annonce ?');"
+    >
+
+    <button
+    type="submit"
+    class="btn btn-outline-danger"
+
+    >
+
+    <i class="bi bi-trash"></i>
+
+    Supprimer
+
+
+    </button>
+
+    </form>
+
+    <form
+        action="/admin/annonce/supprimer-definitivement/{{ product.id }}"
+        method="post"
+        onsubmit="return confirm('⚠️ ATTENTION ! Cette action supprimera définitivement cette annonce de la base de données. Cette action est irréversible. Voulez-vous vraiment continuer ?');"
+    >
+
+    <button
+    type="submit"
+    class="btn btn-delete-permanent"
+
+    >
+
+
+    <i class="bi bi-trash3-fill"></i>
+
+    Supprimer définitivement
+
+
+    </button>
+
+    </form>
+
+    </div>
+
+    </div>
+
+    {% endfor %}
+
+    </div>
+
+    {% else %}
+
+    <div class="p-5 text-center text-muted">
+
+    <i class="bi bi-box-seam fs-1"></i>
+
+    <p class="mt-3 mb-0">
+        Aucune annonce pour le moment.
+    </p>
+
+    </div>
+
+    {% endif %}
+
+    </div>
+
+    </div>
+
+    </div>
+
+    {% endblock %}
+

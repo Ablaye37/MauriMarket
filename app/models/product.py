@@ -1,4 +1,13 @@
-from sqlalchemy import Column, Integer, String, Text, Float, Boolean, ForeignKey
+from sqlalchemy import (
+    Column,
+    Integer,
+    String,
+    Text,
+    Float,
+    Boolean,
+    ForeignKey
+)
+
 from sqlalchemy.orm import relationship
 
 from app.database.database import Base
@@ -19,7 +28,7 @@ class Product(Base):
     )
 
     # =====================================================
-    # INFORMATIONS DU PRODUIT
+    # INFORMATIONS PRODUIT
     # =====================================================
 
     title = Column(
@@ -48,6 +57,31 @@ class Product(Base):
     )
 
     # =====================================================
+    # TYPE DE PUBLICATION
+    # =====================================================
+
+    publication_type = Column(
+        String(50),
+        nullable=False,
+        default="vente",
+        server_default="vente"
+    )
+
+    # =====================================================
+    # LIVRAISON
+    #
+    # True  = livraison disponible
+    # False = pas de livraison
+    # =====================================================
+
+    delivery_available = Column(
+        Boolean,
+        nullable=False,
+        default=False,
+        server_default="false"
+    )
+
+    # =====================================================
     # IMAGE
     # =====================================================
 
@@ -62,7 +96,9 @@ class Product(Base):
 
     category_id = Column(
         Integer,
-        ForeignKey("categories.id"),
+        ForeignKey(
+            "categories.id"
+        ),
         nullable=True
     )
 
@@ -72,17 +108,26 @@ class Product(Base):
 
     subcategory_id = Column(
         Integer,
-        ForeignKey("subcategories.id"),
+        ForeignKey(
+            "subcategories.id"
+        ),
         nullable=True
     )
 
     # =====================================================
     # PROPRIÉTAIRE
+    #
+    # IMPORTANT :
+    # Le produit appartient à un utilisateur.
+    # Lorsqu'un utilisateur est supprimé par l'admin,
+    # le code admin supprime d'abord ses produits.
     # =====================================================
 
     user_id = Column(
         Integer,
-        ForeignKey("users.id"),
+        ForeignKey(
+            "users.id"
+        ),
         nullable=False,
         index=True
     )
@@ -93,20 +138,15 @@ class Product(Base):
 
     boutique_id = Column(
         Integer,
-        ForeignKey("boutiques.id"),
+        ForeignKey(
+            "boutiques.id"
+        ),
         nullable=True,
         index=True
     )
 
     # =====================================================
-    # STATUT DE L'ANNONCE
-    #
-    # True  = annonce visible
-    # False = annonce supprimée/désactivée
-    #
-    # IMPORTANT :
-    # On ne supprime pas réellement la ligne SQL.
-    # Cela permet de conserver les références des commandes.
+    # STATUT
     # =====================================================
 
     is_active = Column(

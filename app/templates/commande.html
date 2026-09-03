@@ -1,0 +1,272 @@
+{% extends "base.html" %}
+
+{% block title %}Finaliser ma commande - MauriMarket{% endblock %}
+
+{% block content %}
+
+<div class="container py-4">
+
+    <div class="row justify-content-center">
+
+        <div class="col-lg-8">
+
+            <!-- =====================================================
+                 TITRE
+            ====================================================== -->
+
+            <div class="mb-4">
+
+                <h1 class="fw-bold">
+                    🛒 Finaliser ma commande
+                </h1>
+
+                <p class="text-muted">
+                    Vérifiez votre commande puis renseignez vos
+                    informations de livraison.
+                </p>
+
+            </div>
+
+
+            <!-- =====================================================
+                 PRODUITS
+            ====================================================== -->
+
+            <div class="card shadow-sm mb-4">
+
+                <div class="card-body">
+
+                    <h4 class="fw-bold mb-3">
+                        📦 Votre commande
+                    </h4>
+
+                    {% for product in products %}
+
+                    <div class="d-flex justify-content-between
+                                align-items-center
+                                border-bottom
+                                py-3">
+
+                        <div>
+
+                            <div class="fw-bold">
+                                {{ product.title }}
+                            </div>
+
+                            {% if product.city %}
+
+                            <small class="text-muted">
+                                📍 {{ product.city }}
+                            </small>
+
+                            {% endif %}
+
+                        </div>
+
+                        <div class="fw-bold">
+
+                            {{ "{:,.0f}".format(product.price or 0) }}
+                            MRU
+
+                        </div>
+
+                    </div>
+
+                    {% endfor %}
+
+
+                    <!-- TOTAL -->
+
+                    <div class="d-flex justify-content-between
+                                align-items-center
+                                pt-3">
+
+                        <span class="fs-5 fw-bold">
+                            Total
+                        </span>
+
+                        <span class="fs-4 fw-bold text-success">
+
+                            {{ "{:,.0f}".format(total or 0) }}
+                            MRU
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =====================================================
+                 FORMULAIRE
+            ====================================================== -->
+
+            <div class="card shadow-sm">
+
+                <div class="card-body">
+
+                    <h4 class="fw-bold mb-4">
+                        📋 Informations client
+                    </h4>
+
+
+                    <form
+                        method="post"
+                        action="/commande/valider"
+                    >
+
+
+                        <!-- NOM -->
+
+                        <div class="mb-3">
+
+                            <label
+                                for="customer_name"
+                                class="form-label fw-bold"
+                            >
+                                Nom complet *
+                            </label>
+
+                            <input
+                                type="text"
+                                id="customer_name"
+                                name="customer_name"
+                                class="form-control"
+                                value="{{ user_name or '' }}"
+                                placeholder="Votre nom complet"
+                                required
+                            >
+
+                        </div>
+
+
+                        <!-- TELEPHONE -->
+
+                        <div class="mb-3">
+
+                            <label
+                                for="customer_phone"
+                                class="form-label fw-bold"
+                            >
+                                Numéro de téléphone *
+                            </label>
+
+                            <input
+                                type="tel"
+                                id="customer_phone"
+                                name="customer_phone"
+                                class="form-control"
+                                placeholder="Ex : 22 XX XX XX"
+                                required
+                            >
+
+                        </div>
+
+
+                        <!-- VILLE -->
+
+                        <div class="mb-3">
+
+                            <label
+                                for="city"
+                                class="form-label fw-bold"
+                            >
+                                Ville *
+                            </label>
+
+                            <input
+                                type="text"
+                                id="city"
+                                name="city"
+                                class="form-control"
+                                placeholder="Ex : Nouakchott"
+                                required
+                            >
+
+                        </div>
+
+
+                        <!-- ADRESSE -->
+
+                        <div class="mb-3">
+
+                            <label
+                                for="delivery_address"
+                                class="form-label fw-bold"
+                            >
+                                Adresse de livraison
+                            </label>
+
+                            <textarea
+                                id="delivery_address"
+                                name="delivery_address"
+                                class="form-control"
+                                rows="3"
+                                placeholder="Quartier, rue, repère..."
+                            ></textarea>
+
+                        </div>
+
+
+                        <!-- COMMENTAIRE -->
+
+                        <div class="mb-4">
+
+                            <label
+                                for="comment"
+                                class="form-label fw-bold"
+                            >
+                                Commentaire
+                            </label>
+
+                            <textarea
+                                id="comment"
+                                name="comment"
+                                class="form-control"
+                                rows="3"
+                                placeholder="Une précision pour le vendeur..."
+                            ></textarea>
+
+                        </div>
+
+
+                        <!-- BOUTONS -->
+
+                        <div class="d-flex
+                                    justify-content-between
+                                    align-items-center
+                                    gap-2
+                                    flex-wrap">
+
+                            <a
+                                href="/panier"
+                                class="btn btn-outline-secondary"
+                            >
+                                ← Retour au panier
+                            </a>
+
+
+                            <button
+                                type="submit"
+                                class="btn btn-success btn-lg"
+                            >
+                                ✅ Confirmer la commande
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

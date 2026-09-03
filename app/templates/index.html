@@ -4,6 +4,94 @@
 
 {% block content %}
 
+{% if message %}
+<!--<div id="success-message" class="success-message-overlay">
+    <div class="success-message-box">
+        <div class="success-icon">
+            <i class="bi bi-check-circle-fill"></i>
+        </div>
+        <div class="success-message-text">
+            <strong>{{ message }}</strong>
+            <span>Bienvenue sur MauriMarket</span>
+        </div>
+    </div>
+</div>-->
+
+<style>
+.success-message-overlay {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 99999;
+    pointer-events: none;
+}
+
+.success-message-box {
+    background: white;
+    padding: 25px 35px;
+    border-radius: 18px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.25);
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    min-width: 350px;
+    max-width: 90%;
+    animation: successAppear 0.4s ease;
+    pointer-events: auto;
+}
+
+.success-icon {
+    font-size: 42px;
+    color: #198754;
+}
+
+.success-message-text {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    font-size: 17px;
+}
+
+.success-message-text strong {
+    color: #198754;
+}
+
+.success-message-text span {
+    color: #555;
+    font-size: 14px;
+}
+
+@keyframes successAppear {
+    from {
+        opacity: 0;
+        transform: scale(0.85);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+</style>
+
+<script>
+setTimeout(function () {
+    const message = document.getElementById("success-message");
+
+    if (message) {
+        message.style.opacity = "0";
+        message.style.transition = "opacity 0.5s ease";
+
+        setTimeout(function () {
+            message.remove();
+        }, 500);
+    }
+}, 5000);
+</script>
+{% endif %}
+
+
 <div class="container-fluid marketplace-content">
 
     <div class="row g-3">
@@ -978,3 +1066,4 @@ function toggleSubcategories(categoryId) {
 
 
 {% endblock %}
+

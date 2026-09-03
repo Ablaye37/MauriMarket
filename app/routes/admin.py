@@ -12,6 +12,7 @@ from app.models.category import Category
 from app.models.boutique import Boutique
 from app.models.boutique_request import BoutiqueRequest
 from app.models.contact_message import ContactMessage
+from app.models.order import Order
 from app.models.order_item import OrderItem
 
 
@@ -35,7 +36,9 @@ def get_admin(request: Request, db):
 
     user = (
         db.query(User)
-        .filter(User.id == user_id)
+        .filter(
+            User.id == user_id
+        )
         .first()
     )
 
@@ -73,10 +76,6 @@ async def admin_page(
 
     try:
 
-        # ----------------------------------------------------
-        # VÉRIFIER ADMIN
-        # ----------------------------------------------------
-
         admin = get_admin(
             request,
             db
@@ -102,36 +101,23 @@ async def admin_page(
         )
 
         # ====================================================
-        # ANNONCES
-        #
-        # IMPORTANT :
-        # On récupère TOUTES les annonces.
-        #
-        # Même :
-        # - is_active = True
-        # - is_active = False
-        # - annonces indépendantes
-        # - annonces de boutique
-        #
-        # Donc une annonce présente en base ne sera pas
-        # cachée de l'administration.
+        # PRODUITS
         # ====================================================
+
         products = (
-        db.query(Product)
-        .options(
-         joinedload(Product.user),
-        joinedload(Product.category),
-        joinedload(Product.subcategory),
-        joinedload(Product.boutique)
-    )
-    .filter(
-        Product.is_active == True
-    )
-    .order_by(
-        Product.id.desc()
-    )
-    .all()
-)
+            db.query(Product)
+            .options(
+                joinedload(Product.user),
+                joinedload(Product.category),
+                joinedload(Product.subcategory),
+                joinedload(Product.boutique)
+            )
+            .order_by(
+                Product.id.desc()
+            )
+            .all()
+        )
+
         # ====================================================
         # BOUTIQUES
         # ====================================================
@@ -148,7 +134,7 @@ async def admin_page(
         )
 
         # ====================================================
-        # DEMANDES DE BOUTIQUES
+        # DEMANDES DE BOUTIQUE
         # ====================================================
 
         boutique_requests = (
@@ -172,6 +158,23 @@ async def admin_page(
         )
 
         # ====================================================
+        # COMMANDES
+        # ====================================================
+
+        orders = (
+            db.query(Order)
+            .options(
+                joinedload(Order.user),
+                joinedload(Order.items)
+                .joinedload(OrderItem.product)
+            )
+            .order_by(
+                Order.created_at.desc()
+            )
+            .all()
+        )
+
+        # ====================================================
         # STATISTIQUES
         # ====================================================
 
@@ -180,13 +183,11 @@ async def admin_page(
             .count()
         )
 
-        # Toutes les annonces
         product_count = (
             db.query(Product)
             .count()
         )
 
-        # Annonces actuellement visibles
         active_product_count = (
             db.query(Product)
             .filter(
@@ -195,7 +196,6 @@ async def admin_page(
             .count()
         )
 
-        # Annonces désactivées
         inactive_product_count = (
             db.query(Product)
             .filter(
@@ -230,6 +230,41 @@ async def admin_page(
             .count()
         )
 
+        pending_order_count = (
+            db.query(Order)
+            .filter(
+                Order.status == "pending"
+            )
+            .count()
+        )
+
+        # ====================================================
+        # LOGS
+        # ====================================================
+
+        print("====================================")
+        print(
+            "📊 TOTAL PRODUITS :",
+            product_count
+        )
+        print(
+            "🟢 PRODUITS ACTIFS :",
+            active_product_count
+        )
+        print(
+            "🔴 PRODUITS INACTIFS :",
+            inactive_product_count
+        )
+        print(
+            "📦 TOTAL COMMANDES :",
+            len(orders)
+        )
+        print(
+            "⏳ COMMANDES EN ATTENTE :",
+            pending_order_count
+        )
+        print("====================================")
+
         # ====================================================
         # MESSAGE FLASH
         # ====================================================
@@ -240,7 +275,7 @@ async def admin_page(
         )
 
         # ====================================================
-        # AFFICHER ADMIN
+        # AFFICHAGE
         # ====================================================
 
         return templates.TemplateResponse(
@@ -251,19 +286,26 @@ async def admin_page(
 
             context={
 
-                "user": admin,
+                "user":
+                    admin,
 
-                "users": users,
+                "users":
+                    users,
 
-                "products": products,
+                "products":
+                    products,
 
-                "boutiques": boutiques,
+                "boutiques":
+                    boutiques,
 
                 "boutique_requests":
                     boutique_requests,
 
                 "contact_messages":
                     contact_messages,
+
+                "orders":
+                    orders,
 
                 "user_count":
                     user_count,
@@ -288,6 +330,9 @@ async def admin_page(
 
                 "contact_message_count":
                     contact_message_count,
+
+                "pending_order_count":
+                    pending_order_count,
 
                 "message":
                     message
@@ -317,17 +362,18 @@ async def admin_page(
 
 
 # ============================================================
-# SUPPRIMER UN UTILISATEUR
+# COMMANDES — PRENDRE EN CHARGE
 # ============================================================
 
 @router.post(
-    "/admin/utilisateur/supprimer/{user_id}"
+    "/admin/commande/livraison/{order_id}"
 )
-async def supprimer_utilisateur(
+async def prendre_commande_en_charge(
 
     request: Request,
 
-    user_id: int
+    order_id: int
+
 ):
 
     db = SessionLocal()
@@ -346,22 +392,400 @@ async def supprimer_utilisateur(
                 status_code=303
             )
 
-        # ----------------------------------------------------
-        # EMPÊCHER L'ADMIN DE SE SUPPRIMER
-        # ----------------------------------------------------
+        order = (
+            db.query(Order)
+            .filter(
+                Order.id == order_id
+            )
+            .first()
+        )
+
+        if not order:
+
+            request.session["message"] = (
+                "❌ Commande introuvable."
+            )
+
+            return admin_redirect()
+
+        if order.delivery_status != "pending":
+
+            request.session["message"] = (
+                "⚠️ Cette commande n'est plus "
+                "en attente de prise en charge."
+            )
+
+            return admin_redirect()
+
+        order.delivery_status = "assigned"
+
+        order.delivery_person = "Papa"
+
+        db.commit()
+
+        print(
+            f"🚚 Commande #{order.order_number} "
+            "prise en charge."
+        )
+
+        request.session["message"] = (
+            f"🚚 Commande #{order.order_number} "
+            "prise en charge."
+        )
+
+        return admin_redirect()
+
+    except Exception as e:
+
+        db.rollback()
+
+        print(
+            "❌ ERREUR PRISE EN CHARGE :",
+            repr(e)
+        )
+
+        request.session["message"] = (
+            "❌ Impossible de prendre en charge "
+            "la commande."
+        )
+
+        return admin_redirect()
+
+    finally:
+
+        db.close()
+
+
+# ============================================================
+# COMMANDES — LIVRAISON EN COURS
+# ============================================================
+
+@router.post(
+    "/admin/commande/livraison/en-cours/{order_id}"
+)
+async def livraison_en_cours(
+
+    request: Request,
+
+    order_id: int
+
+):
+
+    db = SessionLocal()
+
+    try:
+
+        admin = get_admin(
+            request,
+            db
+        )
+
+        if not admin:
+
+            return RedirectResponse(
+                "/login",
+                status_code=303
+            )
+
+        order = (
+            db.query(Order)
+            .filter(
+                Order.id == order_id
+            )
+            .first()
+        )
+
+        if not order:
+
+            request.session["message"] = (
+                "❌ Commande introuvable."
+            )
+
+            return admin_redirect()
+
+        if order.delivery_status != "assigned":
+
+            request.session["message"] = (
+                "⚠️ La commande n'est pas "
+                "prête pour la livraison."
+            )
+
+            return admin_redirect()
+
+        order.delivery_status = "in_transit"
+
+        order.status = "pending"
+
+        order.delivery_person = "Papa"
+
+        db.commit()
+
+        print(
+            f"🚚 Commande #{order.order_number} "
+            "en cours de livraison."
+        )
+
+        request.session["message"] = (
+            f"🚚 Commande #{order.order_number} "
+            "est maintenant en cours de livraison."
+        )
+
+        return admin_redirect()
+
+    except Exception as e:
+
+        db.rollback()
+
+        print(
+            "❌ ERREUR LIVRAISON EN COURS :",
+            repr(e)
+        )
+
+        request.session["message"] = (
+            "❌ Impossible de modifier "
+            "le statut de livraison."
+        )
+
+        return admin_redirect()
+
+    finally:
+
+        db.close()
+
+
+# ============================================================
+# COMMANDES — ANNULER LA PRISE EN CHARGE
+# ============================================================
+
+@router.post(
+    "/admin/commande/livraison/annuler/{order_id}"
+)
+async def annuler_prise_en_charge(
+
+    request: Request,
+
+    order_id: int
+
+):
+
+    db = SessionLocal()
+
+    try:
+
+        admin = get_admin(
+            request,
+            db
+        )
+
+        if not admin:
+
+            return RedirectResponse(
+                "/login",
+                status_code=303
+            )
+
+        order = (
+            db.query(Order)
+            .filter(
+                Order.id == order_id
+            )
+            .first()
+        )
+
+        if not order:
+
+            request.session["message"] = (
+                "❌ Commande introuvable."
+            )
+
+            return admin_redirect()
+
+        if order.delivery_status != "assigned":
+
+            request.session["message"] = (
+                "⚠️ Cette commande ne peut "
+                "plus être annulée à cette étape."
+            )
+
+            return admin_redirect()
+
+        order.delivery_status = "pending"
+
+        order.delivery_person = None
+
+        db.commit()
+
+        print(
+            f"↩️ Prise en charge annulée "
+            f"pour la commande #{order.order_number}."
+        )
+
+        request.session["message"] = (
+            f"↩️ Prise en charge de la commande "
+            f"#{order.order_number} annulée."
+        )
+
+        return admin_redirect()
+
+    except Exception as e:
+
+        db.rollback()
+
+        print(
+            "❌ ERREUR ANNULATION LIVRAISON :",
+            repr(e)
+        )
+
+        request.session["message"] = (
+            "❌ Impossible d'annuler "
+            "la prise en charge."
+        )
+
+        return admin_redirect()
+
+    finally:
+
+        db.close()
+
+
+# ============================================================
+# COMMANDES — LIVRÉE / PAIEMENT REÇU
+# ============================================================
+
+@router.post(
+    "/admin/commande/livraison/livree/{order_id}"
+)
+async def commande_livree(
+
+    request: Request,
+
+    order_id: int
+
+):
+
+    db = SessionLocal()
+
+    try:
+
+        admin = get_admin(
+            request,
+            db
+        )
+
+        if not admin:
+
+            return RedirectResponse(
+                "/login",
+                status_code=303
+            )
+
+        order = (
+            db.query(Order)
+            .filter(
+                Order.id == order_id
+            )
+            .first()
+        )
+
+        if not order:
+
+            request.session["message"] = (
+                "❌ Commande introuvable."
+            )
+
+            return admin_redirect()
+
+        if order.delivery_status != "in_transit":
+
+            request.session["message"] = (
+                "⚠️ Cette commande n'est pas "
+                "en cours de livraison."
+            )
+
+            return admin_redirect()
+
+        order.delivery_status = "delivered"
+
+        order.status = "completed"
+
+        order.payment_status = "paid"
+
+        order.delivery_person = "Papa"
+
+        db.commit()
+
+        print(
+            f"✅ Commande #{order.order_number} "
+            "livrée et paiement reçu."
+        )
+
+        request.session["message"] = (
+            f"✅ Commande #{order.order_number} "
+            "livrée. Paiement reçu."
+        )
+
+        return admin_redirect()
+
+    except Exception as e:
+
+        db.rollback()
+
+        print(
+            "❌ ERREUR COMMANDE LIVRÉE :",
+            repr(e)
+        )
+
+        request.session["message"] = (
+            "❌ Impossible de terminer "
+            "la commande."
+        )
+
+        return admin_redirect()
+
+    finally:
+
+        db.close()
+
+
+# ============================================================
+# SUPPRIMER UN UTILISATEUR
+# ============================================================
+
+@router.post(
+    "/admin/utilisateur/supprimer/{user_id}"
+)
+async def supprimer_utilisateur(
+
+    request: Request,
+
+    user_id: int
+
+):
+
+    db = SessionLocal()
+
+    try:
+
+        admin = get_admin(
+            request,
+            db
+        )
+
+        if not admin:
+
+            return RedirectResponse(
+                "/login",
+                status_code=303
+            )
 
         if user_id == admin.id:
 
             request.session["message"] = (
                 "❌ Vous ne pouvez pas supprimer "
-                "votre propre compte."
+                "votre propre compte administrateur."
             )
 
             return admin_redirect()
-
-        # ----------------------------------------------------
-        # UTILISATEUR
-        # ----------------------------------------------------
 
         user = (
             db.query(User)
@@ -381,9 +805,19 @@ async def supprimer_utilisateur(
 
         user_name = user.full_name
 
-        # ----------------------------------------------------
-        # SUPPRIMER SES PRODUITS
-        # ----------------------------------------------------
+        orders = (
+            db.query(Order)
+            .filter(
+                Order.user_id == user.id
+            )
+            .all()
+        )
+
+        order_count = len(orders)
+
+        for order in orders:
+
+            order.user_id = None
 
         products = (
             db.query(Product)
@@ -393,13 +827,34 @@ async def supprimer_utilisateur(
             .all()
         )
 
+        product_ids = [
+            product.id
+            for product in products
+        ]
+
+        order_item_count = 0
+
+        if product_ids:
+
+            order_items = (
+                db.query(OrderItem)
+                .filter(
+                    OrderItem.product_id.in_(
+                        product_ids
+                    )
+                )
+                .all()
+            )
+
+            order_item_count = len(order_items)
+
+            for order_item in order_items:
+
+                order_item.product_id = None
+
         for product in products:
 
             db.delete(product)
-
-        # ----------------------------------------------------
-        # SUPPRIMER SES BOUTIQUES
-        # ----------------------------------------------------
 
         boutiques = (
             db.query(Boutique)
@@ -413,10 +868,6 @@ async def supprimer_utilisateur(
 
             db.delete(boutique)
 
-        # ----------------------------------------------------
-        # SUPPRIMER SES DEMANDES
-        # ----------------------------------------------------
-
         requests_list = (
             db.query(BoutiqueRequest)
             .filter(
@@ -427,19 +878,21 @@ async def supprimer_utilisateur(
 
         for boutique_request in requests_list:
 
-            db.delete(boutique_request)
-
-        # ----------------------------------------------------
-        # SUPPRIMER UTILISATEUR
-        # ----------------------------------------------------
+            db.delete(
+                boutique_request
+            )
 
         db.delete(user)
 
         db.commit()
 
         request.session["message"] = (
-            f"✅ Utilisateur {user_name} "
-            "et toutes ses données ont été supprimés."
+
+            f"✅ Utilisateur « {user_name} » "
+            "supprimé définitivement. "
+
+            f"{order_count} commande(s) "
+            "et leur historique ont été conservés."
         )
 
         return admin_redirect()
@@ -455,8 +908,7 @@ async def supprimer_utilisateur(
 
         request.session["message"] = (
             "❌ Impossible de supprimer "
-            "cet utilisateur. "
-            "Vérifiez les relations de la base."
+            "cet utilisateur."
         )
 
         return admin_redirect()
@@ -478,6 +930,7 @@ async def changer_role(
     request: Request,
 
     user_id: int
+
 ):
 
     db = SessionLocal()
@@ -566,25 +1019,24 @@ async def changer_role(
         db.close()
 
 
-# =====================================================
+# ============================================================
 # SUPPRIMER UNE ANNONCE
-# =====================================================
+# ============================================================
 
 @router.post(
     "/admin/annonce/supprimer/{product_id}"
 )
 async def supprimer_annonce(
+
     request: Request,
+
     product_id: int
+
 ):
 
     db = SessionLocal()
 
     try:
-
-        # -------------------------------------------------
-        # VÉRIFIER ADMIN
-        # -------------------------------------------------
 
         admin = get_admin(
             request,
@@ -597,10 +1049,6 @@ async def supprimer_annonce(
                 "/login",
                 status_code=303
             )
-
-        # -------------------------------------------------
-        # CHERCHER L'ANNONCE
-        # -------------------------------------------------
 
         product = (
             db.query(Product)
@@ -616,24 +1064,11 @@ async def supprimer_annonce(
                 "❌ Annonce introuvable."
             )
 
-            return RedirectResponse(
-                "/admin",
-                status_code=303
-            )
+            return admin_redirect()
 
         product_title = product.title
 
-        print(
-            f"🗑️ Tentative suppression : "
-            f"{product.id} {product.title}"
-        )
-
-        # -------------------------------------------------
-        # VÉRIFIER SI LE PRODUIT EST UTILISÉ
-        # DANS UNE COMMANDE
-        # -------------------------------------------------
-
-        order_item = (
+        order_item_exists = (
             db.query(OrderItem)
             .filter(
                 OrderItem.product_id == product.id
@@ -641,68 +1076,38 @@ async def supprimer_annonce(
             .first()
         )
 
-        # -------------------------------------------------
-        # CAS 1 :
-        # PRODUIT UTILISÉ DANS UNE COMMANDE
-        # -------------------------------------------------
-
-        if order_item:
-
-            # On ne peut pas supprimer physiquement
-            # le produit car order_items.product_id
-            # pointe encore vers products.id.
+        if order_item_exists:
 
             product.is_active = False
 
             db.commit()
 
-            print(
-                f"⚠️ Produit #{product.id} conservé "
-                "car il est utilisé dans une commande."
-            )
-
             request.session["message"] = (
                 f"⛔ Annonce « {product_title} » "
-                "désactivée. Elle est conservée dans "
-                "la base afin de préserver l'historique "
+                "désactivée. Elle est conservée "
+                "afin de préserver l'historique "
                 "des commandes."
             )
 
-            return RedirectResponse(
-                "/admin",
-                status_code=303
-            )
-
-        # -------------------------------------------------
-        # CAS 2 :
-        # PRODUIT JAMAIS UTILISÉ DANS UNE COMMANDE
-        # -------------------------------------------------
+            return admin_redirect()
 
         db.delete(product)
 
         db.commit()
-
-        print(
-            f"✅ Produit #{product.id} "
-            "supprimé définitivement."
-        )
 
         request.session["message"] = (
             f"🗑️ Annonce « {product_title} » "
             "supprimée définitivement."
         )
 
-        return RedirectResponse(
-            "/admin",
-            status_code=303
-        )
+        return admin_redirect()
 
     except Exception as e:
 
         db.rollback()
 
         print(
-            "❌ ERREUR SUPPRESSION ANNONCE ADMIN :",
+            "❌ ERREUR SUPPRESSION ANNONCE :",
             repr(e)
         )
 
@@ -711,14 +1116,109 @@ async def supprimer_annonce(
             "cette annonce."
         )
 
-        return RedirectResponse(
-            "/admin",
-            status_code=303
-        )
+        return admin_redirect()
 
     finally:
 
         db.close()
+
+
+# ============================================================
+# SUPPRESSION DÉFINITIVE ANNONCE
+# ============================================================
+
+@router.post(
+    "/admin/annonce/supprimer-definitivement/{product_id}"
+)
+async def supprimer_annonce_definitivement(
+
+    request: Request,
+
+    product_id: int
+
+):
+
+    db = SessionLocal()
+
+    try:
+
+        admin = get_admin(
+            request,
+            db
+        )
+
+        if not admin:
+
+            return RedirectResponse(
+                "/login",
+                status_code=303
+            )
+
+        product = (
+            db.query(Product)
+            .filter(
+                Product.id == product_id
+            )
+            .first()
+        )
+
+        if not product:
+
+            request.session["message"] = (
+                "❌ Annonce introuvable."
+            )
+
+            return admin_redirect()
+
+        product_title = product.title
+
+        order_items = (
+            db.query(OrderItem)
+            .filter(
+                OrderItem.product_id == product.id
+            )
+            .all()
+        )
+
+        order_count = len(order_items)
+
+        for order_item in order_items:
+
+            order_item.product_id = None
+
+        db.delete(product)
+
+        db.commit()
+
+        request.session["message"] = (
+            f"☠️ Annonce « {product_title} » "
+            "supprimée définitivement. "
+            f"{order_count} élément(s) de commande "
+            "conservé(s)."
+        )
+
+        return admin_redirect()
+
+    except Exception as e:
+
+        db.rollback()
+
+        print(
+            "❌ ERREUR SUPPRESSION DÉFINITIVE :",
+            repr(e)
+        )
+
+        request.session["message"] = (
+            "❌ Impossible de supprimer "
+            "définitivement cette annonce."
+        )
+
+        return admin_redirect()
+
+    finally:
+
+        db.close()
+
 
 # ============================================================
 # RÉACTIVER UNE ANNONCE
@@ -732,6 +1232,7 @@ async def reactiver_annonce(
     request: Request,
 
     product_id: int
+
 ):
 
     db = SessionLocal()
@@ -810,6 +1311,7 @@ async def desactiver_annonce(
     request: Request,
 
     product_id: int
+
 ):
 
     db = SessionLocal()
@@ -844,14 +1346,15 @@ async def desactiver_annonce(
 
             return admin_redirect()
 
-            product_title = product.title
+        product.is_active = False
 
-            db.delete(product)
-            db.commit()
-            request.session["message"] = (
-            f"🗑️ Annonce « {product_title} » "
-            "supprimée définitivement."
-          )
+        db.commit()
+
+        request.session["message"] = (
+            f"⛔ Annonce « {product.title} » "
+            "désactivée."
+        )
+
         return admin_redirect()
 
     except Exception as e:
@@ -887,6 +1390,7 @@ async def supprimer_boutique(
     request: Request,
 
     boutique_id: int
+
 ):
 
     db = SessionLocal()
@@ -923,10 +1427,6 @@ async def supprimer_boutique(
 
         boutique_name = boutique.name
 
-        # ----------------------------------------------------
-        # PRODUITS DE LA BOUTIQUE
-        # ----------------------------------------------------
-
         products = (
             db.query(Product)
             .filter(
@@ -935,13 +1435,30 @@ async def supprimer_boutique(
             .all()
         )
 
+        product_ids = [
+            product.id
+            for product in products
+        ]
+
+        if product_ids:
+
+            order_items = (
+                db.query(OrderItem)
+                .filter(
+                    OrderItem.product_id.in_(
+                        product_ids
+                    )
+                )
+                .all()
+            )
+
+            for order_item in order_items:
+
+                order_item.product_id = None
+
         for product in products:
 
             db.delete(product)
-
-        # ----------------------------------------------------
-        # SUPPRIMER BOUTIQUE
-        # ----------------------------------------------------
 
         db.delete(boutique)
 
@@ -949,7 +1466,9 @@ async def supprimer_boutique(
 
         request.session["message"] = (
             f"🗑️ Boutique « {boutique_name} » "
-            "et ses annonces ont été supprimées."
+            "et ses annonces ont été supprimées. "
+            "L'historique des commandes "
+            "a été conservé."
         )
 
         return admin_redirect()
@@ -987,6 +1506,7 @@ async def accepter_boutique(
     request: Request,
 
     request_id: int
+
 ):
 
     db = SessionLocal()
@@ -1054,11 +1574,8 @@ async def accepter_boutique(
             return admin_redirect()
 
         boutique = Boutique(
-
             name=boutique_request.name,
-
             sale_type=boutique_request.sale_type,
-
             user_id=boutique_request.user_id
         )
 
@@ -1108,6 +1625,7 @@ async def refuser_boutique(
     request: Request,
 
     request_id: int
+
 ):
 
     db = SessionLocal()
@@ -1195,6 +1713,7 @@ async def supprimer_demande_boutique(
     request: Request,
 
     request_id: int
+
 ):
 
     db = SessionLocal()
@@ -1275,6 +1794,7 @@ async def lire_message_contact(
     request: Request,
 
     message_id: int
+
 ):
 
     db = SessionLocal()
@@ -1352,6 +1872,7 @@ async def message_contact_non_lu(
     request: Request,
 
     message_id: int
+
 ):
 
     db = SessionLocal()
@@ -1429,6 +1950,7 @@ async def supprimer_message_contact(
     request: Request,
 
     message_id: int
+
 ):
 
     db = SessionLocal()

@@ -273,20 +273,17 @@
                          ACTIONS DU PROPRIÉTAIRE
                     ================================================== -->
 
-                    {% if request.session.get("user_id") == boutique.user_id %}
+                 {% if request.session.get("user_id") == produit.user_id %}
 
                     <div class="product-owner-actions">
-
-                     <!-- MODIFIER -->
-                    <a
-                          href="/boutique/modifier-produit/{{ produit.id }}"
-                          class="product-edit-btn"
-                          title="Modifier ce produit"
-                        >   
-                          <i class="bi bi-pencil"></i>
-                            <span>Modifier</span>
-                        </a>
-
+<a
+    href="/annonce/modifier/{{ produit.id }}?source=boutique"
+    class="product-edit-btn"
+    title="Modifier ce produit"
+>
+    <i class="bi bi-pencil"></i>
+    <span>Modifier</span>
+</a>
                         <!-- SUPPRIMER -->
 
                         <form
@@ -677,7 +674,7 @@
 
     margin-top: 2px;
 
-    color: #7b8492;
+    color: #fbfcfc;
 
     font-size: 10px;
 }

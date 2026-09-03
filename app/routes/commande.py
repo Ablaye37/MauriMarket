@@ -2,6 +2,8 @@ from fastapi import APIRouter, Request, Form
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 
+from sqlalchemy.orm import joinedload
+
 from app.database.database import SessionLocal
 from app.models.product import Product
 from app.models.order import Order
@@ -34,7 +36,10 @@ async def ajouter_au_panier(
 
         product = (
             db.query(Product)
-            .filter(Product.id == product_id)
+            .filter(
+                Product.id == product_id,
+                Product.is_active == True
+            )
             .first()
         )
 
@@ -45,7 +50,7 @@ async def ajouter_au_panier(
     if not product:
 
         request.session["message"] = (
-            "Produit introuvable"
+            "Produit introuvable ou indisponible."
         )
 
         return RedirectResponse(
@@ -65,7 +70,7 @@ async def ajouter_au_panier(
     request.session["panier"] = panier
 
     request.session["message"] = (
-        "Produit ajouté au panier"
+        "Produit ajouté au panier."
     )
 
     return RedirectResponse(
@@ -97,7 +102,8 @@ async def afficher_panier(
             products = (
                 db.query(Product)
                 .filter(
-                    Product.id.in_(panier)
+                    Product.id.in_(panier),
+                    Product.is_active == True
                 )
                 .all()
             )
@@ -169,18 +175,26 @@ async def commander_directement(
     db = SessionLocal()
 
     try:
+
         product = (
             db.query(Product)
-            .filter(Product.id == product_id)
+            .filter(
+                Product.id == product_id,
+                Product.is_active == True
+            )
             .first()
         )
+
     finally:
+
         db.close()
 
     if not product:
+
         request.session["message"] = (
             "Produit introuvable ou indisponible."
         )
+
         return RedirectResponse(
             url="/",
             status_code=303
@@ -221,7 +235,8 @@ async def page_commande(
         products = (
             db.query(Product)
             .filter(
-                Product.id.in_(panier)
+                Product.id.in_(panier),
+                Product.is_active == True
             )
             .all()
         )
@@ -270,6 +285,19 @@ async def page_commande(
 
 # =====================================================
 # VALIDER LA COMMANDE
+#
+# LIVRAISON MANUELLE
+#
+# Le fonctionnement est volontairement simple :
+#
+# - Le client passe la commande.
+# - La commande est enregistrée.
+# - Le livreur est automatiquement "Papa".
+# - Le statut livraison commence à "pending".
+# - Le vendeur peut être contacté.
+# - Papa récupère le produit.
+# - Papa livre le client.
+# - Le client paie à la livraison.
 # =====================================================
 
 @router.post("/commande/valider")
@@ -298,13 +326,25 @@ async def valider_commande(
             status_code=303
         )
 
+    # -------------------------------------------------
+    # NETTOYAGE DES INFORMATIONS
+    # -------------------------------------------------
+
     customer_name = customer_name.strip()
     customer_phone = customer_phone.strip()
     city = city.strip()
     delivery_address = delivery_address.strip()
     comment = comment.strip()
 
-    if not customer_name or not customer_phone or not city:
+    # -------------------------------------------------
+    # VÉRIFICATION
+    # -------------------------------------------------
+
+    if (
+        not customer_name
+        or not customer_phone
+        or not city
+    ):
 
         request.session["message"] = (
             "Veuillez remplir les champs obligatoires."
@@ -319,10 +359,15 @@ async def valider_commande(
 
     try:
 
+        # -------------------------------------------------
+        # RÉCUPÉRER LES PRODUITS
+        # -------------------------------------------------
+
         products = (
             db.query(Product)
             .filter(
-                Product.id.in_(panier)
+                Product.id.in_(panier),
+                Product.is_active == True
             )
             .all()
         )
@@ -338,10 +383,18 @@ async def valider_commande(
                 status_code=303
             )
 
+        # -------------------------------------------------
+        # TOTAL
+        # -------------------------------------------------
+
         total = sum(
             product.price or 0
             for product in products
         )
+
+        # -------------------------------------------------
+        # UTILISATEUR CONNECTÉ
+        # -------------------------------------------------
 
         user_id = request.session.get(
             "user_id"
@@ -360,6 +413,16 @@ async def valider_commande(
 
         # -------------------------------------------------
         # CRÉATION DE LA COMMANDE
+        #
+        # LIVRAISON :
+        #
+        # delivery_status = pending
+        # delivery_person = Papa
+        #
+        # PAIEMENT :
+        #
+        # payment_method = manuel
+        # payment_status = pending
         # -------------------------------------------------
 
         order = Order(
@@ -390,7 +453,11 @@ async def valider_commande(
 
             payment_status="pending",
 
-            payment_method="manuel"
+            payment_method="manuel",
+
+            delivery_status="pending",
+
+            delivery_person="Papa"
         )
 
         db.add(order)
@@ -398,7 +465,7 @@ async def valider_commande(
         db.flush()
 
         # -------------------------------------------------
-        # AJOUT DES PRODUITS DE LA COMMANDE
+        # AJOUT DES PRODUITS À LA COMMANDE
         # -------------------------------------------------
 
         for product in products:
@@ -422,6 +489,10 @@ async def valider_commande(
 
             db.add(order_item)
 
+        # -------------------------------------------------
+        # ENREGISTRER
+        # -------------------------------------------------
+
         db.commit()
 
         db.refresh(order)
@@ -432,11 +503,21 @@ async def valider_commande(
 
         request.session["panier"] = []
 
-        request.session["commande_id"] = order.id
+        # -------------------------------------------------
+        # MÉMORISER LA COMMANDE
+        # -------------------------------------------------
+
+        request.session["commande_id"] = (
+            order.id
+        )
 
         request.session["commande_number"] = (
             order.order_number
         )
+
+        # -------------------------------------------------
+        # REDIRECTION
+        # -------------------------------------------------
 
         return RedirectResponse(
             url=f"/commande/succes/{order.id}",
@@ -452,7 +533,7 @@ async def valider_commande(
         )
 
         print(
-            "ERREUR CREATION COMMANDE :",
+            "❌ ERREUR CREATION COMMANDE :",
             repr(e)
         )
 
@@ -489,6 +570,10 @@ async def commande_succes(
 
     try:
 
+        # -------------------------------------------------
+        # RÉCUPÉRER LA COMMANDE
+        # -------------------------------------------------
+
         order = (
             db.query(Order)
             .filter(
@@ -504,6 +589,10 @@ async def commande_succes(
                 status_code=303
             )
 
+        # -------------------------------------------------
+        # RÉCUPÉRER LES ARTICLES
+        # -------------------------------------------------
+
         items = (
             db.query(OrderItem)
             .filter(
@@ -511,6 +600,10 @@ async def commande_succes(
             )
             .all()
         )
+
+        # -------------------------------------------------
+        # AFFICHER
+        # -------------------------------------------------
 
         return templates.TemplateResponse(
             request=request,

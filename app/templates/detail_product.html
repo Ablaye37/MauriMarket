@@ -6,121 +6,325 @@
 
 <div class="container py-3">
 
-    <div class="row">
+    <div class="row g-4">
 
-        <!-- Image -->
+        <!-- =====================================================
+             IMAGE DU PRODUIT
+        ====================================================== -->
+
         <div class="col-lg-5">
 
-            {% if product.image %}
-                <img src="{{ product.image }}"
-                     class="img-fluid rounded shadow"
-                     alt="{{ product.title }}">
-            {% else %}
-                <img src="https://placehold.co/800x600?text=MauriMarket"
-                     class="img-fluid rounded shadow"
-                     alt="Produit">
-            {% endif %}
+            <div class="product-image-container">
+
+                {% if product.image %}
+
+                    <img
+                        src="{{ product.image }}"
+                        class="img-fluid rounded shadow product-main-image"
+                        alt="{{ product.title }}"
+                    >
+
+                {% else %}
+
+                    <img
+                        src="https://placehold.co/800x600?text=MauriMarket"
+                        class="img-fluid rounded shadow product-main-image"
+                        alt="Produit"
+                    >
+
+                {% endif %}
+
+            </div>
 
         </div>
 
-        <!-- Informations -->
+
+        <!-- =====================================================
+             INFORMATIONS PRODUIT
+        ====================================================== -->
+
         <div class="col-lg-6">
+
+            <!-- TITRE -->
 
             <h2 class="fw-bold mb-3">
                 {{ product.title }}
             </h2>
 
-            <h3 class="text-success mb-4">
+
+            <!-- PRIX -->
+
+            <h3 class="text-success fw-bold mb-4">
                 {{ product.price }} MRU
             </h3>
 
-            <p>
-                <strong>Description :</strong>
-            </p>
 
-            <p class="text-muted">
-                {{ product.description }}
-            </p>
+            <!-- =================================================
+                 DESCRIPTION
+            ================================================== -->
+
+            <div class="product-info-block">
+
+                <p class="mb-1">
+                    <strong>Description :</strong>
+                </p>
+
+                <p class="text-muted mb-0">
+                    {% if product.description %}
+                        {{ product.description }}
+                    {% else %}
+                        Aucune description disponible.
+                    {% endif %}
+                </p>
+
+            </div>
+
 
             <hr>
 
-            <p>
+
+            <!-- =================================================
+                 VILLE
+            ================================================== -->
+
+            <div class="product-detail-line">
+
                 <i class="bi bi-geo-alt-fill text-success"></i>
+
                 <strong>Ville :</strong>
-                {{ product.city }}
-            </p>
 
-            <p>
+                <span>
+                    {% if product.city %}
+                        {{ product.city }}
+                    {% else %}
+                        Non renseignée
+                    {% endif %}
+                </span>
+
+            </div>
+
+
+            <!-- =================================================
+                 ETAT
+            ================================================== -->
+
+            <div class="product-detail-line">
+
                 <i class="bi bi-box-seam text-success"></i>
-                <strong>État :</strong>
-                {{ product.condition }}
-            </p>
 
-            <p>
+                <strong>etat </strong>
+
+                <span>
+                    {% if product.condition %}
+                        {{ product.condition }}
+                    {% else %}
+                        Non renseigné
+                    {% endif %}
+                </span>
+
+            </div>
+
+
+            <!-- =================================================
+                 LIVRAISON
+            ================================================== -->
+
+            <div class="product-delivery">
+
+                <div class="delivery-icon">
+
+                    <i class="bi bi-truck"></i>
+
+                </div>
+
+
+                <div class="delivery-content">
+
+                    {% if product.delivery_available == True %}
+
+                        <strong class="delivery-available">
+                            Livraison disponible
+                        </strong>
+
+                        <span>
+                            Ce produit peut être livré.
+                        </span>
+
+                    {% else %}
+
+                        <strong class="delivery-unavailable">
+                            Livraison non disponible
+                        </strong>
+
+                        <span>
+                            Ce produit n'est pas indiqué comme livrable.
+                        </span>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 CATÉGORIE
+            ================================================== -->
+
+            <div class="product-detail-line">
+
                 <i class="bi bi-tag-fill text-success"></i>
-                <strong>Catégorie :</strong>
 
-                {% if product.category %}
-                    {{ product.category.name }}
-                {% else %}
-                    Non renseignée
-                {% endif %}
-            </p>
+                <strong>Categorie :</strong>
+
+                <span>
+
+                    {% if product.category %}
+
+                        {{ product.category.name }}
+
+                    {% else %}
+
+                        Non renseignée
+
+                    {% endif %}
+
+                </span>
+
+            </div>
+
 
             <hr>
 
-<h5 class="fw-bold">
-    <i class="bi bi-person-fill text-success"></i>
-    Vendeur
-</h5>
 
-{% if product.user %}
+            <!-- =================================================
+                 VENDEUR
+            ================================================== -->
 
-<p>
-    <strong>Nom :</strong>
-    {{ product.user.full_name }}
-</p>
+            <h5 class="fw-bold mb-3">
 
-<p>
-    <strong>Téléphone :</strong>
-    {{ product.user.phone }}
-</p>
+                <i class="bi bi-person-fill text-success"></i>
 
-{% else %}
+                Vendeur
 
-<p class="text-muted">
-    Informations vendeur indisponibles
-</p>
+            </h5>
 
-{% endif %}
 
-            <div class="mt-4">
+            {% if product.user %}
 
-                <a href="/" class="btn btn-outline-secondary">
+                <div class="seller-info">
+
+                    <p>
+
+                        <strong>Nom :</strong>
+
+                        {{ product.user.full_name }}
+
+                    </p>
+
+
+                    <p>
+
+                        <strong>Tèlèphone </strong>
+
+                        {{ product.user.phone }}
+
+                    </p>
+
+                </div>
+
+            {% else %}
+
+                <p class="text-muted">
+
+                    Informations vendeur indisponibles.
+
+                </p>
+
+            {% endif %}
+
+
+            <!-- =================================================
+                 ACTIONS
+            ================================================== -->
+
+            <div class="mt-4 d-flex flex-wrap gap-2">
+
+                <!-- RETOUR -->
+
+                <a
+                    href="/"
+                    class="btn btn-outline-secondary"
+                >
+
                     <i class="bi bi-arrow-left"></i>
+
                     Retour
+
                 </a>
-                <form action="/panier/ajouter/{{ product.id }}" method="post" class="d-inline">
-    <button type="submit" class="btn btn-warning">
-        <i class="bi bi-cart-plus"></i>
-        Ajouter au panier
-    </button>
-</form>
 
-                {% if product.user %}
 
-<a href="https://wa.me/{{ product.user.phone }}"
-   target="_blank"
-   class="btn btn-success">
+                <!-- AJOUTER AU PANIER -->
 
-    <i class="bi bi-whatsapp"></i>
-    Contacter le vendeur
+                <form
+                    action="/panier/ajouter/{{ product.id }}"
+                    method="post"
+                    class="d-inline"
+                >
 
-</a>
+                    <button
+                        type="submit"
+                        class="btn btn-warning"
+                    >
 
-{% endif %}
+                        <i class="bi bi-cart-plus"></i>
 
-              
+                        Ajouter au panier
+
+                    </button>
+
+                </form>
+
+
+                <!-- COMMANDER -->
+
+                <form
+                    action="/commande/direct/{{ product.id }}"
+                    method="post"
+                    class="d-inline"
+                >
+
+                    <button
+                        type="submit"
+                        class="btn btn-success"
+                    >
+
+                        <i class="bi bi-bag-check"></i>
+
+                        Commander
+
+                    </button>
+
+                </form>
+
+                <!-- WHATSAPP -->
+
+                {% if product.user and product.user.phone %}
+
+                    <a
+                        href="https://wa.me/{{ product.user.phone }}"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="btn btn-success"
+                    >
+
+                        <i class="bi bi-whatsapp"></i>
+
+                        Contacter le vendeur
+
+                    </a>
+
+                {% endif %}
 
             </div>
 
@@ -130,4 +334,227 @@
 
 </div>
 
+
+<!-- =========================================================
+     STYLE
+========================================================== -->
+
+<style>
+
+.product-image-container {
+
+    width: 100%;
+
+}
+
+
+.product-main-image {
+
+    width: 100%;
+
+    max-height: 600px;
+
+    object-fit: contain;
+
+    background: #f8f9fa;
+
+}
+
+
+/* =========================================================
+   INFORMATIONS
+========================================================= */
+
+.product-info-block {
+
+    margin-bottom: 15px;
+
+}
+
+
+.product-detail-line {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    margin-bottom: 14px;
+
+    font-size: 15px;
+
+}
+
+
+.product-detail-line i {
+
+    font-size: 17px;
+
+}
+
+
+.product-detail-line strong {
+
+    margin-right: 3px;
+
+}
+
+
+/* =========================================================
+   LIVRAISON
+========================================================= */
+
+.product-delivery {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 14px;
+
+    margin-top: 20px;
+
+    margin-bottom: 20px;
+
+    padding: 14px 16px;
+
+    background: #eaf7f0;
+
+    border: 1px solid #cfe9dc;
+
+    border-radius: 10px;
+
+}
+
+
+.delivery-icon {
+
+    width: 42px;
+
+    height: 42px;
+
+    min-width: 42px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #198754;
+
+    color: white;
+
+}
+
+
+.delivery-icon i {
+
+    font-size: 21px;
+
+}
+
+
+.delivery-content {
+
+    display: flex;
+
+    flex-direction: column;
+
+}
+
+
+.delivery-content strong {
+
+    font-size: 15px;
+
+    font-weight: 700;
+
+}
+
+
+.delivery-available {
+
+    color: #198754;
+
+}
+
+
+.delivery-unavailable {
+
+    color: #6c757d;
+
+}
+
+
+.delivery-content span {
+
+    margin-top: 3px;
+
+    color: #667085;
+
+    font-size: 13px;
+
+}
+
+
+/* =========================================================
+   VENDEUR
+========================================================= */
+
+.seller-info p {
+
+    margin-bottom: 8px;
+
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 768px) {
+
+    .product-main-image {
+
+        max-height: 400px;
+
+    }
+
+
+    .product-detail-line {
+
+        font-size: 14px;
+
+    }
+
+
+    .product-delivery {
+
+        padding: 12px;
+
+    }
+
+
+    .delivery-content strong {
+
+        font-size: 14px;
+
+    }
+
+
+    .delivery-content span {
+
+        font-size: 12px;
+
+    }
+
+}
+
+</style>
+
 {% endblock %}
+
