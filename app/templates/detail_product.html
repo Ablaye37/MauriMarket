@@ -70,11 +70,17 @@
                 </p>
 
                 <p class="text-muted mb-0">
+
                     {% if product.description %}
+
                         {{ product.description }}
+
                     {% else %}
+
                         Aucune description disponible.
+
                     {% endif %}
+
                 </p>
 
             </div>
@@ -94,11 +100,17 @@
                 <strong>Ville :</strong>
 
                 <span>
+
                     {% if product.city %}
+
                         {{ product.city }}
+
                     {% else %}
+
                         Non renseignée
+
                     {% endif %}
+
                 </span>
 
             </div>
@@ -112,14 +124,20 @@
 
                 <i class="bi bi-box-seam text-success"></i>
 
-                <strong>etat </strong>
+                <strong>Etat :</strong>
 
                 <span>
+
                     {% if product.condition %}
+
                         {{ product.condition }}
+
                     {% else %}
+
                         Non renseigné
+
                     {% endif %}
+
                 </span>
 
             </div>
@@ -175,7 +193,7 @@
 
                 <i class="bi bi-tag-fill text-success"></i>
 
-                <strong>Categorie :</strong>
+                <strong>Catégorie :</strong>
 
                 <span>
 
@@ -225,7 +243,7 @@
 
                     <p>
 
-                        <strong>Tèlèphone </strong>
+                        <strong>Téléphone :</strong>
 
                         {{ product.user.phone }}
 
@@ -249,6 +267,7 @@
             ================================================== -->
 
             <div class="mt-4 d-flex flex-wrap gap-2">
+
 
                 <!-- RETOUR -->
 
@@ -307,12 +326,23 @@
 
                 </form>
 
-                <!-- WHATSAPP -->
+
+                <!-- =================================================
+                     WHATSAPP
+                ================================================== -->
 
                 {% if product.user and product.user.phone %}
 
+                    {% set whatsapp_message =
+                        "Bonjour, je suis intéressé(e) par ce produit sur MauriMarket 🛍️\n\n"
+                        ~ "Produit : " ~ product.title ~ "\n"
+                        ~ "Prix : " ~ product.price ~ " MRU\n"
+                        ~ "Ville : " ~ (product.city if product.city else "Non renseignée") ~ "\n\n"
+                        ~ "Pouvez-vous me confirmer s’il est toujours disponible ?"
+                    %}
+
                     <a
-                        href="https://wa.me/{{ product.user.phone }}"
+                        href="https://wa.me/{{ product.user.phone }}?text={{ whatsapp_message | urlencode }}"
                         target="_blank"
                         rel="noopener noreferrer"
                         class="btn btn-success"
@@ -557,4 +587,3 @@
 </style>
 
 {% endblock %}
-

@@ -15,7 +15,11 @@ DATABASE_URL = (
     os.getenv("DATABASE_URL")
     or os.getenv("SUPABASE_DB_URL")
 )
-
+print("DATABASE CONFIGUREE :", bool(DATABASE_URL))
+print(
+    "TYPE DATABASE :",
+    "SQLITE" if DATABASE_URL.startswith("sqlite") else "POSTGRESQL"
+)
 if not DATABASE_URL:
     DATABASE_URL = "sqlite:///./maurimarket.db"
 
