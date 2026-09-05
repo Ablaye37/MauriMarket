@@ -8,6 +8,7 @@ from app.models.product import Product
 from app.models.category import Category
 from app.models.subcategory import SubCategory
 from app.models.boutique import Boutique
+from app.models.order_item import OrderItem
 
 from supabase import create_client
 from dotenv import load_dotenv
@@ -70,7 +71,10 @@ else:
     )
 
 
-# Types d'images autorisés
+# ============================================================
+# TYPES D'IMAGES AUTORISÉS
+# ============================================================
+
 ALLOWED_IMAGE_TYPES = {
 
     "image/jpeg": ".jpg",
@@ -361,11 +365,6 @@ def get_subcategories(db):
 # ============================================================
 # PUBLIER DEPUIS L'ACCUEIL
 # GET /publier
-#
-# IMPORTANT :
-# Une annonce publiée ici est indépendante.
-# Elle n'est PAS automatiquement rattachée
-# à la boutique.
 # ============================================================
 
 @router.get("/publier")
@@ -536,8 +535,6 @@ async def publish_boutique_page(
 # ============================================================
 # TRAITEMENT PUBLICATION ACCUEIL
 # POST /publier
-#
-# boutique_id = None
 # ============================================================
 
 @router.post("/publier")
@@ -618,8 +615,7 @@ async def publish_product(
         subcategory = (
             db.query(SubCategory)
             .filter(
-                SubCategory.id ==
-                subcategory_id
+                SubCategory.id == subcategory_id
             )
             .first()
         )
@@ -762,8 +758,6 @@ async def publish_product(
 # ============================================================
 # TRAITEMENT PUBLICATION MA BOUTIQUE
 # POST /ma-boutique/publier
-#
-# boutique_id = boutique.id
 # ============================================================
 
 @router.post("/ma-boutique/publier")
@@ -864,8 +858,7 @@ async def publish_boutique_product(
         subcategory = (
             db.query(SubCategory)
             .filter(
-                SubCategory.id ==
-                subcategory_id
+                SubCategory.id == subcategory_id
             )
             .first()
         )
@@ -1098,6 +1091,590 @@ async def product_detail(
 
         return RedirectResponse(
             "/",
+            status_code=303
+        )
+
+
+    finally:
+
+        db.close()
+
+
+# ============================================================
+# MODIFIER UNE ANNONCE
+# GET /annonce/modifier/{product_id}
+# ============================================================
+
+@router.get("/annonce/modifier/{product_id}")
+async def modifier_annonce_page(
+
+    request: Request,
+
+    product_id: int
+
+):
+
+    user_id = request.session.get(
+        "user_id"
+    )
+
+    if not user_id:
+
+        return RedirectResponse(
+            "/login",
+            status_code=303
+        )
+
+
+    db = SessionLocal()
+
+    try:
+
+        # ----------------------------------------------------
+        # RÉCUPÉRER LE PRODUIT
+        # ----------------------------------------------------
+
+        product = (
+            db.query(Product)
+            .filter(
+                Product.id == product_id,
+                Product.user_id == user_id
+            )
+            .first()
+        )
+
+
+        if not product:
+
+            print(
+                "❌ Produit introuvable ou non autorisé :",
+                product_id
+            )
+
+            return RedirectResponse(
+                "/ma-boutique",
+                status_code=303
+            )
+
+
+        # ----------------------------------------------------
+        # CATÉGORIES
+        # ----------------------------------------------------
+
+        categories = get_categories(
+            db
+        )
+
+        subcategories = get_subcategories(
+            db
+        )
+
+
+        # ----------------------------------------------------
+        # CONTEXTE GLOBAL
+        # ----------------------------------------------------
+
+        global_context = get_global_context(
+            request,
+            db
+        )
+
+
+        # ----------------------------------------------------
+        # AFFICHER LE FORMULAIRE
+        # ----------------------------------------------------
+
+        return templates.TemplateResponse(
+
+            request=request,
+
+            name="modifier.html",
+
+            context={
+
+                "product":
+                    product,
+
+                "categories":
+                    categories,
+
+                "subcategories":
+                    subcategories,
+
+                **global_context
+            }
+        )
+
+
+    except Exception as e:
+
+        print(
+            "ERREUR GET MODIFICATION ANNONCE :",
+            repr(e)
+        )
+
+        return RedirectResponse(
+            "/ma-boutique",
+            status_code=303
+        )
+
+
+    finally:
+
+        db.close()
+
+
+# ============================================================
+# TRAITER LA MODIFICATION
+# POST /annonce/modifier/{product_id}
+# ============================================================
+
+@router.post("/annonce/modifier/{product_id}")
+async def modifier_annonce(
+
+    request: Request,
+
+    product_id: int,
+
+    title: str = Form(...),
+
+    description: str = Form(...),
+
+    price: float = Form(...),
+
+    city: str = Form(...),
+
+    condition: str = Form(...),
+
+    category_id: int = Form(...),
+
+    subcategory_id: int = Form(...),
+
+    image: UploadFile = File(None)
+
+):
+
+    user_id = request.session.get(
+        "user_id"
+    )
+
+    if not user_id:
+
+        return RedirectResponse(
+            "/login",
+            status_code=303
+        )
+
+
+    db = SessionLocal()
+
+    try:
+
+        # ----------------------------------------------------
+        # RÉCUPÉRER LE PRODUIT
+        # ----------------------------------------------------
+
+        product = (
+            db.query(Product)
+            .filter(
+                Product.id == product_id,
+                Product.user_id == user_id
+            )
+            .first()
+        )
+
+
+        if not product:
+
+            return RedirectResponse(
+                "/ma-boutique",
+                status_code=303
+            )
+
+
+        # ----------------------------------------------------
+        # NETTOYAGE
+        # ----------------------------------------------------
+
+        title = title.strip()
+
+        description = description.strip()
+
+        city = city.strip()
+
+        condition = condition.strip()
+
+
+        # ----------------------------------------------------
+        # VÉRIFIER CATÉGORIE
+        # ----------------------------------------------------
+
+        category = (
+            db.query(Category)
+            .filter(
+                Category.id == category_id
+            )
+            .first()
+        )
+
+
+        if not category:
+
+            return RedirectResponse(
+                f"/annonce/modifier/{product_id}",
+                status_code=303
+            )
+
+
+        # ----------------------------------------------------
+        # VÉRIFIER SOUS-CATÉGORIE
+        # ----------------------------------------------------
+
+        subcategory = (
+            db.query(SubCategory)
+            .filter(
+                SubCategory.id == subcategory_id
+            )
+            .first()
+        )
+
+
+        if not subcategory:
+
+            return RedirectResponse(
+                f"/annonce/modifier/{product_id}",
+                status_code=303
+            )
+
+
+        # ----------------------------------------------------
+        # VÉRIFIER RELATION
+        # ----------------------------------------------------
+
+        if (
+            subcategory.category_id
+            != category_id
+        ):
+
+            print(
+                "Sous-catégorie incompatible."
+            )
+
+            return RedirectResponse(
+                f"/annonce/modifier/{product_id}",
+                status_code=303
+            )
+
+
+        # ----------------------------------------------------
+        # MODIFIER LES INFORMATIONS
+        # ----------------------------------------------------
+
+        product.title = title
+
+        product.description = description
+
+        product.price = price
+
+        product.city = city
+
+        product.condition = condition
+
+        product.category_id = category_id
+
+        product.subcategory_id = subcategory_id
+
+
+        # ----------------------------------------------------
+        # NOUVELLE IMAGE
+        #
+        # Si aucune nouvelle image :
+        # ancienne image conservée.
+        # ----------------------------------------------------
+
+        if image and image.filename:
+
+            new_image_url = await upload_product_image(
+                image
+            )
+
+            if new_image_url:
+
+                product.image = new_image_url
+
+                print(
+                    "✅ Nouvelle image enregistrée."
+                )
+
+            else:
+
+                print(
+                    "⚠️ Nouvelle image invalide."
+                    " Ancienne image conservée."
+                )
+
+
+        # ----------------------------------------------------
+        # ENREGISTRER
+        # ----------------------------------------------------
+
+        db.commit()
+
+        db.refresh(product)
+
+
+        print(
+            "=========================================="
+        )
+
+        print(
+            "ANNONCE MODIFIÉE"
+        )
+
+        print(
+            "ID :",
+            product.id
+        )
+
+        print(
+            "TITRE :",
+            product.title
+        )
+
+        print(
+            "IMAGE :",
+            product.image
+        )
+
+        print(
+            "=========================================="
+        )
+
+
+        return RedirectResponse(
+            "/ma-boutique",
+            status_code=303
+        )
+
+
+    except Exception as e:
+
+        db.rollback()
+
+        print(
+            "ERREUR MODIFICATION ANNONCE :",
+            repr(e)
+        )
+
+        return RedirectResponse(
+            f"/annonce/modifier/{product_id}",
+            status_code=303
+        )
+
+
+    finally:
+
+        db.close()
+
+
+# ============================================================
+# SUPPRIMER UNE ANNONCE
+# POST /annonce/supprimer/{product_id}
+#
+# SÉCURITÉ :
+# - Vérifie que le produit appartient à l'utilisateur.
+# - Si le produit n'a jamais été commandé :
+#       suppression définitive.
+# - S'il existe dans OrderItem :
+#       désactivation uniquement.
+# ============================================================
+
+@router.post("/annonce/supprimer/{product_id}")
+async def supprimer_annonce(
+
+    request: Request,
+
+    product_id: int
+
+):
+
+    user_id = request.session.get(
+        "user_id"
+    )
+
+    if not user_id:
+
+        return RedirectResponse(
+            "/login",
+            status_code=303
+        )
+
+
+    db = SessionLocal()
+
+    try:
+
+        # ----------------------------------------------------
+        # RÉCUPÉRER LE PRODUIT
+        # ----------------------------------------------------
+
+        product = (
+            db.query(Product)
+            .filter(
+                Product.id == product_id,
+                Product.user_id == user_id
+            )
+            .first()
+        )
+
+
+        if not product:
+
+            print(
+                "❌ Produit introuvable ou non autorisé :",
+                product_id
+            )
+
+            return RedirectResponse(
+                "/ma-boutique",
+                status_code=303
+            )
+
+
+        # ----------------------------------------------------
+        # VÉRIFIER SI LE PRODUIT EST DANS UNE COMMANDE
+        # ----------------------------------------------------
+
+        order_item = (
+            db.query(OrderItem)
+            .filter(
+                OrderItem.product_id == product.id
+            )
+            .first()
+        )
+
+
+        # ----------------------------------------------------
+        # CAS 1 : PRODUIT DÉJÀ COMMANDÉ
+        #
+        # On ne supprime PAS le produit.
+        # On le désactive pour préserver
+        # l'historique des commandes.
+        # ----------------------------------------------------
+
+        if order_item:
+
+            product.is_active = False
+
+            db.commit()
+
+            print(
+                "=========================================="
+            )
+
+            print(
+                "⚠️ PRODUIT DÉSACTIVÉ"
+            )
+
+            print(
+                "Le produit existe dans une commande."
+            )
+
+            print(
+                "ID :",
+                product.id
+            )
+
+            print(
+                "TITRE :",
+                product.title
+            )
+
+            print(
+                "=========================================="
+            )
+
+
+        # ----------------------------------------------------
+        # CAS 2 : PRODUIT JAMAIS COMMANDÉ
+        #
+        # Suppression définitive.
+        # ----------------------------------------------------
+
+        else:
+
+            print(
+                "=========================================="
+            )
+
+            print(
+                "🗑️ SUPPRESSION ANNONCE"
+            )
+
+            print(
+                "ID :",
+                product.id
+            )
+
+            print(
+                "TITRE :",
+                product.title
+            )
+
+            print(
+                "IMAGE :",
+                product.image
+            )
+
+            print(
+                "=========================================="
+            )
+
+
+            db.delete(product)
+
+            db.commit()
+
+
+        # ----------------------------------------------------
+        # RETOUR
+        # ----------------------------------------------------
+
+        return RedirectResponse(
+            "/ma-boutique",
+            status_code=303
+        )
+
+
+    except Exception as e:
+
+        db.rollback()
+
+        print(
+            "=========================================="
+        )
+
+        print(
+            "❌ ERREUR SUPPRESSION ANNONCE"
+        )
+
+        print(
+            "TYPE :",
+            type(e).__name__
+        )
+
+        print(
+            "ERREUR :",
+            str(e)
+        )
+
+        print(
+            "=========================================="
+        )
+
+
+        return RedirectResponse(
+            "/ma-boutique",
             status_code=303
         )
 
