@@ -2,8 +2,9 @@ from fastapi import FastAPI, Request, Query
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.middleware.sessions import SessionMiddleware
-
+from sqlalchemy import text
 from app.database.database import SessionLocal
+
 from app.models.category import Category
 from app.models.subcategory import SubCategory
 from app.models.product import Product
@@ -86,6 +87,14 @@ async def home(
     db = SessionLocal()
 
     try:
+        db.execute(
+    text("""
+        UPDATE site_visits
+        SET count = count + 1
+        WHERE id = 1
+    """)
+)
+        db.commit()
 
         # -------------------------------------------------
         # RÉCUPÉRER LES CATÉGORIES

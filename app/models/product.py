@@ -156,6 +156,16 @@ class Product(Base):
         server_default="true",
         index=True
     )
+    # =====================================================
+# NOMBRE DE VUES
+# =====================================================
+
+    views = Column(
+    Integer,
+    nullable=False,
+    default=0,
+    server_default="0"
+    )
 
     # =====================================================
     # RELATION CATÉGORIE
