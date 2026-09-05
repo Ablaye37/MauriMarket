@@ -169,27 +169,20 @@ async def upload_product_image(
 
     try:
 
-        supabase.storage \
-            .from_(SUPABASE_BUCKET) \
+        (
+            supabase
+            .storage
+            .from_(SUPABASE_BUCKET)
             .upload(
-
                 path=filename,
-
                 file=content,
-
                 file_options={
-
-                    "content-type":
-                        image.content_type,
-
-                    "cache-control":
-                        "3600",
-
-                    "upsert":
-                        "false"
+                    "content-type": image.content_type,
+                    "cache-control": "3600",
+                    "upsert": "false"
                 }
             )
-
+        )
 
         print(
             "=========================================="
@@ -256,12 +249,10 @@ async def upload_product_image(
             )
         )
 
-
         print(
             "✅ URL SUPABASE :",
             public_url
         )
-
 
         return public_url
 
@@ -365,6 +356,8 @@ def get_subcategories(db):
 # ============================================================
 # PUBLIER DEPUIS L'ACCUEIL
 # GET /publier
+#
+# ANNONCE SIMPLE UNIQUEMENT
 # ============================================================
 
 @router.get("/publier")
@@ -441,6 +434,8 @@ async def publish_page(
 # ============================================================
 # PUBLIER DEPUIS MA BOUTIQUE
 # GET /ma-boutique/publier
+#
+# BOUTIQUE UNIQUEMENT
 # ============================================================
 
 @router.get("/ma-boutique/publier")
@@ -535,6 +530,9 @@ async def publish_boutique_page(
 # ============================================================
 # TRAITEMENT PUBLICATION ACCUEIL
 # POST /publier
+#
+# ANNONCE SIMPLE
+# boutique_id = None
 # ============================================================
 
 @router.post("/publier")
@@ -657,7 +655,7 @@ async def publish_product(
 
 
         # ----------------------------------------------------
-        # CRÉER PRODUIT INDÉPENDANT
+        # CRÉER ANNONCE SIMPLE
         # ----------------------------------------------------
 
         product = Product(
@@ -680,6 +678,8 @@ async def publish_product(
 
             image=image_path,
 
+            # IMPORTANT :
+            # aucune boutique
             boutique_id=None
         )
 
@@ -696,7 +696,7 @@ async def publish_product(
         )
 
         print(
-            "PRODUIT PUBLIÉ INDÉPENDANT"
+            "✅ ANNONCE SIMPLE PUBLIÉE"
         )
 
         print(
@@ -729,8 +729,14 @@ async def publish_product(
         )
 
 
+        # ----------------------------------------------------
+        # IMPORTANT
+        # APRÈS UNE ANNONCE SIMPLE :
+        # /mes-annonces
+        # ----------------------------------------------------
+
         return RedirectResponse(
-            "/",
+            "/mes-annonces",
             status_code=303
         )
 
@@ -758,6 +764,8 @@ async def publish_product(
 # ============================================================
 # TRAITEMENT PUBLICATION MA BOUTIQUE
 # POST /ma-boutique/publier
+#
+# BOUTIQUE UNIQUEMENT
 # ============================================================
 
 @router.post("/ma-boutique/publier")
@@ -923,6 +931,8 @@ async def publish_boutique_product(
 
             image=image_path,
 
+            # IMPORTANT :
+            # produit lié à la boutique
             boutique_id=boutique.id
         )
 
@@ -939,7 +949,7 @@ async def publish_boutique_product(
         )
 
         print(
-            "PRODUIT PUBLIÉ DANS MA BOUTIQUE"
+            "✅ PRODUIT PUBLIÉ DANS MA BOUTIQUE"
         )
 
         print(
@@ -967,6 +977,11 @@ async def publish_boutique_product(
         )
 
 
+        # ----------------------------------------------------
+        # IMPORTANT
+        # UNE PUBLICATION BOUTIQUE RESTE DANS LA BOUTIQUE
+        # ----------------------------------------------------
+
         return RedirectResponse(
             "/ma-boutique",
             status_code=303
@@ -984,6 +999,102 @@ async def publish_boutique_product(
 
         return RedirectResponse(
             "/ma-boutique/publier",
+            status_code=303
+        )
+
+
+    finally:
+
+        db.close()
+
+
+# ============================================================
+# MES ANNONCES
+# GET /mes-annonces
+#
+# AFFICHER UNIQUEMENT LES ANNONCES SIMPLES
+# boutique_id IS NULL
+# ============================================================
+
+@router.get("/mes-annonces")
+async def mes_annonces(
+    request: Request
+):
+
+    user_id = request.session.get(
+        "user_id"
+    )
+
+    if not user_id:
+
+        return RedirectResponse(
+            "/login",
+            status_code=303
+        )
+
+    db = SessionLocal()
+
+    try:
+
+        # ----------------------------------------------------
+        # RÉCUPÉRER UNIQUEMENT LES ANNONCES SIMPLES
+        # ----------------------------------------------------
+
+        products = (
+            db.query(Product)
+            .filter(
+                Product.user_id == user_id,
+
+                Product.boutique_id.is_(None),
+
+                Product.is_active == True
+            )
+            .order_by(
+                Product.id.desc()
+            )
+            .all()
+        )
+
+
+        # ----------------------------------------------------
+        # CONTEXTE GLOBAL
+        # ----------------------------------------------------
+
+        global_context = get_global_context(
+            request,
+            db
+        )
+
+
+        # ----------------------------------------------------
+        # AFFICHER MES ANNONCES
+        # ----------------------------------------------------
+
+        return templates.TemplateResponse(
+
+            request=request,
+
+            name="mes_annonces.html",
+
+            context={
+
+                "products":
+                    products,
+
+                **global_context
+            }
+        )
+
+
+    except Exception as e:
+
+        print(
+            "ERREUR GET /mes-annonces :",
+            repr(e)
+        )
+
+        return RedirectResponse(
+            "/",
             status_code=303
         )
 
@@ -1152,7 +1263,7 @@ async def modifier_annonce_page(
             )
 
             return RedirectResponse(
-                "/ma-boutique",
+                "/mes-annonces",
                 status_code=303
             )
 
@@ -1214,7 +1325,7 @@ async def modifier_annonce_page(
         )
 
         return RedirectResponse(
-            "/ma-boutique",
+            "/mes-annonces",
             status_code=303
         )
 
@@ -1287,9 +1398,24 @@ async def modifier_annonce(
         if not product:
 
             return RedirectResponse(
-                "/ma-boutique",
+                "/mes-annonces",
                 status_code=303
             )
+
+
+        # ----------------------------------------------------
+        # DÉTERMINER LE TYPE
+        #
+        # SIMPLE :
+        # boutique_id = None
+        #
+        # BOUTIQUE :
+        # boutique_id != None
+        # ----------------------------------------------------
+
+        is_simple_announcement = (
+            product.boutique_id is None
+        )
 
 
         # ----------------------------------------------------
@@ -1319,6 +1445,13 @@ async def modifier_annonce(
 
 
         if not category:
+
+            if is_simple_announcement:
+
+                return RedirectResponse(
+                    f"/annonce/modifier/{product_id}",
+                    status_code=303
+                )
 
             return RedirectResponse(
                 f"/annonce/modifier/{product_id}",
@@ -1428,7 +1561,7 @@ async def modifier_annonce(
         )
 
         print(
-            "ANNONCE MODIFIÉE"
+            "✅ ANNONCE MODIFIÉE"
         )
 
         print(
@@ -1442,6 +1575,11 @@ async def modifier_annonce(
         )
 
         print(
+            "BOUTIQUE ID :",
+            product.boutique_id
+        )
+
+        print(
             "IMAGE :",
             product.image
         )
@@ -1450,6 +1588,17 @@ async def modifier_annonce(
             "=========================================="
         )
 
+
+        # ----------------------------------------------------
+        # RETOUR SELON LE TYPE
+        # ----------------------------------------------------
+
+        if product.boutique_id is None:
+
+            return RedirectResponse(
+                "/mes-annonces",
+                status_code=303
+            )
 
         return RedirectResponse(
             "/ma-boutique",
@@ -1482,11 +1631,20 @@ async def modifier_annonce(
 # POST /annonce/supprimer/{product_id}
 #
 # SÉCURITÉ :
+#
 # - Vérifie que le produit appartient à l'utilisateur.
+#
 # - Si le produit n'a jamais été commandé :
 #       suppression définitive.
+#
 # - S'il existe dans OrderItem :
 #       désactivation uniquement.
+#
+# - Annonce simple :
+#       retour /mes-annonces
+#
+# - Produit boutique :
+#       retour /ma-boutique
 # ============================================================
 
 @router.post("/annonce/supprimer/{product_id}")
@@ -1536,9 +1694,18 @@ async def supprimer_annonce(
             )
 
             return RedirectResponse(
-                "/ma-boutique",
+                "/mes-annonces",
                 status_code=303
             )
+
+
+        # ----------------------------------------------------
+        # MÉMORISER LE TYPE AVANT SUPPRESSION
+        # ----------------------------------------------------
+
+        is_simple_announcement = (
+            product.boutique_id is None
+        )
 
 
         # ----------------------------------------------------
@@ -1555,7 +1722,8 @@ async def supprimer_annonce(
 
 
         # ----------------------------------------------------
-        # CAS 1 : PRODUIT DÉJÀ COMMANDÉ
+        # CAS 1 :
+        # PRODUIT DÉJÀ COMMANDÉ
         #
         # On ne supprime PAS le produit.
         # On le désactive pour préserver
@@ -1567,6 +1735,7 @@ async def supprimer_annonce(
             product.is_active = False
 
             db.commit()
+
 
             print(
                 "=========================================="
@@ -1591,12 +1760,18 @@ async def supprimer_annonce(
             )
 
             print(
+                "BOUTIQUE ID :",
+                product.boutique_id
+            )
+
+            print(
                 "=========================================="
             )
 
 
         # ----------------------------------------------------
-        # CAS 2 : PRODUIT JAMAIS COMMANDÉ
+        # CAS 2 :
+        # PRODUIT JAMAIS COMMANDÉ
         #
         # Suppression définitive.
         # ----------------------------------------------------
@@ -1627,6 +1802,11 @@ async def supprimer_annonce(
             )
 
             print(
+                "BOUTIQUE ID :",
+                product.boutique_id
+            )
+
+            print(
                 "=========================================="
             )
 
@@ -1637,8 +1817,16 @@ async def supprimer_annonce(
 
 
         # ----------------------------------------------------
-        # RETOUR
+        # RETOUR SELON LE TYPE
         # ----------------------------------------------------
+
+        if is_simple_announcement:
+
+            return RedirectResponse(
+                "/mes-annonces",
+                status_code=303
+            )
+
 
         return RedirectResponse(
             "/ma-boutique",
@@ -1673,8 +1861,36 @@ async def supprimer_annonce(
         )
 
 
+        # ----------------------------------------------------
+        # EN CAS D'ERREUR :
+        # essayer de retourner au bon espace.
+        # ----------------------------------------------------
+
+        try:
+
+            product = (
+                db.query(Product)
+                .filter(
+                    Product.id == product_id,
+                    Product.user_id == user_id
+                )
+                .first()
+            )
+
+            if product and product.boutique_id is not None:
+
+                return RedirectResponse(
+                    "/ma-boutique",
+                    status_code=303
+                )
+
+        except Exception:
+
+            pass
+
+
         return RedirectResponse(
-            "/ma-boutique",
+            "/mes-annonces",
             status_code=303
         )
 
