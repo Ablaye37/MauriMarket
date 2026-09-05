@@ -1339,12 +1339,13 @@ async function shareBoutique() {
     const boutiqueUrl =
         window.location.origin + "/boutique/detail/{{ boutique.id }}";
 
+    console.log("🏪 BOUTIQUE ID :", "{{ boutique.id }}");
+    console.log("🔗 LIEN PARTAGE :", boutiqueUrl);
+
+    alert("ID boutique : {{ boutique.id }}\n\nLien : " + boutiqueUrl);
+
     const shareTitle =
         "Découvrez {{ boutique.name|e }} sur MauriMarket 🇲🇷";
-
-    const shareText =
-        "🛍️ Découvrez {{ boutique.name|e }} sur MauriMarket 🇲🇷\n\n" +
-        "Découvrez tous les produits de cette boutique 👇";
 
     // Partage natif du téléphone
     if (navigator.share) {
