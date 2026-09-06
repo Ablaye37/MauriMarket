@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Request, Form
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
+import re
 
 from app.database.database import SessionLocal
 from app.models.user import User
@@ -39,16 +40,101 @@ async def register_user(
 
     db = SessionLocal()
 
-    # Vérifier si le numéro existe déjà
-    existing_user = db.query(User).filter(
-        User.phone == phone
-    ).first()
+    try:
 
-    if existing_user:
-        db.close()
+        # =====================================================
+        # NETTOYER LES DONNÉES
+        # =====================================================
+
+        full_name = full_name.strip()
+        phone = phone.strip()
+
+        # =====================================================
+        # VÉRIFIER LE NUMÉRO MOBILE MAURITANIEN
+        # =====================================================
+
+        if not re.fullmatch(
+            r"(20|21|22|23|24|26|27|28|29|30|31|32|33|34|36|37|38|39|40|41|42|43|44|46|47|48|49)[0-9]{6}",
+            phone
+        ):
+
+            request.session["message"] = (
+                "Veuillez entrer un numéro mobile mauritanien valide."
+            )
+
+            return RedirectResponse(
+                "/register",
+                status_code=303
+            )
+
+        # =====================================================
+        # VÉRIFIER SI LE NUMÉRO EXISTE DÉJÀ
+        # =====================================================
+
+        existing_user = db.query(User).filter(
+            User.phone == phone
+        ).first()
+
+        if existing_user:
+
+            request.session["message"] = (
+                "Ce compte existe déjà. Veuillez vous connecter."
+            )
+
+            return RedirectResponse(
+                "/register",
+                status_code=303
+            )
+
+        # =====================================================
+        # CRÉATION DU NOUVEAU COMPTE
+        # =====================================================
+
+        user = User(
+            full_name=full_name,
+            phone=phone,
+            password=password
+        )
+
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+
+        # =====================================================
+        # CONNEXION AUTOMATIQUE
+        # =====================================================
+
+        request.session["user_id"] = user.id
+        request.session["user_name"] = user.full_name
+
+        # =====================================================
+        # MESSAGE DE BIENVENUE
+        # =====================================================
 
         request.session["message"] = (
-            "Ce compte existe déjà. Veuillez vous connecter."
+            "Votre compte a été créé avec succès. "
+            "Bienvenue sur MauriMarket ! 🇲🇷"
+        )
+
+        return RedirectResponse(
+            "/",
+            status_code=303
+        )
+
+    except Exception as e:
+
+        # Annuler toute modification éventuelle en base
+        db.rollback()
+
+        # Afficher l'erreur uniquement dans le terminal
+        print("================================")
+        print("ERREUR INSCRIPTION :", repr(e))
+        print("================================")
+
+        # Message simple pour l'utilisateur
+        request.session["message"] = (
+            "Une erreur est survenue lors de l'inscription. "
+            "Veuillez réessayer."
         )
 
         return RedirectResponse(
@@ -56,32 +142,9 @@ async def register_user(
             status_code=303
         )
 
-    # Création du nouveau compte
-    user = User(
-        full_name=full_name,
-        phone=phone,
-        password=password
-    )
+    finally:
 
-    db.add(user)
-    db.commit()
-    db.refresh(user)
-
-    # Connexion automatique
-    request.session["user_id"] = user.id
-    request.session["user_name"] = user.full_name
-
-    # Message de bienvenue
-    request.session["message"] = (
-        "Votre compte a été créé avec succès. Bienvenue sur MauriMarket ! 🇲🇷"
-    )
-
-    db.close()
-
-    return RedirectResponse(
-        "/",
-        status_code=303
-    )
+        db.close()
 
 
 # =====================================================
@@ -178,7 +241,7 @@ async def logout(request: Request):
     request.session.clear()
 
     request.session["message"] = (
-        "Vous avez été déconnecté avec succès. ! 🇲🇷"
+        "Vous avez été déconnecté avec succès ! 🇲🇷"
     )
 
     return RedirectResponse(
