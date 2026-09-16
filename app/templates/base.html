@@ -1,5 +1,8 @@
+
 <!DOCTYPE html>
-<html lang="{{ lang if lang else 'fr' }}">
+
+<html lang="{{ lang if lang in ['fr', 'ar'] else 'fr' }}"
+      dir="{{ 'rtl' if lang == 'ar' else 'ltr' }}">
 
 <head>
 
@@ -10,33 +13,873 @@
 
     <title>{% block title %}MauriMarket{% endblock %}</title>
 
-    <!-- Bootstrap -->
     <link
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-        rel="stylesheet">
+        rel="stylesheet"
+    >
 
-    <!-- Bootstrap Icons -->
     <link
         rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    >
 
-    <!-- CSS MauriMarket -->
     <link
         rel="stylesheet"
-        href="/static/css/style.css">
+        href="/static/css/style.css"
+    >
+
+<style>
+
+/* =====================================================
+   BASE
+===================================================== */
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+}
+
+body {
+    min-width: 0;
+}
+
+.main-header,
+.header-container,
+.category-navbar,
+.category-navbar-inner,
+.page-content,
+.site-footer {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+}
+
+
+/* =====================================================
+   HEADER
+===================================================== */
+
+.header-container {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    width: 100%;
+    padding: 12px 24px;
+}
+
+
+/* =====================================================
+   LOGO
+===================================================== */
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 0 0 auto;
+    min-width: max-content;
+    text-decoration: none;
+}
+
+.brand img {
+    width: 42px;
+    height: 42px;
+    object-fit: contain;
+    flex: 0 0 42px;
+}
+
+.brand > span {
+    font-size: 20px;
+    font-weight: 800;
+    white-space: nowrap;
+    color: #20252b;
+}
+
+.brand > span span {
+    color: #198754;
+}
+
+
+/* =====================================================
+   RECHERCHE
+===================================================== */
+
+.main-search {
+    display: flex;
+    align-items: stretch;
+    flex: 1 1 auto;
+    min-width: 180px;
+    max-width: 650px;
+    margin: 0 auto;
+}
+
+.main-search input {
+    width: 100%;
+    min-width: 0;
+    height: 42px;
+    padding: 0 14px;
+    border: 1px solid #dfe3e8;
+    border-right: 0;
+    border-radius: 8px 0 0 8px;
+    outline: none;
+    background: #fff;
+    font-size: 14px;
+}
+
+.main-search input:focus {
+    border-color: #198754;
+}
+
+.main-search button {
+    flex: 0 0 auto;
+    height: 42px;
+    padding: 0 18px;
+    border: 0;
+    border-radius: 0 8px 8px 0;
+    background: #198754;
+    color: #fff;
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.main-search button:hover {
+    background: #157347;
+}
+
+
+/* =====================================================
+   ACTIONS HEADER
+===================================================== */
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    flex: 0 1 auto;
+    min-width: 0;
+}
+
+.header-action {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    min-height: 38px;
+    padding: 6px 8px;
+    border: 0;
+    background: transparent;
+    color: #20252b;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.header-action:hover {
+    color: #198754;
+}
+
+.header-action > i {
+    font-size: 18px;
+}
+
+.header-action b {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 17px;
+    height: 17px;
+    padding: 0 4px;
+    border-radius: 20px;
+    background: #198754;
+    color: #fff;
+    font-size: 9px;
+    line-height: 1;
+}
+
+
+/* =====================================================
+   COMPTE
+===================================================== */
+
+.account-menu {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.account-button {
+    padding-left: 6px;
+    padding-right: 6px;
+}
+
+.account-arrow {
+    font-size: 10px !important;
+}
+
+.account-dropdown {
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    width: 225px;
+    padding: 6px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 9px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .12);
+    display: none;
+    z-index: 99999;
+}
+
+.account-menu:hover .account-dropdown,
+.account-menu.open .account-dropdown {
+    display: block;
+}
+
+.account-user {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    min-width: 0;
+    padding: 10px;
+    margin-bottom: 4px;
+    background: #f0f8f4;
+    border-radius: 7px;
+}
+
+.account-user > i {
+    flex: 0 0 auto;
+    color: #198754;
+    font-size: 25px;
+}
+
+.account-user > div {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.account-user strong {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: #172033;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.account-user small {
+    color: #7b8492;
+    font-size: 9px;
+}
+
+.account-dropdown a {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    width: 100%;
+    padding: 9px 10px;
+    border-radius: 7px;
+    color: #172033;
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.account-dropdown a:hover {
+    background: #f0f8f4;
+    color: #198754;
+}
+
+.account-dropdown .logout-link {
+    margin-top: 4px;
+    border-top: 1px solid #eee;
+    color: #dc3545;
+}
+
+.account-dropdown .logout-link:hover {
+    background: #fff5f5;
+    color: #dc3545;
+}
+
+
+/* =====================================================
+   SÉLECTEUR DE LANGUE
+===================================================== */
+
+.language-menu {
+    position: relative;
+    display: flex;
+    align-items: center;
+    flex: 0 0 auto;
+}
+
+.language-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    height: 38px;
+    min-width: 72px;
+    padding: 6px 10px;
+    border: 1px solid #e1e5e9;
+    border-radius: 8px;
+    background: #fff;
+    color: #20252b;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: .2s ease;
+}
+
+.language-button:hover {
+    border-color: #198754;
+    color: #198754;
+    background: #f8fbf9;
+}
+
+.language-button .language-flag {
+    font-size: 17px;
+    line-height: 1;
+}
+
+.language-button .language-arrow {
+    font-size: 10px;
+    transition: transform .2s ease;
+}
+
+.language-menu:hover .language-arrow,
+.language-menu.open .language-arrow {
+    transform: rotate(180deg);
+}
+
+.language-dropdown {
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    width: 145px;
+    padding: 5px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 9px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .12);
+    display: none;
+    z-index: 99999;
+}
+
+.language-menu:hover .language-dropdown,
+.language-menu.open .language-dropdown {
+    display: block;
+}
+
+.language-option {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    width: 100%;
+    padding: 9px 10px;
+    border-radius: 7px;
+    color: #20252b;
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 600;
+    transition: .2s ease;
+}
+
+.language-option:hover {
+    background: #f0f8f4;
+    color: #198754;
+}
+
+.language-option.active {
+    background: #f0f8f4;
+    color: #198754;
+}
+
+.language-option .language-flag {
+    font-size: 17px;
+}
+
+.language-option .language-check {
+    margin-left: auto;
+    font-size: 13px;
+    color: #198754;
+}
+
+
+/* =====================================================
+   NAVIGATION CATÉGORIES
+===================================================== */
+
+.category-navbar {
+    width: 100%;
+    border-top: 1px solid #eeeeee;
+    border-bottom: 1px solid #eeeeee;
+    background: #fff;
+}
+
+.category-navbar-inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 18px;
+}
+
+.category-nav-link,
+.publish-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    min-height: 40px;
+    padding: 7px 13px;
+    border-radius: 7px;
+    text-decoration: none;
+    white-space: nowrap;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.category-nav-link {
+    color: #30343a;
+}
+
+.category-nav-link:hover {
+    background: #f4f7f5;
+    color: #198754;
+}
+
+.publish-button {
+    background: #198754;
+    color: #fff;
+}
+
+.publish-button:hover {
+    background: #157347;
+    color: #fff;
+}
+
+.category-nav-link i,
+.publish-button i {
+    font-size: 16px;
+}
+
+
+/* =====================================================
+   CONTENU
+===================================================== */
+
+.page-content {
+    min-height: calc(100vh - 190px);
+}
+
+
+/* =====================================================
+   FOOTER
+===================================================== */
+
+.site-footer {
+    margin-top: 30px;
+    border-top: 1px solid #eeeeee;
+    background: #fff;
+}
+
+.footer-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px 18px;
+    padding: 18px 20px;
+    text-align: center;
+    font-size: 12px;
+}
+
+.footer-content strong {
+    font-weight: 800;
+}
+
+
+/* =====================================================
+   MESSAGES
+===================================================== */
+
+.message-box {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding: 12px 15px;
+    border: 1px solid #d7e9df;
+    border-radius: 8px;
+    background: #ffffff;
+    box-shadow: none;
+    animation: messageSlideIn 0.3s ease-out;
+}
+
+.message-icon {
+    flex: 0 0 auto;
+    color: #198754;
+    font-size: 20px;
+}
+
+.message-text {
+    min-width: 0;
+    color: #20252b;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+
+/* =====================================================
+   RTL
+===================================================== */
+
+html[dir="rtl"] body {
+    direction: rtl;
+}
+
+html[dir="rtl"] .main-search input {
+    text-align: right;
+    border-right: 1px solid #dfe3e8;
+    border-left: 0;
+    border-radius: 0 8px 8px 0;
+}
+
+html[dir="rtl"] .main-search button {
+    border-radius: 8px 0 0 8px;
+}
+
+html[dir="rtl"] .account-dropdown {
+    right: auto;
+    left: 0;
+}
+
+html[dir="rtl"] .account-user,
+html[dir="rtl"] .account-dropdown a {
+    text-align: right;
+}
+
+html[dir="rtl"] .language-dropdown {
+    right: auto;
+    left: 0;
+}
+
+html[dir="rtl"] .language-option {
+    text-align: right;
+}
+
+html[dir="rtl"] .language-option .language-check {
+    margin-left: 0;
+    margin-right: auto;
+}
+
+
+/* =====================================================
+   TABLETTE
+===================================================== */
+
+@media (max-width: 1100px) {
+
+    .header-container {
+        gap: 10px;
+        padding: 10px 14px;
+    }
+
+    .brand > span {
+        font-size: 18px;
+    }
+
+    .header-action > span {
+        display: none;
+    }
+
+    .header-action {
+        width: 38px;
+        padding: 5px;
+    }
+
+    .main-search {
+        max-width: none;
+    }
+
+    .category-navbar-inner {
+        flex-wrap: wrap;
+    }
+}
+
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media (max-width: 700px) {
+
+    .header-container {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 8px;
+        padding: 9px 10px;
+    }
+
+    .brand {
+        min-width: 0;
+    }
+
+    .brand img {
+        width: 36px;
+        height: 36px;
+        flex-basis: 36px;
+    }
+
+    .brand > span {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-size: 17px;
+    }
+
+    .header-actions {
+        gap: 2px;
+        max-width: 100%;
+    }
+
+    .header-action {
+        width: 34px;
+        min-width: 34px;
+        height: 34px;
+        min-height: 34px;
+        padding: 4px;
+    }
+
+    .header-action > i {
+        font-size: 17px;
+    }
+
+    .header-action b {
+        position: absolute;
+        top: 0;
+        right: -1px;
+        min-width: 14px;
+        height: 14px;
+        font-size: 8px;
+    }
+
+    .account-button {
+        width: 34px;
+        min-width: 34px;
+    }
+
+    .account-button .account-arrow {
+        display: none;
+    }
+
+
+    /* LANGUE MOBILE */
+
+    .language-button {
+        width: 48px;
+        min-width: 48px;
+        height: 34px;
+        padding: 4px 6px;
+        gap: 3px;
+    }
+
+    .language-button .language-flag {
+        font-size: 16px;
+    }
+
+    .language-button .language-code {
+        font-size: 10px;
+    }
+
+    .language-button .language-arrow {
+        font-size: 8px;
+    }
+
+    .language-dropdown {
+        width: 140px;
+    }
+
+
+    /* RECHERCHE */
+
+    .main-search {
+        grid-column: 1 / -1;
+        width: 100%;
+        min-width: 0;
+        margin: 0;
+    }
+
+    .main-search input {
+        min-width: 0;
+        height: 40px;
+    }
+
+    .main-search button {
+        height: 40px;
+        padding: 0 13px;
+        font-size: 12px;
+    }
+
+
+    /* NAVIGATION */
+
+    .category-navbar-inner {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 5px;
+        padding: 7px;
+    }
+
+    .category-nav-link,
+    .publish-button {
+        width: 100%;
+        min-width: 0;
+        min-height: 45px;
+        padding: 5px 3px;
+        flex-direction: column;
+        gap: 2px;
+        text-align: center;
+        white-space: normal;
+        line-height: 1.1;
+    }
+
+    .category-nav-link i,
+    .publish-button i {
+        font-size: 17px;
+    }
+
+    .category-nav-link span,
+    .publish-button span {
+        display: block;
+        width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-size: 9px;
+    }
+
+
+    /* COMPTE */
+
+    .account-dropdown {
+        width: min(225px, calc(100vw - 20px));
+        max-width: calc(100vw - 20px);
+    }
+
+    html[dir="rtl"] .account-dropdown {
+        right: auto;
+        left: 0;
+    }
+
+
+    /* FOOTER */
+
+    .footer-content {
+        padding: 15px 10px;
+        gap: 6px 12px;
+        font-size: 11px;
+    }
+}
+
+
+/* =====================================================
+   TRÈS PETIT MOBILE
+===================================================== */
+
+@media (max-width: 400px) {
+
+    .header-container {
+        padding: 7px;
+        gap: 5px;
+    }
+
+    .brand img {
+        width: 32px;
+        height: 32px;
+        flex-basis: 32px;
+    }
+
+    .brand > span {
+        font-size: 15px;
+    }
+
+    .header-actions {
+        gap: 0;
+    }
+
+    .header-action,
+    .account-button {
+        width: 31px;
+        min-width: 31px;
+        height: 32px;
+        min-height: 32px;
+    }
+
+    .header-action > i {
+        font-size: 16px;
+    }
+
+    .language-button {
+        width: 44px;
+        min-width: 44px;
+        height: 32px;
+        padding: 3px 5px;
+    }
+
+    .language-button .language-flag {
+        font-size: 15px;
+    }
+
+    .language-button .language-code {
+        font-size: 9px;
+    }
+
+    .category-navbar-inner {
+        gap: 3px;
+        padding: 5px;
+    }
+
+    .category-nav-link,
+    .publish-button {
+        min-height: 42px;
+    }
+
+    .category-nav-link i,
+    .publish-button i {
+        font-size: 15px;
+    }
+
+    .category-nav-link span,
+    .publish-button span {
+        font-size: 8px;
+    }
+}
+
+</style>
 
 </head>
 
 
 <body>
 
-
-<!-- =====================================================
-     VARIABLES UTILISATEUR
-===================================================== -->
-
 {% set current_user_id = request.session.get("user_id") %}
 {% set current_user_name = request.session.get("user_name") %}
+{% set current_lang = lang if lang in ["fr", "ar"] else "fr" %}
 
 
 <!-- =====================================================
@@ -45,20 +888,20 @@
 
 <header class="main-header">
 
-    <!-- =================================================
-         LIGNE PRINCIPALE
-    ================================================== -->
-
     <div class="header-container">
 
 
-        <!-- LOGO -->
+        <!-- =================================================
+             LOGO
+        ================================================== -->
 
-        <a href="/?lang={{ lang }}" class="brand">
+        <a href="/?lang={{ current_lang }}"
+           class="brand">
 
             <img
                 src="/static/images/logo.png"
-                alt="MauriMarket">
+                alt="MauriMarket"
+            >
 
             <span>
                 Mauri<span>Market</span>
@@ -74,21 +917,24 @@
         <form
             action="/"
             method="get"
-            class="main-search">
+            class="main-search"
+        >
 
             <input
                 type="hidden"
                 name="lang"
-                value="{{ lang }}">
+                value="{{ current_lang }}"
+            >
 
             <input
                 type="text"
                 name="q"
                 value="{{ request.query_params.get('q', '') }}"
-                placeholder="Rechercher un produit, une catégorie...">
+                placeholder="{{ t.search_placeholder }}"
+            >
 
             <button type="submit">
-                Rechercher
+                {{ t.search }}
             </button>
 
         </form>
@@ -101,18 +947,17 @@
         <div class="header-actions">
 
 
-            <!-- =================================================
-                 PANIER
-            ================================================== -->
+            <!-- PANIER -->
 
             <a
-                href="/panier?lang={{ lang }}"
-                class="header-action">
+                href="/panier?lang={{ current_lang }}"
+                class="header-action"
+            >
 
                 <i class="bi bi-cart3"></i>
 
                 <span>
-                    Panier
+                    {{ t.cart }}
                 </span>
 
                 <b>
@@ -122,21 +967,21 @@
             </a>
 
 
-            <!-- =================================================
-                 FAVORIS
-            ================================================== -->
+            <!-- FAVORIS -->
 
-          <a
-    href="/favorites/mes-favoris?lang={{ lang }}"
-    class="header-action">
+            <a
+                href="/favorites/mes-favoris?lang={{ current_lang }}"
+                class="header-action"
+            >
 
-    <i class="bi bi-heart"></i>
+                <i class="bi bi-heart"></i>
 
-    <span>
-        Favoris
-    </span>
+                <span>
+                    {{ t.favorites }}
+                </span>
 
-</a>
+            </a>
+
 
             <!-- =================================================
                  COMPTE
@@ -146,7 +991,8 @@
 
                 <button
                     type="button"
-                    class="header-action account-button">
+                    class="header-action account-button"
+                >
 
                     <i class="bi bi-person-circle"></i>
 
@@ -154,11 +1000,11 @@
 
                         {% if current_user_id %}
 
-                            {{ current_user_name or "Mon compte" }}
+                            {{ current_user_name or t.my_account }}
 
                         {% else %}
 
-                            Compte
+                            {{ t.account }}
 
                         {% endif %}
 
@@ -169,18 +1015,10 @@
                 </button>
 
 
-                <!-- =================================================
-                     MENU CONNECTÉ
-                ================================================= -->
-
                 <div class="account-dropdown">
 
                     {% if current_user_id %}
 
-
-                        <!-- =================================================
-                             MON COMPTE
-                        ================================================= -->
 
                         <div class="account-user">
 
@@ -189,11 +1027,11 @@
                             <div>
 
                                 <strong>
-                                    {{ current_user_name or "Utilisateur" }}
+                                    {{ current_user_name or t.user }}
                                 </strong>
 
                                 <small>
-                                    Compte connecté
+                                    {{ t.connected_account }}
                                 </small>
 
                             </div>
@@ -201,60 +1039,32 @@
                         </div>
 
 
-                        <!-- =================================================
-                             MES ANNONCES
-                        ================================================= -->
-
-                        <a
-                            href="/mes-annonces?lang={{ lang }}">
+                        <a href="/mes-annonces?lang={{ current_lang }}">
 
                             <i class="bi bi-box-seam"></i>
 
-                            Mes annonces
+                            {{ t.my_ads }}
 
                         </a>
 
 
-                        <!-- =================================================
-                             MA BOUTIQUE
-                        ================================================= -->
-
-                        <a
-                            href="/ma-boutique?lang={{ lang }}">
+                        <a href="/ma-boutique?lang={{ current_lang }}">
 
                             <i class="bi bi-shop"></i>
 
-                            Ma boutique
+                            {{ t.my_shop }}
 
                         </a>
 
 
-                        <!-- =================================================
-                             CRÉER UNE BOUTIQUE
-                             On garde ce lien séparé uniquement si besoin
-                        ================================================= -->
-
-                          <!--<a
-                            href="/boutiques?lang={{ lang }}">
-
-                            <i class="bi bi-shop-window"></i>
-
-                            Toutes les boutiques
-
-                        </a>-->
-
-
-                        <!-- =================================================
-                             DÉCONNEXION
-                        ================================================= -->
-
                         <a
-                            href="/logout?lang={{ lang }}"
-                            class="logout-link">
+                            href="/logout?lang={{ current_lang }}"
+                            class="logout-link"
+                        >
 
                             <i class="bi bi-box-arrow-right"></i>
 
-                            Déconnexion
+                            {{ t.logout }}
 
                         </a>
 
@@ -262,26 +1072,20 @@
                     {% else %}
 
 
-                        <!-- =================================================
-                             UTILISATEUR NON CONNECTÉ
-                        ================================================= -->
-
-                        <a
-                            href="/login?lang={{ lang }}">
+                        <a href="/login?lang={{ current_lang }}">
 
                             <i class="bi bi-box-arrow-in-right"></i>
 
-                            Connexion
+                            {{ t.login }}
 
                         </a>
 
 
-                        <a
-                            href="/register?lang={{ lang }}">
+                        <a href="/register?lang={{ current_lang }}">
 
                             <i class="bi bi-person-plus"></i>
 
-                            Inscription
+                            {{ t.register }}
 
                         </a>
 
@@ -291,6 +1095,139 @@
                 </div>
 
             </div>
+
+
+            <!-- =================================================
+                 LANGUE
+            ================================================== -->
+
+            <div class="language-menu">
+
+
+                <button
+                    type="button"
+                    class="language-button"
+                    aria-label="Changer de langue"
+                >
+
+                    {% if current_lang == "ar" %}
+
+                        <span class="language-flag">
+                            🇲🇷
+                        </span>
+
+                        <span class="language-code">
+                            AR
+                        </span>
+
+                    {% else %}
+
+                        <span class="language-flag">
+                            🇫🇷
+                        </span>
+
+                        <span class="language-code">
+                            FR
+                        </span>
+
+                    {% endif %}
+
+                    <i class="bi bi-chevron-down language-arrow"></i>
+
+                </button>
+
+
+                <div class="language-dropdown">
+
+
+                    {% if current_lang == "fr" %}
+
+
+                        <!-- FRANÇAIS ACTIF -->
+
+                        <a
+                            href="{{ request.url.path }}?lang=fr{% if request.query_params.get('q') %}&q={{ request.query_params.get('q') }}{% endif %}"
+                            class="language-option active"
+                        >
+
+                            <span class="language-flag">
+                                🇫🇷
+                            </span>
+
+                            <span>
+                                Français
+                            </span>
+
+                            <i class="bi bi-check language-check"></i>
+
+                        </a>
+
+
+                        <!-- ARABE -->
+
+                        <a
+                            href="{{ request.url.path }}?lang=ar{% if request.query_params.get('q') %}&q={{ request.query_params.get('q') }}{% endif %}"
+                            class="language-option"
+                        >
+
+                            <span class="language-flag">
+                                🇲🇷
+                            </span>
+
+                            <span>
+                                العربية
+                            </span>
+
+                        </a>
+
+
+                    {% else %}
+
+
+                        <!-- FRANÇAIS -->
+
+                        <a
+                            href="{{ request.url.path }}?lang=fr{% if request.query_params.get('q') %}&q={{ request.query_params.get('q') }}{% endif %}"
+                            class="language-option"
+                        >
+
+                            <span class="language-flag">
+                                🇫🇷
+                            </span>
+
+                            <span>
+                                Français
+                            </span>
+
+                        </a>
+
+
+                        <!-- ARABE ACTIF -->
+
+                        <a
+                            href="{{ request.url.path }}?lang=ar{% if request.query_params.get('q') %}&q={{ request.query_params.get('q') }}{% endif %}"
+                            class="language-option active"
+                        >
+
+                            <span class="language-flag">
+                                🇲🇷
+                            </span>
+
+                            <span>
+                                العربية
+                            </span>
+
+                            <i class="bi bi-check language-check"></i>
+
+                        </a>
+
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
 
         </div>
 
@@ -306,93 +1243,85 @@
         <div class="category-navbar-inner">
 
 
-            <!-- ACCUEIL -->
-
             <a
-                href="/?lang={{ lang }}"
-                class="category-nav-link">
+                href="/?lang={{ current_lang }}"
+                class="category-nav-link"
+            >
 
                 <i class="bi bi-house-door"></i>
 
                 <span>
-                    Accueil
+                    {{ t.home }}
                 </span>
 
             </a>
 
 
-            <!-- BOUTIQUES -->
-
             <a
-                href="/boutiques?lang={{ lang }}"
-                class="category-nav-link">
+                href="/boutiques?lang={{ current_lang }}"
+                class="category-nav-link"
+            >
 
                 <i class="bi bi-shop"></i>
 
                 <span>
-                    Boutiques
+                    {{ t.shops }}
                 </span>
 
             </a>
 
 
-            <!-- LIVRAISON -->
-
             <a
-                href="/livraison?lang={{ lang }}"
-                class="category-nav-link">
+                href="/livraison?lang={{ current_lang }}"
+                class="category-nav-link"
+            >
 
                 <i class="bi bi-truck"></i>
 
                 <span>
-                    Livraison
+                    {{ t.delivery }}
                 </span>
 
             </a>
 
 
-            <!-- =================================================
-                 PUBLIER UNE ANNONCE
-            ================================================== -->
-
             <a
-                href="/publier?lang={{ lang }}"
-                class="publish-button">
+                href="/publier?lang={{ current_lang }}"
+                class="publish-button"
+            >
 
                 <i class="bi bi-plus-circle"></i>
 
                 <span>
-                    Publier une annonce
+                    {{ t.publish_ad }}
                 </span>
 
             </a>
 
 
-            <!-- AIDE -->
-
             <a
-                href="/aide?lang={{ lang }}"
-                class="category-nav-link">
+                href="/aide?lang={{ current_lang }}"
+                class="category-nav-link"
+            >
 
                 <i class="bi bi-question-circle"></i>
 
                 <span>
-                    Aide
+                    {{ t.help }}
                 </span>
 
             </a>
 
 
-            <!-- CONTACT -->
-
             <a
-                href="/contact?lang={{ lang }}"
-                class="category-nav-link">
+                href="/contact?lang={{ current_lang }}"
+                class="category-nav-link"
+            >
 
                 <i class="bi bi-headset"></i>
 
                 <span>
-                    Contact
+                    {{ t.contact }}
                 </span>
 
             </a>
@@ -406,63 +1335,7 @@
 
 
 <!-- =====================================================
-     MESSAGE
-===================================================== -->
-
-{% if message %}
-
-<div id="message-overlay">
-
-    <div class="message-box">
-
-        <div class="message-icon">
-
-            <i class="bi bi-check-circle-fill"></i>
-
-        </div>
-
-        <div class="message-text">
-
-            {{ message }}
-
-        </div>
-
-    </div>
-
-</div>
-
-
-<script>
-
-setTimeout(function () {
-
-    const overlay =
-        document.getElementById("message-overlay");
-
-    if (overlay) {
-
-        overlay.style.transition =
-            "opacity 0.4s";
-
-        overlay.style.opacity = "0";
-
-        setTimeout(function () {
-
-            overlay.remove();
-
-        }, 400);
-
-    }
-
-}, 3000);
-
-</script>
-
-{% endif %}
-
-
-<!-- =====================================================
-     CONTENU DES PAGES
+     CONTENU
 ===================================================== -->
 
 <main class="page-content">
@@ -482,15 +1355,15 @@ setTimeout(function () {
     <div class="footer-content">
 
         <strong>
-            MauriMarket
+            {{ t.site_name }}
         </strong>
 
         <span>
-            Marketplace mauritanienne
+            {{ t.marketplace_mauritania }}
         </span>
 
         <span>
-            © 2026 MauriMarket
+            {{ t.copyright }}
         </span>
 
     </div>
@@ -499,203 +1372,103 @@ setTimeout(function () {
 
 
 <!-- =====================================================
-     CSS COMPTE
+     JAVASCRIPT
 ===================================================== -->
 
-<style>
+<script>
 
-.account-menu {
+document.addEventListener("DOMContentLoaded", function () {
 
-    position: relative;
 
-    display: flex;
+    /* =================================================
+       MENU COMPTE
+    ================================================== */
 
-    align-items: center;
+    const accountMenu =
+        document.querySelector(".account-menu");
 
-}
+    const accountButton =
+        document.querySelector(".account-button");
 
 
-.account-button {
+    if (accountMenu && accountButton) {
 
-    border: 0;
+        accountButton.addEventListener(
+            "click",
+            function (event) {
 
-    background: transparent;
+                event.stopPropagation();
 
-    cursor: pointer;
+                accountMenu.classList.toggle("open");
 
-}
+                const languageMenu =
+                    document.querySelector(".language-menu");
 
+                if (languageMenu) {
+                    languageMenu.classList.remove("open");
+                }
 
-.account-arrow {
+            }
+        );
 
-    font-size: 9px !important;
+    }
 
-    margin-left: 2px;
 
-}
+    /* =================================================
+       MENU LANGUE
+    ================================================== */
 
+    const languageMenu =
+        document.querySelector(".language-menu");
 
-.account-dropdown {
+    const languageButton =
+        document.querySelector(".language-button");
 
-    position: absolute;
 
-    top: calc(100% + 6px);
+    if (languageMenu && languageButton) {
 
-    right: 0;
+        languageButton.addEventListener(
+            "click",
+            function (event) {
 
-    width: 220px;
+                event.stopPropagation();
 
-    padding: 5px;
+                languageMenu.classList.toggle("open");
 
-    background: #ffffff;
+                if (accountMenu) {
+                    accountMenu.classList.remove("open");
+                }
 
-    border: 1px solid #e5e7eb;
+            }
+        );
 
-    border-radius: 8px;
+    }
 
-    box-shadow:
-        0 6px 18px rgba(0, 0, 0, 0.12);
 
-    display: none;
+    /* =================================================
+       FERMER LES MENUS EN CLIQUANT AILLEURS
+    ================================================== */
 
-    z-index: 9999;
+    document.addEventListener(
+        "click",
+        function () {
 
-}
+            if (accountMenu) {
+                accountMenu.classList.remove("open");
+            }
 
+            if (languageMenu) {
+                languageMenu.classList.remove("open");
+            }
 
-.account-menu:hover .account-dropdown {
+        }
+    );
 
-    display: block;
 
-}
+});
 
+</script>
 
-/* =====================================================
-   UTILISATEUR CONNECTÉ
-===================================================== */
-
-.account-user {
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 9px;
-
-    padding: 10px;
-
-    margin-bottom: 4px;
-
-    background: #f0f8f4;
-
-    border-radius: 6px;
-
-}
-
-
-.account-user > i {
-
-    color: #198754;
-
-    font-size: 25px;
-
-}
-
-
-.account-user div {
-
-    display: flex;
-
-    flex-direction: column;
-
-    min-width: 0;
-
-}
-
-
-.account-user strong {
-
-    color: #172033;
-
-    font-size: 12px;
-
-    font-weight: 700;
-
-    overflow: hidden;
-
-    text-overflow: ellipsis;
-
-    white-space: nowrap;
-
-}
-
-
-.account-user small {
-
-    color: #7b8492;
-
-    font-size: 9px;
-
-}
-
-
-.account-dropdown a {
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 8px;
-
-    padding: 8px 9px;
-
-    border-radius: 6px;
-
-    color: #172033;
-
-    font-size: 12px;
-
-    font-weight: 600;
-
-    text-decoration: none;
-
-}
-
-
-.account-dropdown a:hover {
-
-    background: #f0f8f4;
-
-    color: #198754;
-
-}
-
-
-.account-dropdown .logout-link {
-
-    color: #dc3545;
-
-    border-top: 1px solid #eeeeee;
-
-    margin-top: 4px;
-
-}
-
-
-.account-dropdown .logout-link:hover {
-
-    background: #fff5f5;
-
-    color: #dc3545;
-
-}
-
-</style>
-
-
-<!-- =====================================================
-     BOOTSTRAP JS
-===================================================== -->
 
 <script
     src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">

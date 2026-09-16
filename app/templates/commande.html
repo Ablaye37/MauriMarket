@@ -1,265 +1,292 @@
 {% extends "base.html" %}
 
-{% block title %}Finaliser ma commande - MauriMarket{% endblock %}
+{% block title %}
+{{ t.order }} - MauriMarket
+{% endblock %}
 
 {% block content %}
 
 <div class="container py-4">
 
-    <div class="row justify-content-center">
+```
+<div class="row justify-content-center">
 
-        <div class="col-lg-8">
+    <div class="col-lg-8">
 
-            <!-- =====================================================
-                 TITRE
-            ====================================================== -->
+        <!-- =====================================================
+             TITRE
+        ====================================================== -->
 
-            <div class="mb-4">
+        <div class="mb-4">
 
-                <h1 class="fw-bold">
-                    🛒 Finaliser ma commande
-                </h1>
+            <h1 class="fw-bold">
+                🛒 {{ t.order }}
+            </h1>
 
-                <p class="text-muted">
-                    Vérifiez votre commande puis renseignez vos
-                    informations de livraison.
-                </p>
+            <p class="text-muted">
+                {% if lang == "ar" %}
+                    أدخل معلوماتك لإتمام طلبك.
+                {% else %}
+                    Entrez vos informations pour finaliser votre commande.
+                {% endif %}
+            </p>
 
-            </div>
+        </div>
 
 
-            <!-- =====================================================
-                 PRODUITS
-            ====================================================== -->
+        <!-- =====================================================
+             PRODUITS
+        ====================================================== -->
 
-            <div class="card shadow-sm mb-4">
+        <div class="card shadow-sm mb-4">
 
-                <div class="card-body">
+            <div class="card-body">
 
-                    <h4 class="fw-bold mb-3">
-                        📦 Votre commande
-                    </h4>
+                <h4 class="fw-bold mb-3">
+                    📦 {{ t.order }}
+                </h4>
 
-                    {% for product in products %}
+                {% for product in products %}
 
-                    <div class="d-flex justify-content-between
-                                align-items-center
-                                border-bottom
-                                py-3">
+                <div class="d-flex justify-content-between
+                            align-items-center
+                            border-bottom
+                            py-3
+                            product-row">
 
-                        <div>
-
-                            <div class="fw-bold">
-                                {{ product.title }}
-                            </div>
-
-                            {% if product.city %}
-
-                            <small class="text-muted">
-                                📍 {{ product.city }}
-                            </small>
-
-                            {% endif %}
-
-                        </div>
+                    <div class="product-info">
 
                         <div class="fw-bold">
-
-                            {{ "{:,.0f}".format(product.price or 0) }}
-                            MRU
-
+                            {{ product.title }}
                         </div>
 
-                    </div>
+                        {% if product.city %}
 
-                    {% endfor %}
+                        <small class="text-muted">
+                            📍 {{ product.city }}
+                        </small>
 
-
-                    <!-- TOTAL -->
-
-                    <div class="d-flex justify-content-between
-                                align-items-center
-                                pt-3">
-
-                        <span class="fs-5 fw-bold">
-                            Total
-                        </span>
-
-                        <span class="fs-4 fw-bold text-success">
-
-                            {{ "{:,.0f}".format(total or 0) }}
-                            MRU
-
-                        </span>
+                        {% endif %}
 
                     </div>
+
+                    <div class="fw-bold product-price">
+
+                        {{ "{:,.0f}".format(product.price or 0) }}
+                        MRU
+
+                    </div>
+
+                </div>
+
+                {% endfor %}
+
+
+                <!-- TOTAL -->
+
+                <div class="d-flex justify-content-between
+                            align-items-center
+                            pt-3
+                            total-row">
+
+                    <span class="fs-5 fw-bold">
+                        {{ t.total }}
+                    </span>
+
+                    <span class="fs-4 fw-bold text-success">
+
+                        {{ "{:,.0f}".format(total or 0) }}
+                        MRU
+
+                    </span>
 
                 </div>
 
             </div>
 
-
-            <!-- =====================================================
-                 FORMULAIRE
-            ====================================================== -->
-
-            <div class="card shadow-sm">
-
-                <div class="card-body">
-
-                    <h4 class="fw-bold mb-4">
-                        📋 Informations client
-                    </h4>
+        </div>
 
 
-                    <form
-                        method="post"
-                        action="/commande/valider"
-                    >
+        <!-- =====================================================
+             FORMULAIRE
+        ====================================================== -->
+
+        <div class="card shadow-sm">
+
+            <div class="card-body">
+
+                <h4 class="fw-bold mb-4">
+
+                    📋
+                    {% if lang == "ar" %}
+                        معلومات العميل
+                    {% else %}
+                        Informations du client
+                    {% endif %}
+
+                </h4>
 
 
-                        <!-- NOM -->
-
-                        <div class="mb-3">
-
-                            <label
-                                for="customer_name"
-                                class="form-label fw-bold"
-                            >
-                                Nom complet *
-                            </label>
-
-                            <input
-                                type="text"
-                                id="customer_name"
-                                name="customer_name"
-                                class="form-control"
-                                value="{{ user_name or '' }}"
-                                placeholder="Votre nom complet"
-                                required
-                            >
-
-                        </div>
+                <form
+                    method="post"
+                    action="/commande/valider?lang={{ lang }}"
+                >
 
 
-                        <!-- TELEPHONE -->
+                    <!-- NOM -->
 
-                        <div class="mb-3">
+                    <div class="mb-3">
 
-                            <label
-                                for="customer_phone"
-                                class="form-label fw-bold"
-                            >
-                                Numéro de téléphone *
-                            </label>
+                        <label
+                            for="customer_name"
+                            class="form-label fw-bold"
+                        >
+                            {{ t.full_name }} *
+                        </label>
 
-                            <input
-                                type="tel"
-                                id="customer_phone"
-                                name="customer_phone"
-                                class="form-control"
-                                placeholder="Ex : 22 XX XX XX"
-                                required
-                            >
+                        <input
+                            type="text"
+                            id="customer_name"
+                            name="customer_name"
+                            class="form-control"
+                            value="{{ user_name or '' }}"
+                            placeholder="{{ t.full_name }}"
+                            required
+                        >
 
-                        </div>
-
-
-                        <!-- VILLE -->
-
-                        <div class="mb-3">
-
-                            <label
-                                for="city"
-                                class="form-label fw-bold"
-                            >
-                                Ville *
-                            </label>
-
-                            <input
-                                type="text"
-                                id="city"
-                                name="city"
-                                class="form-control"
-                                placeholder="Ex : Nouakchott"
-                                required
-                            >
-
-                        </div>
+                    </div>
 
 
-                        <!-- ADRESSE -->
+                    <!-- TELEPHONE -->
 
-                        <div class="mb-3">
+                    <div class="mb-3">
 
-                            <label
-                                for="delivery_address"
-                                class="form-label fw-bold"
-                            >
-                                Adresse de livraison
-                            </label>
+                        <label
+                            for="customer_phone"
+                            class="form-label fw-bold"
+                        >
+                            {{ t.phone }} *
+                        </label>
 
-                            <textarea
-                                id="delivery_address"
-                                name="delivery_address"
-                                class="form-control"
-                                rows="3"
-                                placeholder="Quartier, rue, repère..."
-                            ></textarea>
+                        <input
+                            type="tel"
+                            id="customer_phone"
+                            name="customer_phone"
+                            class="form-control"
+                            placeholder="{% if lang == 'ar' %}22 XX XX XX{% else %}22 XX XX XX{% endif %}"
+                            required
+                        >
 
-                        </div>
+                    </div>
 
 
-                        <!-- COMMENTAIRE -->
+                    <!-- VILLE -->
 
-                        <div class="mb-4">
+                    <div class="mb-3">
 
-                            <label
-                                for="comment"
-                                class="form-label fw-bold"
-                            >
+                        <label
+                            for="city"
+                            class="form-label fw-bold"
+                        >
+                            {{ t.city }} *
+                        </label>
+
+                        <input
+                            type="text"
+                            id="city"
+                            name="city"
+                            class="form-control"
+                            placeholder="{% if lang == 'ar' %}نواكشوط{% else %}Nouakchott{% endif %}"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- ADRESSE -->
+
+                    <div class="mb-3">
+
+                        <label
+                            for="delivery_address"
+                            class="form-label fw-bold"
+                        >
+                            {{ t.delivery_address }}
+                        </label>
+
+                        <textarea
+                            id="delivery_address"
+                            name="delivery_address"
+                            class="form-control"
+                            rows="3"
+                            placeholder="{{ t.delivery_address }}"
+                        ></textarea>
+
+                    </div>
+
+
+                    <!-- COMMENTAIRE -->
+
+                    <div class="mb-4">
+
+                        <label
+                            for="comment"
+                            class="form-label fw-bold"
+                        >
+                            {% if lang == "ar" %}
+                                ملاحظة
+                            {% else %}
                                 Commentaire
-                            </label>
+                            {% endif %}
+                        </label>
 
-                            <textarea
-                                id="comment"
-                                name="comment"
-                                class="form-control"
-                                rows="3"
-                                placeholder="Une précision pour le vendeur..."
-                            ></textarea>
+                        <textarea
+                            id="comment"
+                            name="comment"
+                            class="form-control"
+                            rows="3"
+                            placeholder="{% if lang == 'ar' %}أضف ملاحظة أو معلومات إضافية{% else %}Ajoutez une remarque ou une information supplémentaire{% endif %}"
+                        ></textarea>
 
-                        </div>
-
-
-                        <!-- BOUTONS -->
-
-                        <div class="d-flex
-                                    justify-content-between
-                                    align-items-center
-                                    gap-2
-                                    flex-wrap">
-
-                            <a
-                                href="/panier"
-                                class="btn btn-outline-secondary"
-                            >
-                                ← Retour au panier
-                            </a>
+                    </div>
 
 
-                            <button
-                                type="submit"
-                                class="btn btn-success btn-lg"
-                            >
-                                ✅ Confirmer la commande
-                            </button>
+                    <!-- BOUTONS -->
 
-                        </div>
+                    <div class="d-flex
+                                justify-content-between
+                                align-items-center
+                                gap-2
+                                flex-wrap">
 
-                    </form>
+                        <a
+                            href="/panier?lang={{ lang }}"
+                            class="btn btn-outline-secondary"
+                        >
+                            {% if lang == "ar" %}
+                                → العودة
+                            {% else %}
+                                ← {{ t.back }}
+                            {% endif %}
+                        </a>
 
-                </div>
+
+                        <button
+                            type="submit"
+                            class="btn btn-success btn-lg"
+                        >
+
+                            {% if lang == "ar" %}
+                                تأكيد الطلب ✅
+                            {% else %}
+                                ✅ {{ t.confirm }}
+                            {% endif %}
+
+                        </button>
+
+                    </div>
+
+                </form>
 
             </div>
 
@@ -268,5 +295,69 @@
     </div>
 
 </div>
+```
+
+</div>
+
+<!-- =====================================================
+     RTL ARABE
+====================================================== -->
+
+<style>
+
+html[dir="rtl"] .container {
+    direction: rtl;
+}
+
+html[dir="rtl"] .text-muted,
+html[dir="rtl"] .form-label {
+    text-align: right;
+}
+
+html[dir="rtl"] .product-row,
+html[dir="rtl"] .total-row {
+    direction: rtl;
+}
+
+html[dir="rtl"] .product-info {
+    text-align: right;
+}
+
+html[dir="rtl"] .product-price {
+    text-align: left;
+}
+
+html[dir="rtl"] input,
+html[dir="rtl"] textarea {
+    text-align: right;
+    direction: rtl;
+}
+
+html[dir="rtl"] .btn-outline-secondary {
+    direction: rtl;
+}
+
+@media (max-width: 576px) {
+
+    .product-row {
+        gap: 15px;
+    }
+
+    .product-price {
+        white-space: nowrap;
+        font-size: 14px;
+    }
+
+    .total-row .fs-5 {
+        font-size: 16px !important;
+    }
+
+    .total-row .fs-4 {
+        font-size: 18px !important;
+    }
+
+}
+
+</style>
 
 {% endblock %}

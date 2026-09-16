@@ -1,5 +1,4 @@
-﻿
-from uuid import uuid4
+﻿from uuid import uuid4
 from urllib.parse import urlparse, unquote
 import os
 import traceback
@@ -23,6 +22,9 @@ from app.models.boutique import Boutique
 from app.models.boutique_request import BoutiqueRequest
 from app.models.product import Product
 from app.models.user import User
+
+from app.translations.fr import TRANSLATIONS as FR
+from app.translations.ar import TRANSLATIONS as AR
 
 from supabase import create_client
 
@@ -50,7 +52,6 @@ templates = Jinja2Templates(
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 
-# Bucket déjà utilisé pour les images
 SUPABASE_BUCKET = "product-images"
 
 
@@ -121,19 +122,44 @@ def get_db():
 
 
 # ============================================================
+# LANGUE
+# ============================================================
+
+def get_language(request: Request):
+
+    lang = request.query_params.get(
+        "lang",
+        "fr"
+    )
+
+    if lang not in ["fr", "ar"]:
+
+        lang = "fr"
+
+    translations = (
+        FR
+        if lang == "fr"
+        else AR
+    )
+
+    return lang, translations
+
+
+# ============================================================
 # UTILISATEUR CONNECTÉ / SESSION VALIDE
 # ============================================================
-def get_current_user(request: Request, db: Session):
-    """
-    Retourne l'utilisateur correspondant à la session.
 
-    Si la session contient un ancien user_id qui n'existe plus
-    dans la table users, la session est nettoyée afin d'éviter
-    les erreurs de clé étrangère sur BoutiqueRequest/Boutique.
-    """
-    user_id = request.session.get("user_id")
+def get_current_user(
+    request: Request,
+    db: Session
+):
+
+    user_id = request.session.get(
+        "user_id"
+    )
 
     if not user_id:
+
         return None
 
     user = (
@@ -143,15 +169,19 @@ def get_current_user(request: Request, db: Session):
     )
 
     if not user:
+
         request.session.clear()
+
         request.session["message"] = (
             "Votre session n'est plus valide. "
             "Veuillez vous reconnecter."
         )
+
         print(
             "⚠️ SESSION NETTOYÉE : user_id inexistant :",
             user_id
         )
+
         return None
 
     return user
@@ -179,6 +209,14 @@ def contexte_global(
     boutique_request = None
 
     # --------------------------------------------------------
+    # LANGUE
+    # --------------------------------------------------------
+
+    lang, translations = get_language(
+        request
+    )
+
+    # --------------------------------------------------------
     # UTILISATEUR CONNECTÉ
     # --------------------------------------------------------
 
@@ -191,15 +229,23 @@ def contexte_global(
         )
 
         if not user:
+
             request.session.clear()
+
             request.session["message"] = (
-                "Votre session n'est plus valide. "
-                "Veuillez vous reconnecter."
+                translations["server_error"]
             )
+
             user_id = None
             user_name = None
+
         else:
+
             user_name = user.full_name
+
+    # --------------------------------------------------------
+    # BOUTIQUE UTILISATEUR
+    # --------------------------------------------------------
 
     if user_id:
 
@@ -244,13 +290,8 @@ def contexte_global(
     )
 
     # --------------------------------------------------------
-    # LANGUE
+    # CONTEXTE
     # --------------------------------------------------------
-
-    lang = request.query_params.get(
-        "lang",
-        "fr"
-    )
 
     return {
 
@@ -271,6 +312,9 @@ def contexte_global(
 
         "lang":
             lang,
+
+        "t":
+            translations,
     }
 
 
@@ -283,10 +327,6 @@ async def upload_boutique_image(
     prefix: str,
 ):
 
-    # --------------------------------------------------------
-    # AUCUNE IMAGE
-    # --------------------------------------------------------
-
     if not image or not image.filename:
 
         print(
@@ -295,10 +335,6 @@ async def upload_boutique_image(
 
         return None
 
-    # --------------------------------------------------------
-    # VÉRIFIER SUPABASE
-    # --------------------------------------------------------
-
     if not supabase:
 
         print(
@@ -306,10 +342,6 @@ async def upload_boutique_image(
         )
 
         return None
-
-    # --------------------------------------------------------
-    # TYPE
-    # --------------------------------------------------------
 
     extension = ALLOWED_IMAGE_TYPES.get(
         image.content_type
@@ -324,10 +356,6 @@ async def upload_boutique_image(
 
         return None
 
-    # --------------------------------------------------------
-    # LIRE LE FICHIER
-    # --------------------------------------------------------
-
     content = await image.read()
 
     if not content:
@@ -338,19 +366,11 @@ async def upload_boutique_image(
 
         return None
 
-    # --------------------------------------------------------
-    # NOM UNIQUE
-    # --------------------------------------------------------
-
     filename = (
         f"{prefix}_"
         f"{uuid4().hex}"
         f"{extension}"
     )
-
-    # --------------------------------------------------------
-    # UPLOAD SUPABASE
-    # --------------------------------------------------------
 
     try:
 
@@ -425,10 +445,6 @@ async def upload_boutique_image(
 
         return None
 
-    # --------------------------------------------------------
-    # URL PUBLIQUE
-    # --------------------------------------------------------
-
     try:
 
         public_url = (
@@ -470,10 +486,6 @@ def delete_supabase_image(
 
     if not supabase:
         return
-
-    # --------------------------------------------------------
-    # UNIQUEMENT LES IMAGES SUPABASE
-    # --------------------------------------------------------
 
     if "supabase.co/storage/v1/object/" not in image_url:
 
@@ -535,7 +547,7 @@ def delete_supabase_image(
 
 
 # ============================================================
-# CATÉGORIES
+# BOUTIQUES
 # ============================================================
 
 @router.get("/boutiques")
@@ -626,19 +638,27 @@ async def page_creer_boutique(
     db: Session = Depends(get_db),
 ):
 
-    user = get_current_user(request, db)
-    user_id = user.id if user else None
+    user = get_current_user(
+        request,
+        db
+    )
+
+    user_id = (
+        user.id
+        if user
+        else None
+    )
+
+    lang, _ = get_language(
+        request
+    )
 
     if not user_id:
 
         return RedirectResponse(
-            url="/login",
+            url=f"/login?lang={lang}",
             status_code=303,
         )
-
-    # --------------------------------------------------------
-    # VÉRIFIER SI BOUTIQUE EXISTE
-    # --------------------------------------------------------
 
     boutique = (
         db.query(Boutique)
@@ -651,13 +671,9 @@ async def page_creer_boutique(
     if boutique:
 
         return RedirectResponse(
-            url="/ma-boutique",
+            url=f"/ma-boutique?lang={lang}",
             status_code=303,
         )
-
-    # --------------------------------------------------------
-    # DERNIÈRE DEMANDE
-    # --------------------------------------------------------
 
     demande = (
         db.query(BoutiqueRequest)
@@ -673,13 +689,9 @@ async def page_creer_boutique(
     if demande and demande.status == "pending":
 
         return RedirectResponse(
-            url="/boutique/demande",
+            url=f"/boutique/demande?lang={lang}",
             status_code=303,
         )
-
-    # --------------------------------------------------------
-    # DEMANDE ACCEPTÉE
-    # --------------------------------------------------------
 
     if demande and demande.status == "approved":
 
@@ -715,13 +727,9 @@ async def page_creer_boutique(
             )
 
         return RedirectResponse(
-            url="/ma-boutique",
+            url=f"/ma-boutique?lang={lang}",
             status_code=303,
         )
-
-    # --------------------------------------------------------
-    # FORMULAIRE
-    # --------------------------------------------------------
 
     context = contexte_global(
         request,
@@ -758,19 +766,27 @@ async def creer_boutique(
     db: Session = Depends(get_db),
 ):
 
-    user = get_current_user(request, db)
-    user_id = user.id if user else None
+    lang, translations = get_language(
+        request
+    )
+
+    user = get_current_user(
+        request,
+        db
+    )
+
+    user_id = (
+        user.id
+        if user
+        else None
+    )
 
     if not user_id:
 
         return RedirectResponse(
-            url="/login",
+            url=f"/login?lang={lang}",
             status_code=303,
         )
-
-    # --------------------------------------------------------
-    # BOUTIQUE EXISTANTE
-    # --------------------------------------------------------
 
     boutique = (
         db.query(Boutique)
@@ -783,13 +799,9 @@ async def creer_boutique(
     if boutique:
 
         return RedirectResponse(
-            url="/ma-boutique",
+            url=f"/ma-boutique?lang={lang}",
             status_code=303,
         )
-
-    # --------------------------------------------------------
-    # DERNIÈRE DEMANDE
-    # --------------------------------------------------------
 
     derniere_demande = (
         db.query(BoutiqueRequest)
@@ -808,13 +820,9 @@ async def creer_boutique(
     ):
 
         return RedirectResponse(
-            url="/boutique/demande",
+            url=f"/boutique/demande?lang={lang}",
             status_code=303,
         )
-
-    # --------------------------------------------------------
-    # DEMANDE APPROUVÉE
-    # --------------------------------------------------------
 
     if (
         derniere_demande
@@ -853,13 +861,9 @@ async def creer_boutique(
             )
 
         return RedirectResponse(
-            url="/ma-boutique",
+            url=f"/ma-boutique?lang={lang}",
             status_code=303,
         )
-
-    # --------------------------------------------------------
-    # NOUVELLE DEMANDE
-    # --------------------------------------------------------
 
     demande = BoutiqueRequest(
 
@@ -881,11 +885,14 @@ async def creer_boutique(
     db.commit()
 
     request.session["message"] = (
-        "Votre demande de boutique a été envoyée."
+        translations.get(
+            "shop_request_sent",
+            "Votre demande de boutique a été envoyée."
+        )
     )
 
     return RedirectResponse(
-        url="/boutique/demande",
+        url=f"/boutique/demande?lang={lang}",
         status_code=303,
     )
 
@@ -902,19 +909,27 @@ async def statut_demande(
     db: Session = Depends(get_db),
 ):
 
-    user = get_current_user(request, db)
-    user_id = user.id if user else None
+    lang, _ = get_language(
+        request
+    )
+
+    user = get_current_user(
+        request,
+        db
+    )
+
+    user_id = (
+        user.id
+        if user
+        else None
+    )
 
     if not user_id:
 
         return RedirectResponse(
-            url="/login",
+            url=f"/login?lang={lang}",
             status_code=303,
         )
-
-    # --------------------------------------------------------
-    # BOUTIQUE EXISTANTE
-    # --------------------------------------------------------
 
     boutique = (
         db.query(Boutique)
@@ -927,13 +942,9 @@ async def statut_demande(
     if boutique:
 
         return RedirectResponse(
-            url="/ma-boutique",
+            url=f"/ma-boutique?lang={lang}",
             status_code=303,
         )
-
-    # --------------------------------------------------------
-    # DERNIÈRE DEMANDE
-    # --------------------------------------------------------
 
     demande = (
         db.query(BoutiqueRequest)
@@ -945,10 +956,6 @@ async def statut_demande(
         )
         .first()
     )
-
-    # --------------------------------------------------------
-    # APPROUVÉE
-    # --------------------------------------------------------
 
     if demande and demande.status == "approved":
 
@@ -970,13 +977,9 @@ async def statut_demande(
         db.commit()
 
         return RedirectResponse(
-            url="/ma-boutique",
+            url=f"/ma-boutique?lang={lang}",
             status_code=303,
         )
-
-    # --------------------------------------------------------
-    # CONTEXTE
-    # --------------------------------------------------------
 
     context = contexte_global(
         request,
@@ -1012,21 +1015,30 @@ async def ma_boutique(
     request: Request,
 
     db: Session = Depends(get_db),
+
 ):
 
-    user = get_current_user(request, db)
-    user_id = user.id if user else None
+    lang, _ = get_language(
+        request
+    )
+
+    user = get_current_user(
+        request,
+        db
+    )
+
+    user_id = (
+        user.id
+        if user
+        else None
+    )
 
     if not user_id:
 
         return RedirectResponse(
-            url="/login",
+            url=f"/login?lang={lang}",
             status_code=303,
         )
-
-    # --------------------------------------------------------
-    # SA BOUTIQUE UNIQUEMENT
-    # --------------------------------------------------------
 
     boutique = (
         db.query(Boutique)
@@ -1039,17 +1051,9 @@ async def ma_boutique(
     if not boutique:
 
         return RedirectResponse(
-            url="/boutique/creer",
+            url=f"/boutique/creer?lang={lang}",
             status_code=303,
         )
-
-    # --------------------------------------------------------
-    # PRODUITS ACTIFS DE SA BOUTIQUE
-    #
-    # IMPORTANT :
-    # Les produits supprimés avec is_active=False
-    # ne doivent plus apparaître ici.
-    # --------------------------------------------------------
 
     products = (
         db.query(Product)
@@ -1062,10 +1066,6 @@ async def ma_boutique(
         )
         .all()
     )
-
-    # --------------------------------------------------------
-    # CONTEXTE
-    # --------------------------------------------------------
 
     context = contexte_global(
         request,
@@ -1104,21 +1104,30 @@ async def page_modifier_boutique(
     request: Request,
 
     db: Session = Depends(get_db),
+
 ):
 
-    user = get_current_user(request, db)
-    user_id = user.id if user else None
+    lang, _ = get_language(
+        request
+    )
+
+    user = get_current_user(
+        request,
+        db
+    )
+
+    user_id = (
+        user.id
+        if user
+        else None
+    )
 
     if not user_id:
 
         return RedirectResponse(
-            url="/login",
+            url=f"/login?lang={lang}",
             status_code=303,
         )
-
-    # --------------------------------------------------------
-    # SA BOUTIQUE
-    # --------------------------------------------------------
 
     boutique = (
         db.query(Boutique)
@@ -1131,7 +1140,7 @@ async def page_modifier_boutique(
     if not boutique:
 
         return RedirectResponse(
-            url="/boutique/creer",
+            url=f"/boutique/creer?lang={lang}",
             status_code=303,
         )
 
@@ -1161,9 +1170,6 @@ async def page_modifier_boutique(
 
 # ============================================================
 # MODIFIER MA BOUTIQUE
-#
-# IMPORTANT :
-# LOGO + COUVERTURE → SUPABASE
 # ============================================================
 
 @router.post("/ma-boutique/modifier")
@@ -1186,21 +1192,30 @@ async def modifier_boutique(
     cover_image: UploadFile | None = File(None),
 
     db: Session = Depends(get_db),
+
 ):
 
-    user = get_current_user(request, db)
-    user_id = user.id if user else None
+    lang, _ = get_language(
+        request
+    )
+
+    user = get_current_user(
+        request,
+        db
+    )
+
+    user_id = (
+        user.id
+        if user
+        else None
+    )
 
     if not user_id:
 
         return RedirectResponse(
-            url="/login",
+            url=f"/login?lang={lang}",
             status_code=303,
         )
-
-    # --------------------------------------------------------
-    # SA BOUTIQUE
-    # --------------------------------------------------------
 
     boutique = (
         db.query(Boutique)
@@ -1213,13 +1228,9 @@ async def modifier_boutique(
     if not boutique:
 
         return RedirectResponse(
-            url="/boutique/creer",
+            url=f"/boutique/creer?lang={lang}",
             status_code=303,
         )
-
-    # --------------------------------------------------------
-    # INFORMATIONS
-    # --------------------------------------------------------
 
     boutique.name = name.strip()
 
@@ -1319,7 +1330,7 @@ async def modifier_boutique(
     )
 
     return RedirectResponse(
-        url="/ma-boutique",
+        url=f"/ma-boutique?lang={lang}",
         status_code=303,
     )
 
@@ -1338,11 +1349,12 @@ async def boutique_detail(
     request: Request,
 
     db: Session = Depends(get_db),
+
 ):
 
-    # --------------------------------------------------------
-    # RÉCUPÉRER LA BOUTIQUE
-    # --------------------------------------------------------
+    lang, _ = get_language(
+        request
+    )
 
     boutique = (
         db.query(Boutique)
@@ -1355,17 +1367,9 @@ async def boutique_detail(
     if not boutique:
 
         return RedirectResponse(
-            url="/boutiques",
+            url=f"/boutiques?lang={lang}",
             status_code=303,
         )
-
-    # --------------------------------------------------------
-    # PRODUITS ACTIFS
-    #
-    # IMPORTANT :
-    # Les produits désactivés ne doivent pas être visibles
-    # publiquement dans la boutique.
-    # --------------------------------------------------------
 
     products = (
         db.query(Product)
@@ -1378,10 +1382,6 @@ async def boutique_detail(
         )
         .all()
     )
-
-    # --------------------------------------------------------
-    # CONTEXTE
-    # --------------------------------------------------------
 
     context = contexte_global(
         request,
@@ -1427,6 +1427,7 @@ async def boutique_detail_ancien_lien(
     request: Request,
 
     db: Session = Depends(get_db),
+
 ):
 
     return await boutique_detail(

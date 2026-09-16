@@ -1,109 +1,121 @@
 {% extends "base.html" %}
 
 {% block title %}
-Mes annonces - MauriMarket
+{{ t.my_ads }} - MauriMarket
 {% endblock %}
-
 
 {% block content %}
 
-<div class="container py-5">
-
-    <h2 class="mb-4">
-        Mes annonces
-    </h2>
+<div class="container py-5" dir="{{ 'rtl' if lang == 'ar' else 'ltr' }}">
 
 
-    <div class="row">
-
-        {% for product in products %}
-
-        <div class="col-md-4 mb-4">
-
-            <div class="card shadow">
-
-                {% if product.image %}
-
-                <img
-                    src="{{ product.image }}"
-                    class="card-img-top"
-                    height="200"
-                    alt="{{ product.title }}"
-                >
-
-                {% endif %}
+<h2 class="mb-4">
+    {{ t.my_ads }}
+</h2>
 
 
-                <div class="card-body">
+<div class="row">
 
-                    <h5>
+    {% for product in products %}
+
+    <div class="col-md-4 mb-4">
+
+        <div class="card shadow">
+
+            {% if product.image %}
+
+            <img
+                src="{{ product.image }}"
+                class="card-img-top"
+                height="200"
+                alt="{% if lang == 'ar' %}{{ product.title_ar or product.title }}{% else %}{{ product.title }}{% endif %}"
+            >
+
+            {% endif %}
+
+
+            <div class="card-body">
+
+                <h5>
+                    {% if lang == 'ar' %}
+                        {{ product.title_ar or product.title }}
+                    {% else %}
                         {{ product.title }}
-                    </h5>
+                    {% endif %}
+                </h5>
 
 
-                    <p>
-                        {{ product.description }}
-                    </p>
+                <p>
+                    {% if lang == 'ar' %}
+                        {{ product.description_ar or product.description or t.no_description }}
+                    {% else %}
+                        {{ product.description or t.no_description }}
+                    {% endif %}
+                </p>
 
 
-                    <strong>
-                        {{ product.price }} MRU
-                    </strong>
+                <strong>
+                    {{ product.price }} MRU
+                </strong>
 
 
-                    <p>
-                        {{ product.city }}
-                    </p>
+                <p>
+                    {% if lang == 'ar' %}
+                        {{ product.city_ar or product.city or t.not_specified }}
+                    {% else %}
+                        {{ product.city or t.not_specified }}
+                    {% endif %}
+                </p>
 
 
-                    <!-- =====================================
-                         MODIFIER
-                    ====================================== -->
+                <!-- =====================================
+                     MODIFIER
+                ====================================== -->
 
-                    <a
-                        href="/annonce/modifier/{{ product.id }}"
-                        class="btn btn-primary"
+                <a
+                    href="/annonce/modifier/{{ product.id }}?lang={{ lang }}"
+                    class="btn btn-primary"
+                >
+                    {{ t.edit }}
+                </a>
+
+
+                <!-- =====================================
+                     SUPPRIMER
+                ====================================== -->
+
+                <form
+                    method="POST"
+                    action="/annonce/supprimer/{{ product.id }}?lang={{ lang }}"
+                    style="display: inline;"
+                 onsubmit="return confirm('{{ t.confirm_delete_ad }}');"
+
+                    <button
+                        type="submit"
+                        class="btn btn-danger"
                     >
-                        Modifier
-                    </a>
+                        {{ t.delete }}
+                    </button>
 
-
-                    <!-- =====================================
-                         SUPPRIMER
-                    ====================================== -->
-
-                    <form
-                        method="POST"
-                        action="/annonce/supprimer/{{ product.id }}"
-                        style="display: inline;"
-                        onsubmit="return confirm('Supprimer cette annonce ?');"
-                    >
-
-                        <button
-                            type="submit"
-                            class="btn btn-danger"
-                        >
-                            Supprimer
-                        </button>
-
-                    </form>
-
-                </div>
+                </form>
 
             </div>
 
         </div>
 
-
-        {% else %}
-
-        <p>
-            Vous n'avez aucune annonce.
-        </p>
-
-        {% endfor %}
-
     </div>
+
+
+    {% else %}
+
+    <p>
+        {{ t.no_ads }}
+    </p>
+
+    {% endfor %}
+
+</div>
+
 
 </div>
 

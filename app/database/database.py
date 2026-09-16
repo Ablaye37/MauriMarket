@@ -15,13 +15,23 @@ DATABASE_URL = (
     os.getenv("DATABASE_URL")
     or os.getenv("SUPABASE_DB_URL")
 )
+
+# Si aucune base PostgreSQL n'est configurée,
+# utiliser SQLite en local.
+if not DATABASE_URL:
+    DATABASE_URL = "sqlite:///./maurimarket.db"
+
+
+# ============================================================
+# DATABASE INFO
+# ============================================================
+
 print("DATABASE CONFIGUREE :", bool(DATABASE_URL))
+
 print(
     "TYPE DATABASE :",
     "SQLITE" if DATABASE_URL.startswith("sqlite") else "POSTGRESQL"
 )
-if not DATABASE_URL:
-    DATABASE_URL = "sqlite:///./maurimarket.db"
 
 
 # ============================================================
@@ -29,6 +39,7 @@ if not DATABASE_URL:
 # ============================================================
 
 if DATABASE_URL.startswith("sqlite"):
+
     engine = create_engine(
         DATABASE_URL,
         connect_args={
@@ -37,12 +48,9 @@ if DATABASE_URL.startswith("sqlite"):
     )
 
 else:
+
     # PostgreSQL / Supabase / Railway
-    #
-    # IMPORTANT :
-    # On ne crée aucune connexion ici.
-    # SQLAlchemy ouvrira une connexion uniquement
-    # lorsqu'une requête sera réellement exécutée.
+
     engine = create_engine(
         DATABASE_URL,
         pool_pre_ping=True,
@@ -76,6 +84,7 @@ Base = declarative_base()
 # ============================================================
 
 def get_db():
+
     db = SessionLocal()
 
     try:

@@ -5,6 +5,9 @@ from starlette.middleware.sessions import SessionMiddleware
 from sqlalchemy import text
 from app.database.database import SessionLocal
 
+from app.translations.fr import TRANSLATIONS as FR
+from app.translations.ar import TRANSLATIONS as AR
+
 from app.models.category import Category
 from app.models.subcategory import SubCategory
 from app.models.product import Product
@@ -87,14 +90,17 @@ async def home(
     db = SessionLocal()
 
     try:
+
         db.execute(
-    text("""
-        UPDATE site_visits
-        SET count = count + 1
-        WHERE id = 1
-    """)
-)
+            text("""
+                UPDATE site_visits
+                SET count = count + 1
+                WHERE id = 1
+            """)
+        )
+
         db.commit()
+
 
         # -------------------------------------------------
         # RÉCUPÉRER LES CATÉGORIES
@@ -136,8 +142,6 @@ async def home(
 
         PRODUCTS_PER_PAGE = 30
 
-        # Base de la requête :
-        # seules les annonces actives sont visibles
         product_query = (
             db.query(Product)
             .filter(
@@ -250,6 +254,11 @@ async def home(
             "fr"
         )
 
+        if lang not in ["fr", "ar"]:
+            lang = "fr"
+
+        translations = FR if lang == "fr" else AR
+
 
         # -------------------------------------------------
         # AFFICHER LA PAGE D'ACCUEIL
@@ -259,10 +268,11 @@ async def home(
             request=request,
             name="index.html",
             context={
+
                 "categories": categories,
                 "categories_data": categories_data,
 
-                # Produits de la page actuelle
+                # Produits
                 "products": products,
 
                 # Recherche
@@ -284,7 +294,10 @@ async def home(
                 "panier_count": panier_count,
 
                 # Langue
-                "lang": lang
+                "lang": lang,
+
+                # Traductions
+                "t": translations
             }
         )
 
@@ -328,9 +341,11 @@ app.include_router(
 app.include_router(
     contact.router
 )
+
 app.include_router(
     livraison.router
 )
+
 app.include_router(
     boutiques_router
 )
@@ -338,10 +353,3 @@ app.include_router(
 app.include_router(
     favorites.router
 )
-
-
-
-
-
-
-

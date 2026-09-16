@@ -1,4 +1,4 @@
-ï»¿/* =========================================================
+/* =========================================================
    MAURIMARKET
    STYLE PRINCIPAL
 ========================================================= */
@@ -245,7 +245,7 @@ textarea {
 }
 
 /* =========================================================
-   NAVBAR DES CATÃ‰GORIES
+   NAVBAR DES CATÉGORIES
 ========================================================= */
 
 .category-navbar {
@@ -364,7 +364,7 @@ textarea {
 }
 
 /* =========================================================
-   SIDEBAR CATÃ‰GORIES
+   SIDEBAR CATÉGORIES
 ========================================================= */
 
 .category-sidebar {
@@ -386,7 +386,7 @@ textarea {
 }
 
 /* =========================================================
-   TOUTES LES CATÃ‰GORIES
+   TOUTES LES CATÉGORIES
 ========================================================= */
 
 .all-categories-toggle {
@@ -417,7 +417,7 @@ textarea {
 }
 
 /* =========================================================
-   LISTE CATÃ‰GORIES
+   LISTE CATÉGORIES
 ========================================================= */
 
 .sidebar-list {
@@ -433,7 +433,7 @@ textarea {
 }
 
 /* =========================================================
-   CATÃ‰GORIE
+   CATÉGORIE
 ========================================================= */
 
 .category-toggle {
@@ -481,7 +481,7 @@ textarea {
 }
 
 /* =========================================================
-   ANCIENS LIENS CATÃ‰GORIES
+   ANCIENS LIENS CATÉGORIES
 ========================================================= */
 
 .sidebar-category {
@@ -505,7 +505,7 @@ textarea {
 }
 
 /* =========================================================
-   SOUS-CATÃ‰GORIES
+   SOUS-CATÉGORIES
 ========================================================= */
 
 .subcategories-list {
@@ -726,7 +726,7 @@ textarea {
 
 /* =========================================================
    INFORMATIONS PRODUIT
-   HAUTEUR UNIFORMISÃ‰E
+   HAUTEUR UNIFORMISÉE
 ========================================================= */
 
 .product-info {
@@ -904,46 +904,6 @@ textarea {
 }
 
 /* =========================================================
-   MESSAGE CENTRAL
-========================================================= */
-
-#message-overlay {
-    position: fixed;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(0, 0, 0, 0.35);
-    z-index: 9999;
-    animation: overlayFadeIn 0.3s ease;
-}
-
-.message-box {
-    width: 360px;
-    min-height: 180px;
-    background: #ffffff;
-    border-radius: 16px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 30px;
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
-    animation: messageAppear 0.35s ease;
-}
-
-.message-icon {
-    font-size: 45px;
-    margin-bottom: 15px;
-}
-
-.message-text {
-    font-size: 18px;
-    font-weight: 600;
-}
-
-/* =========================================================
    PAGES BOUTIQUES
 ========================================================= */
 
@@ -1013,7 +973,7 @@ textarea {
 }
 
 /* =========================================================
-   ICÃ”NE BOUTIQUE
+   ICÔNE BOUTIQUE
 ========================================================= */
 
 .boutique-icon {
@@ -1084,7 +1044,7 @@ textarea {
 }
 
 /* =========================================================
-   EN-TÃŠTE MA BOUTIQUE
+   EN-TÊTE MA BOUTIQUE
 ========================================================= */
 
 .ma-boutique-header {
@@ -1285,7 +1245,7 @@ textarea {
 }
 
 /* =========================================================
-   PAGE DÃ‰TAIL BOUTIQUE
+   PAGE DÉTAIL BOUTIQUE
 ========================================================= */
 
 .boutique-detail-page {
@@ -1315,7 +1275,7 @@ textarea {
 }
 
 /* =========================================================
-   CRÃ‰ER UNE BOUTIQUE
+   CRÉER UNE BOUTIQUE
 ========================================================= */
 
 .creer-boutique-page {
@@ -1339,7 +1299,7 @@ textarea {
 }
 
 /* =========================================================
-   HEADER CRÃ‰ATION BOUTIQUE
+   HEADER CRÉATION BOUTIQUE
 ========================================================= */
 
 .creer-boutique-header {
@@ -1382,7 +1342,7 @@ textarea {
 }
 
 /* =========================================================
-   CHAMPS CRÃ‰ATION BOUTIQUE
+   CHAMPS CRÉATION BOUTIQUE
 ========================================================= */
 
 .creer-boutique-field {
@@ -1442,7 +1402,7 @@ textarea {
 }
 
 /* =========================================================
-   BOUTON CRÃ‰ER
+   BOUTON CRÉER
 ========================================================= */
 
 .creer-boutique-card button {
@@ -1834,7 +1794,7 @@ textarea {
 }
 
 /* =========================================================
-   TRÃˆS PETIT MOBILE
+   TRÈS PETIT MOBILE
 ========================================================= */
 
 @media (max-width: 500px) {
@@ -1950,8 +1910,8 @@ textarea {
 }
 
 /* =========================================================
-   TRÃˆS PETIT Ã‰CRAN
-   Ã‰vite les cartes trop Ã©troites
+   TRÈS PETIT ÉCRAN
+   Évite les cartes trop étroites
 ========================================================= */
 
 @media (max-width: 360px) {
@@ -2002,3 +1962,4 @@ textarea {
         font-size: 7px;
     }
 }
+

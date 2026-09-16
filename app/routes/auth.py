@@ -6,6 +6,9 @@ import re
 from app.database.database import SessionLocal
 from app.models.user import User
 
+from app.translations.fr import TRANSLATIONS as FR
+from app.translations.ar import TRANSLATIONS as AR
+
 
 router = APIRouter()
 
@@ -13,11 +16,29 @@ templates = Jinja2Templates(directory="app/templates")
 
 
 # =====================================================
-# INSCRIPTION
+# GESTION DE LA LANGUE
+# =====================================================
+
+def get_language(request: Request):
+
+    lang = request.query_params.get("lang", "fr")
+
+    if lang not in ["fr", "ar"]:
+        lang = "fr"
+
+    translations = FR if lang == "fr" else AR
+
+    return lang, translations
+
+
+# =====================================================
+# INSCRIPTION - PAGE
 # =====================================================
 
 @router.get("/register")
 async def register_page(request: Request):
+
+    lang, translations = get_language(request)
 
     message = request.session.pop("message", None)
 
@@ -25,10 +46,16 @@ async def register_page(request: Request):
         request=request,
         name="register.html",
         context={
-            "message": message
+            "message": message,
+            "lang": lang,
+            "t": translations
         }
     )
 
+
+# =====================================================
+# INSCRIPTION - TRAITEMENT
+# =====================================================
 
 @router.post("/register")
 async def register_user(
@@ -38,20 +65,22 @@ async def register_user(
     password: str = Form(...)
 ):
 
+    lang, translations = get_language(request)
+
     db = SessionLocal()
 
     try:
 
-        # =====================================================
+        # =================================================
         # NETTOYER LES DONNÉES
-        # =====================================================
+        # =================================================
 
         full_name = full_name.strip()
         phone = phone.strip()
 
-        # =====================================================
+        # =================================================
         # VÉRIFIER LE NUMÉRO MOBILE MAURITANIEN
-        # =====================================================
+        # =================================================
 
         if not re.fullmatch(
             r"(20|21|22|23|24|26|27|28|29|30|31|32|33|34|36|37|38|39|40|41|42|43|44|46|47|48|49)[0-9]{6}",
@@ -59,17 +88,17 @@ async def register_user(
         ):
 
             request.session["message"] = (
-                "Veuillez entrer un numéro mobile mauritanien valide."
+                translations["invalid_phone"]
             )
 
             return RedirectResponse(
-                "/register",
+                f"/register?lang={lang}",
                 status_code=303
             )
 
-        # =====================================================
+        # =================================================
         # VÉRIFIER SI LE NUMÉRO EXISTE DÉJÀ
-        # =====================================================
+        # =================================================
 
         existing_user = db.query(User).filter(
             User.phone == phone
@@ -78,17 +107,17 @@ async def register_user(
         if existing_user:
 
             request.session["message"] = (
-                "Ce compte existe déjà. Veuillez vous connecter."
+                translations["account_exists"]
             )
 
             return RedirectResponse(
-                "/register",
+                f"/register?lang={lang}",
                 status_code=303
             )
 
-        # =====================================================
-        # CRÉATION DU NOUVEAU COMPTE
-        # =====================================================
+        # =================================================
+        # CRÉATION DU COMPTE
+        # =================================================
 
         user = User(
             full_name=full_name,
@@ -100,45 +129,40 @@ async def register_user(
         db.commit()
         db.refresh(user)
 
-        # =====================================================
+        # =================================================
         # CONNEXION AUTOMATIQUE
-        # =====================================================
+        # =================================================
 
         request.session["user_id"] = user.id
         request.session["user_name"] = user.full_name
 
-        # =====================================================
+        # =================================================
         # MESSAGE DE BIENVENUE
-        # =====================================================
+        # =================================================
 
         request.session["message"] = (
-            "Votre compte a été créé avec succès. "
-            "Bienvenue sur MauriMarket ! 🇲🇷"
+            translations["register_success"]
         )
 
         return RedirectResponse(
-            "/",
+            f"/?lang={lang}",
             status_code=303
         )
 
     except Exception as e:
 
-        # Annuler toute modification éventuelle en base
         db.rollback()
 
-        # Afficher l'erreur uniquement dans le terminal
         print("================================")
         print("ERREUR INSCRIPTION :", repr(e))
         print("================================")
 
-        # Message simple pour l'utilisateur
         request.session["message"] = (
-            "Une erreur est survenue lors de l'inscription. "
-            "Veuillez réessayer."
+            translations["server_error"]
         )
 
         return RedirectResponse(
-            "/register",
+            f"/register?lang={lang}",
             status_code=303
         )
 
@@ -154,13 +178,17 @@ async def register_user(
 @router.get("/login")
 async def login_page(request: Request):
 
+    lang, translations = get_language(request)
+
     message = request.session.pop("message", None)
 
     return templates.TemplateResponse(
         request=request,
         name="login.html",
         context={
-            "message": message
+            "message": message,
+            "lang": lang,
+            "t": translations
         }
     )
 
@@ -176,59 +204,102 @@ async def login_user(
     password: str = Form(...)
 ):
 
+    lang, translations = get_language(request)
+
     db = SessionLocal()
 
-    user = db.query(User).filter(
-        User.phone == phone
-    ).first()
+    try:
 
-    print("================================")
-    print("PHONE REÇU :", repr(phone))
-    print("PASSWORD REÇU :", repr(password))
+        # =================================================
+        # NETTOYER LE NUMÉRO
+        # =================================================
 
-    if not user:
-        db.close()
+        phone = phone.strip()
+
+        # =================================================
+        # RECHERCHER L'UTILISATEUR
+        # =================================================
+
+        user = db.query(User).filter(
+            User.phone == phone
+        ).first()
+
+        print("================================")
+        print("PHONE REÇU :", repr(phone))
+        print("PASSWORD REÇU :", repr(password))
+
+        # =================================================
+        # UTILISATEUR INTROUVABLE
+        # =================================================
+
+        if not user:
+
+            request.session["message"] = (
+                translations["invalid_credentials"]
+            )
+
+            return RedirectResponse(
+                f"/login?lang={lang}",
+                status_code=303
+            )
+
+        print("USER TROUVÉ :", user.id)
+        print("PHONE DB :", repr(user.phone))
+        print("PASSWORD DB :", repr(user.password))
+
+        # =================================================
+        # MOT DE PASSE INCORRECT
+        # =================================================
+
+        if user.password != password:
+
+            request.session["message"] = (
+                translations["invalid_credentials"]
+            )
+
+            return RedirectResponse(
+                f"/login?lang={lang}",
+                status_code=303
+            )
+
+        # =================================================
+        # CONNEXION RÉUSSIE
+        # =================================================
+
+        print("CONNEXION RÉUSSIE")
+
+        request.session["user_id"] = user.id
+        request.session["user_name"] = user.full_name
 
         request.session["message"] = (
-            "Numéro de téléphone ou mot de passe incorrect."
+            translations["login_success"]
         )
 
         return RedirectResponse(
-            "/login",
+            f"/?lang={lang}",
             status_code=303
         )
 
-    print("USER TROUVÉ :", user.id)
-    print("PHONE DB :", repr(user.phone))
-    print("PASSWORD DB :", repr(user.password))
+    except Exception as e:
 
-    if user.password != password:
-        db.close()
+        db.rollback()
+
+        print("================================")
+        print("ERREUR CONNEXION :", repr(e))
+        print("================================")
 
         request.session["message"] = (
-            "Numéro de téléphone ou mot de passe incorrect."
+            translations["server_error"]
         )
 
         return RedirectResponse(
-            "/login",
+            f"/login?lang={lang}",
             status_code=303
         )
 
-    print("CONNEXION RÉUSSIE")
+    finally:
 
-    request.session["user_id"] = user.id
-    request.session["user_name"] = user.full_name
-
-    request.session["message"] = (
-        "Connexion réussie. Bienvenue sur MauriMarket ! 🇲🇷"
-    )
-
-    db.close()
-
-    return RedirectResponse(
-        "/",
-        status_code=303
-    )
+        db.close()
 
 
 # =====================================================
@@ -238,13 +309,15 @@ async def login_user(
 @router.get("/logout")
 async def logout(request: Request):
 
+    lang, translations = get_language(request)
+
     request.session.clear()
 
     request.session["message"] = (
-        "Vous avez été déconnecté avec succès ! 🇲🇷"
+        translations["logout_success"]
     )
 
     return RedirectResponse(
-        "/",
+        f"/?lang={lang}",
         status_code=303
     )

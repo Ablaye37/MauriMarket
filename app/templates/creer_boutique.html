@@ -1,155 +1,276 @@
 {% extends "base.html" %}
 
-{% block title %}Demander une boutique - MauriMarket{% endblock %}
+{% block title %}
+{% if lang == "ar" %}
+طلب إنشاء متجر - MauriMarket
+{% else %}
+Demander une boutique - MauriMarket
+{% endif %}
+{% endblock %}
 
 {% block content %}
 
-<div class="creer-boutique-page">
+<div class="creer-boutique-page"
+     dir="{{ 'rtl' if lang == 'ar' else 'ltr' }}"
+     lang="{{ lang }}">
 
+    <div class="creer-boutique-card">
 
-<div class="creer-boutique-card">
+        <!-- ================================================= -->
+        <!-- EN-TÊTE -->
+        <!-- ================================================= -->
 
-    <div class="creer-boutique-header">
+        <div class="creer-boutique-header">
 
-        <div class="creer-boutique-icon">
-            <i class="bi bi-shop"></i>
+            <div class="creer-boutique-icon">
+                <i class="bi bi-shop"></i>
+            </div>
+
+            {% if lang == "ar" %}
+
+                <h1>طلب إنشاء متجري</h1>
+
+                <p>
+                    أرسل طلبك لفتح متجر على منصة MauriMarket.
+                </p>
+
+            {% else %}
+
+                <h1>Demander ma boutique</h1>
+
+                <p>
+                    Envoyez votre demande pour ouvrir une boutique
+                    sur MauriMarket.
+                </p>
+
+            {% endif %}
+
         </div>
 
-        <h1>Demander ma boutique</h1>
 
-        <p>
-            Envoyez votre demande pour ouvrir une boutique
-            sur MauriMarket.
-        </p>
+        <!-- ================================================= -->
+        <!-- FORMULAIRE -->
+        <!-- ================================================= -->
+
+        <form method="POST" action="/boutique/creer">
+
+
+            <!-- ================================================= -->
+            <!-- NOM DE LA BOUTIQUE -->
+            <!-- ================================================= -->
+
+            <div class="creer-boutique-field">
+
+                <label for="name">
+
+                    {% if lang == "ar" %}
+                        اسم المتجر
+                    {% else %}
+                        Nom de la boutique
+                    {% endif %}
+
+                </label>
+
+                <input
+                    id="name"
+                    type="text"
+                    name="name"
+
+                    {% if lang == "ar" %}
+                        placeholder="مثال: DBF Business"
+                    {% else %}
+                        placeholder="Ex : DBF Business"
+                    {% endif %}
+
+                    required
+                >
+
+            </div>
+
+
+            <!-- ================================================= -->
+            <!-- CATÉGORIE -->
+            <!-- ================================================= -->
+
+            <div class="creer-boutique-field">
+
+                <label for="category">
+
+                    {% if lang == "ar" %}
+                        فئة المتجر
+                    {% else %}
+                        Catégorie de la boutique
+                    {% endif %}
+
+                </label>
+
+
+                <select
+                    id="category"
+                    name="category"
+                    required
+                >
+
+                    {% if lang == "ar" %}
+
+                        <option value="">
+                            اختر فئة
+                        </option>
+
+                        <option value="Téléphones">
+                            📱 الهواتف
+                        </option>
+
+                        <option value="Informatique">
+                            💻 المعلوماتية
+                        </option>
+
+                        <option value="Mode">
+                            👕 الأزياء
+                        </option>
+
+                        <option value="Maison">
+                            🏠 المنزل
+                        </option>
+
+                        <option value="Automobile">
+                            🚗 السيارات
+                        </option>
+
+                        <option value="Services">
+                            🛠️ الخدمات
+                        </option>
+
+                        <option value="Alimentation">
+                            🛒 المواد الغذائية
+                        </option>
+
+                        <option value="Autre">
+                            📦 أخرى
+                        </option>
+
+                    {% else %}
+
+                        <option value="">
+                            Choisir une catégorie
+                        </option>
+
+                        <option value="Téléphones">
+                            📱 Téléphones
+                        </option>
+
+                        <option value="Informatique">
+                            💻 Informatique
+                        </option>
+
+                        <option value="Mode">
+                            👕 Mode
+                        </option>
+
+                        <option value="Maison">
+                            🏠 Maison
+                        </option>
+
+                        <option value="Automobile">
+                            🚗 Automobile
+                        </option>
+
+                        <option value="Services">
+                            🛠️ Services
+                        </option>
+
+                        <option value="Alimentation">
+                            🛒 Alimentation
+                        </option>
+
+                        <option value="Autre">
+                            📦 Autre
+                        </option>
+
+                    {% endif %}
+
+                </select>
+
+
+                <small>
+
+                    {% if lang == "ar" %}
+                        تساعد هذه الفئة الزوار على العثور على متجرك بسهولة أكبر.
+                    {% else %}
+                        Cette catégorie permet aux visiteurs de trouver
+                        votre boutique plus facilement.
+                    {% endif %}
+
+                </small>
+
+            </div>
+
+
+            <!-- ================================================= -->
+            <!-- TYPE DE VENTE -->
+            <!-- ================================================= -->
+
+            <div class="creer-boutique-field">
+
+                <label for="sale_type">
+
+                    {% if lang == "ar" %}
+                        نوع البيع
+                    {% else %}
+                        Type de vente
+                    {% endif %}
+
+                </label>
+
+
+                <input
+                    id="sale_type"
+                    type="text"
+                    name="sale_type"
+
+                    {% if lang == "ar" %}
+                        placeholder="مثال: البيع بالتجزئة، البيع بالجملة..."
+                    {% else %}
+                        placeholder="Ex : Vente au détail, vente en gros..."
+                    {% endif %}
+
+                    required
+                >
+
+
+                <small>
+
+                    {% if lang == "ar" %}
+                        حدد نوع البيع الذي يقدمه متجرك.
+                    {% else %}
+                        Indiquez le type de vente proposé par votre boutique.
+                    {% endif %}
+
+                </small>
+
+            </div>
+
+
+            <!-- ================================================= -->
+            <!-- BOUTON -->
+            <!-- ================================================= -->
+
+            <button type="submit">
+
+                <i class="bi bi-send"></i>
+
+                {% if lang == "ar" %}
+                    إرسال الطلب
+                {% else %}
+                    Envoyer ma demande
+                {% endif %}
+
+            </button>
+
+
+        </form>
 
     </div>
-
-    <form method="POST" action="/boutique/creer">
-
-        <!-- ================================================= -->
-        <!-- NOM DE LA BOUTIQUE -->
-        <!-- ================================================= -->
-
-        <div class="creer-boutique-field">
-
-            <label for="name">
-                Nom de la boutique
-            </label>
-
-            <input
-                id="name"
-                type="text"
-                name="name"
-                placeholder="Ex : DBF Business"
-                required
-            >
-
-        </div>
-
-
-        <!-- ================================================= -->
-        <!-- CATÉGORIE DE LA BOUTIQUE -->
-        <!-- ================================================= -->
-
-        <div class="creer-boutique-field">
-
-            <label for="category">
-                Catégorie de la boutique
-            </label>
-
-            <select
-                id="category"
-                name="category"
-                required
-            >
-
-                <option value="">
-                    Choisir une catégorie
-                </option>
-
-                <option value="Téléphones">
-                    📱 Téléphones
-                </option>
-
-                <option value="Informatique">
-                    💻 Informatique
-                </option>
-
-                <option value="Mode">
-                    👕 Mode
-                </option>
-
-                <option value="Maison">
-                    🏠 Maison
-                </option>
-
-                <option value="Automobile">
-                    🚗 Automobile
-                </option>
-
-                <option value="Services">
-                    🛠️ Services
-                </option>
-
-                <option value="Alimentation">
-                    🛒 Alimentation
-                </option>
-
-                <option value="Autre">
-                    📦 Autre
-                </option>
-
-            </select>
-
-            <small>
-                Cette catégorie permet aux visiteurs de trouver
-                votre boutique plus facilement.
-            </small>
-
-        </div>
-
-
-        <!-- ================================================= -->
-        <!-- TYPE DE VENTE -->
-        <!-- ================================================= -->
-
-        <div class="creer-boutique-field">
-
-            <label for="sale_type">
-                Type de vente
-            </label>
-
-            <input
-                id="sale_type"
-                type="text"
-                name="sale_type"
-                placeholder="Ex : Vente au détail, vente en gros..."
-                required
-            >
-
-            <small>
-                Indiquez le type de vente proposé par votre boutique.
-            </small>
-
-        </div>
-
-
-        <!-- ================================================= -->
-        <!-- BOUTON -->
-        <!-- ================================================= -->
-
-        <button type="submit">
-
-            <i class="bi bi-send"></i>
-
-            Envoyer ma demande
-
-        </button>
-
-    </form>
-
-</div>
-
 
 </div>
 

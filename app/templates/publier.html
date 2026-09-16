@@ -1,7 +1,12 @@
+
 {% extends "base.html" %}
 
 {% block title %}
+{% if lang == "ar" %}
+نشر منتج - MauriMarket
+{% else %}
 Publier un produit - MauriMarket
+{% endif %}
 {% endblock %}
 
 {% block content %}
@@ -15,26 +20,46 @@ Publier un produit - MauriMarket
     <div class="mb-4">
 
         <h2 class="fw-bold">
+
             <i class="bi bi-plus-circle"></i>
-            Publier un produit
+
+            {% if lang == "ar" %}
+                نشر منتج
+            {% else %}
+                Publier un produit
+            {% endif %}
+
         </h2>
 
-        {% if boutique and is_boutique_publish %}
+        <!--{% if is_boutique_publish and boutique %}
 
-            <p class="text-muted mb-0">
-                Votre produit sera publié dans :
+           <div class="alert alert-info">
+
+                {% if lang == "ar" %}
+                    سيتم نشر منتجك في:
+                {% else %}
+                    Votre produit sera publié dans :
+                {% endif %}
+
                 <strong>{{ boutique.name }}</strong>
-            </p>
+
+            </div>
 
         {% elif not is_boutique_publish %}
 
-            <p class="text-muted mb-0">
-                Votre annonce sera publiée sur MauriMarket.
-            </p>
+            <div class="alert alert-info">
+
+                {% if lang == "ar" %}
+                    سيتم نشر إعلانك على MauriMarket.
+                {% else %}
+                    Votre annonce sera publiée sur MauriMarket.
+                {% endif %}
+
+            </div>
 
         {% endif %}
 
-    </div>
+    </div>-->
 
 
     <!-- =====================================================
@@ -48,55 +73,87 @@ Publier un produit - MauriMarket
         enctype="multipart/form-data"
     >
 
+        <!-- LANGUE -->
+
+        <input
+            type="hidden"
+            name="lang"
+            value="{{ lang }}"
+        >
+
+
         <!-- =================================================
              PHOTO
         ================================================== -->
 
-        <div class="mb-3">
+        <div class="mb-4">
 
             <label
                 for="image"
                 class="form-label fw-semibold"
             >
-                Photo du produit
+
+                {% if lang == "ar" %}
+                    صورة المنتج
+                {% else %}
+                    Photo du produit
+                {% endif %}
+
             </label>
 
             <input
                 type="file"
-                name="image"
-                id="image"
                 class="form-control"
+                id="image"
+                name="image"
                 accept="image/jpeg,image/png,image/webp"
             >
 
             <div class="form-text">
-                Formats acceptés : JPG, PNG, WEBP.
+
+                {% if lang == "ar" %}
+                    الصيغ المقبولة: JPG، PNG، WEBP.
+                {% else %}
+                    Formats acceptés : JPG, PNG, WEBP.
+                {% endif %}
+
             </div>
 
         </div>
 
 
         <!-- =================================================
-             NOM
+             NOM DU PRODUIT
         ================================================== -->
 
-        <div class="mb-3">
+        <div class="mb-4">
 
             <label
                 for="title"
                 class="form-label fw-semibold"
             >
-                Nom du produit
+
+                {% if lang == "ar" %}
+                    اسم المنتج
+                {% else %}
+                    Nom du produit
+                {% endif %}
+
             </label>
 
             <input
                 type="text"
-                name="title"
-                id="title"
                 class="form-control"
-                placeholder="Ex : iPhone 15 Pro"
+                id="title"
+                name="title"
                 maxlength="200"
                 autocomplete="off"
+                {% if lang == "ar" %}
+                    dir="rtl"
+                    placeholder="مثال: iPhone 15 Pro"
+                {% else %}
+                    placeholder="Ex : iPhone 15 Pro"
+                {% endif %}
                 required
             >
 
@@ -107,21 +164,32 @@ Publier un produit - MauriMarket
              DESCRIPTION
         ================================================== -->
 
-        <div class="mb-3">
+        <div class="mb-4">
 
             <label
                 for="description"
                 class="form-label fw-semibold"
             >
-                Description
+
+                {% if lang == "ar" %}
+                    الوصف
+                {% else %}
+                    Description
+                {% endif %}
+
             </label>
 
             <textarea
-                name="description"
-                id="description"
                 class="form-control"
+                id="description"
+                name="description"
                 rows="4"
-                placeholder="Décrivez votre produit..."
+                {% if lang == "ar" %}
+                    dir="rtl"
+                    placeholder="اكتب وصف المنتج..."
+                {% else %}
+                    placeholder="Décrivez votre produit..."
+                {% endif %}
                 required
             ></textarea>
 
@@ -132,28 +200,44 @@ Publier un produit - MauriMarket
              PRIX
         ================================================== -->
 
-        <div class="mb-3">
+        <div class="mb-4">
 
             <label
                 for="price"
                 class="form-label fw-semibold"
             >
-                Prix
+
+                {% if lang == "ar" %}
+                    السعر
+                {% else %}
+                    Prix
+                {% endif %}
+
             </label>
 
             <input
                 type="number"
-                name="price"
-                id="price"
                 class="form-control"
+                id="price"
+                name="price"
                 min="0"
                 step="0.01"
-                placeholder="Ex : 25000"
+                {% if lang == "ar" %}
+                    placeholder="مثال: 25000"
+                {% else %}
+                    placeholder="Ex : 25000"
+                {% endif %}
                 required
             >
 
             <div class="form-text">
-                Prix en MRU.
+
+                {% if lang == "ar" %}
+                    السعر بالدينار الموريتاني (MRU).
+                {% else %}
+                    Prix en MRU.
+                {% endif %}
+
             </div>
 
         </div>
@@ -163,85 +247,73 @@ Publier un produit - MauriMarket
              VILLE
         ================================================== -->
 
-        <div class="mb-3">
+        <div class="mb-4">
 
             <label
                 for="city"
                 class="form-label fw-semibold"
             >
-                Ville
+
+                {% if lang == "ar" %}
+                    المدينة
+                {% else %}
+                    Ville
+                {% endif %}
+
             </label>
 
             <select
-                name="city"
-                id="city"
                 class="form-select"
+                id="city"
+                name="city"
                 required
             >
 
-                <option value="">
-                    -- Choisir une ville --
-                </option>
+                {% if lang == "ar" %}
 
-                <option value="Nouakchott">
-                    Nouakchott
-                </option>
+                    <option value="">
+                        -- اختر مدينة --
+                    </option>
 
-                <option value="Nouadhibou">
-                    Nouadhibou
-                </option>
+                    <option value="Nouakchott">نواكشوط</option>
+                    <option value="Nouadhibou">نواذيبو</option>
+                    <option value="Rosso">روصو</option>
+                    <option value="Kiffa">كيفه</option>
+                    <option value="Kaédi">كيهيدي</option>
+                    <option value="Zouérate">الزويرات</option>
+                    <option value="Atar">أطار</option>
+                    <option value="Néma">النعمة</option>
+                    <option value="Aioun">العيون</option>
+                    <option value="Akjoujt">أكجوجت</option>
+                    <option value="Sélibaby">سيليبابي</option>
+                    <option value="Boghé">بوغي</option>
+                    <option value="Tidjikja">تجكجة</option>
+                    <option value="Boutilimit">بوتلميت</option>
+                    <option value="Aleg">ألاك</option>
 
-                <option value="Rosso">
-                    Rosso
-                </option>
+                {% else %}
 
-                <option value="Kiffa">
-                    Kiffa
-                </option>
+                    <option value="">
+                        -- Choisir une ville --
+                    </option>
 
-                <option value="Kaédi">
-                    Kaédi
-                </option>
+                    <option value="Nouakchott">Nouakchott</option>
+                    <option value="Nouadhibou">Nouadhibou</option>
+                    <option value="Rosso">Rosso</option>
+                    <option value="Kiffa">Kiffa</option>
+                    <option value="Kaédi">Kaédi</option>
+                    <option value="Zouérate">Zouérate</option>
+                    <option value="Atar">Atar</option>
+                    <option value="Néma">Néma</option>
+                    <option value="Aioun">Aioun</option>
+                    <option value="Akjoujt">Akjoujt</option>
+                    <option value="Sélibaby">Sélibaby</option>
+                    <option value="Boghé">Boghé</option>
+                    <option value="Tidjikja">Tidjikja</option>
+                    <option value="Boutilimit">Boutilimit</option>
+                    <option value="Aleg">Aleg</option>
 
-                <option value="Zouérate">
-                    Zouérate
-                </option>
-
-                <option value="Atar">
-                    Atar
-                </option>
-
-                <option value="Néma">
-                    Néma
-                </option>
-
-                <option value="Aioun">
-                    Aioun
-                </option>
-
-                <option value="Akjoujt">
-                    Akjoujt
-                </option>
-
-                <option value="Sélibaby">
-                    Sélibaby
-                </option>
-
-                <option value="Boghé">
-                    Boghé
-                </option>
-
-                <option value="Tidjikja">
-                    Tidjikja
-                </option>
-
-                <option value="Boutilimit">
-                    Boutilimit
-                </option>
-
-                <option value="Aleg">
-                    Aleg
-                </option>
+                {% endif %}
 
             </select>
 
@@ -249,44 +321,76 @@ Publier un produit - MauriMarket
 
 
         <!-- =================================================
-             ÉTAT
+             ÉTAT DU PRODUIT
         ================================================== -->
 
-        <div class="mb-3">
+        <div class="mb-4">
 
             <label
                 for="condition"
                 class="form-label fw-semibold"
             >
-                État du produit
+
+                {% if lang == "ar" %}
+                    حالة المنتج
+                {% else %}
+                    État du produit
+                {% endif %}
+
             </label>
 
             <select
-                name="condition"
-                id="condition"
                 class="form-select"
+                id="condition"
+                name="condition"
                 required
             >
 
-                <option value="">
-                    -- Choisir l'état --
-                </option>
+                {% if lang == "ar" %}
 
-                <option value="Neuf">
-                    Neuf
-                </option>
+                    <option value="">
+                        -- اختر الحالة --
+                    </option>
 
-                <option value="Très bon état">
-                    Très bon état
-                </option>
+                    <option value="Neuf">
+                        جديد
+                    </option>
 
-                <option value="Bon état">
-                    Bon état
-                </option>
+                    <option value="Très bon état">
+                        حالة جيدة جدًا
+                    </option>
 
-                <option value="Occasion">
-                    Occasion
-                </option>
+                    <option value="Bon état">
+                        حالة جيدة
+                    </option>
+
+                    <option value="Occasion">
+                        مستعمل
+                    </option>
+
+                {% else %}
+
+                    <option value="">
+                        -- Choisir l'état --
+                    </option>
+
+                    <option value="Neuf">
+                        Neuf
+                    </option>
+
+                    <option value="Très bon état">
+                        Très bon état
+                    </option>
+
+                    <option value="Bon état">
+                        Bon état
+                    </option>
+
+                    <option value="Occasion">
+                        Occasion
+                    </option>
+
+                {% endif %}
 
             </select>
 
@@ -294,72 +398,118 @@ Publier un produit - MauriMarket
 
 
         <!-- =================================================
-     LIVRAISON
-================================================== -->
+             LIVRAISON
+        ================================================== -->
 
-<div class="mb-4">
+        <div class="mb-4">
 
-    <label class="form-label fw-semibold">
-        Livraison
-    </label>
+            <label class="form-label fw-semibold">
 
-    <div class="form-check form-switch">
+                {% if lang == "ar" %}
+                    التوصيل
+                {% else %}
+                    Livraison
+                {% endif %}
 
-        <input
-            class="form-check-input"
-            type="checkbox"
-            id="delivery_available"
-            name="delivery_available"
-            value="true"
-        >
+            </label>
 
-        <label
-            class="form-check-label"
-            for="delivery_available"
-        >
-            <strong>Livraison disponible</strong>
-        </label>
+            <div class="form-check form-switch">
 
-    </div>
+                <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="delivery_available"
+                    name="delivery_available"
+                    value="true"
+                >
 
-    <div class="form-text">
-        Les acheteurs pourront voir que ce produit peut être livré.
-    </div>
+                <label
+                    class="form-check-label"
+                    for="delivery_available"
+                >
 
-</div>
+                    <strong>
+
+                        {% if lang == "ar" %}
+                            التوصيل متاح
+                        {% else %}
+                            Livraison disponible
+                        {% endif %}
+
+                    </strong>
+
+                </label>
+
+            </div>
+
+            <div class="form-text">
+
+                {% if lang == "ar" %}
+                    سيتمكن المشترون من معرفة أن هذا المنتج متاح للتوصيل.
+                {% else %}
+                    Les acheteurs pourront voir que ce produit peut être livré.
+                {% endif %}
+
+            </div>
+
+        </div>
 
 
         <!-- =================================================
              TYPE DE PUBLICATION
         ================================================== -->
 
-        <div class="mb-3">
+        <div class="mb-4">
 
             <label
                 for="publication_type"
                 class="form-label fw-semibold"
             >
-                Type de publication
+
+                {% if lang == "ar" %}
+                    نوع النشر
+                {% else %}
+                    Type de publication
+                {% endif %}
+
             </label>
 
             <select
-                name="publication_type"
-                id="publication_type"
                 class="form-select"
+                id="publication_type"
+                name="publication_type"
                 required
             >
 
-                <option value="">
-                    -- Choisir le type --
-                </option>
+                {% if lang == "ar" %}
 
-                <option value="vente">
-                    Vente
-                </option>
+                    <option value="">
+                        -- اختر نوع النشر --
+                    </option>
 
-                <option value="annonce">
-                    Annonce
-                </option>
+                    <option value="vente">
+                        بيع
+                    </option>
+
+                    <option value="annonce">
+                        إعلان
+                    </option>
+
+                {% else %}
+
+                    <option value="">
+                        -- Choisir un type --
+                    </option>
+
+                    <option value="vente">
+                        Vente
+                    </option>
+
+                    <option value="annonce">
+                        Annonce
+                    </option>
+
+                {% endif %}
 
             </select>
 
@@ -370,30 +520,48 @@ Publier un produit - MauriMarket
              CATÉGORIE
         ================================================== -->
 
-        <div class="mb-3">
+        <div class="mb-4">
 
             <label
                 for="category_id"
                 class="form-label fw-semibold"
             >
-                Catégorie
+
+                {% if lang == "ar" %}
+                    الفئة
+                {% else %}
+                    Catégorie
+                {% endif %}
+
             </label>
 
             <select
-                name="category_id"
-                id="category_id"
                 class="form-select"
+                id="category_id"
+                name="category_id"
                 required
             >
 
                 <option value="">
-                    -- Choisir une catégorie --
+
+                    {% if lang == "ar" %}
+                        -- اختر الفئة --
+                    {% else %}
+                        -- Choisir une catégorie --
+                    {% endif %}
+
                 </option>
 
                 {% for category in categories %}
 
                     <option value="{{ category.id }}">
-                        {{ category.name }}
+
+                        {% if lang == "ar" %}
+                            {{ category.name_ar or category.name }}
+                        {% else %}
+                            {{ category.name }}
+                        {% endif %}
+
                     </option>
 
                 {% endfor %}
@@ -413,19 +581,31 @@ Publier un produit - MauriMarket
                 for="subcategory_id"
                 class="form-label fw-semibold"
             >
-                Sous-catégorie
+
+                {% if lang == "ar" %}
+                    الفئة الفرعية
+                {% else %}
+                    Sous-catégorie
+                {% endif %}
+
             </label>
 
             <select
-                name="subcategory_id"
-                id="subcategory_id"
                 class="form-select"
-                required
+                id="subcategory_id"
+                name="subcategory_id"
                 disabled
+                required
             >
 
                 <option value="">
-                    -- Choisir d'abord une catégorie --
+
+                    {% if lang == "ar" %}
+                        -- اختر الفئة الفرعية أولاً --
+                    {% else %}
+                        -- Choisir d'abord une sous-catégorie --
+                    {% endif %}
+
                 </option>
 
                 {% for subcategory in subcategories %}
@@ -434,7 +614,13 @@ Publier un produit - MauriMarket
                         value="{{ subcategory.id }}"
                         data-category-id="{{ subcategory.category_id }}"
                     >
-                        {{ subcategory.name }}
+
+                        {% if lang == "ar" %}
+                            {{ subcategory.name_ar or subcategory.name }}
+                        {% else %}
+                            {{ subcategory.name }}
+                        {% endif %}
+
                     </option>
 
                 {% endfor %}
@@ -445,7 +631,7 @@ Publier un produit - MauriMarket
 
 
         <!-- =================================================
-             BOUTON PUBLICATION
+             BOUTON
         ================================================== -->
 
         <button
@@ -460,7 +646,13 @@ Publier un produit - MauriMarket
             ></i>
 
             <span id="publish-text">
-                Publier le produit
+
+                {% if lang == "ar" %}
+                    نشر المنتج
+                {% else %}
+                    Publier le produit
+                {% endif %}
+
             </span>
 
         </button>
@@ -470,506 +662,418 @@ Publier un produit - MauriMarket
 </div>
 
 
-<!-- =========================================================
+<!-- =====================================================
      JAVASCRIPT
-     - SOUS-CATÉGORIES DYNAMIQUES
-     - PROTECTION DOUBLE CLIC
-     - LECTURE RÉELLE DU FORMULAIRE
-========================================================== -->
+====================================================== -->
 
 <script>
 
-document.addEventListener(
-    "DOMContentLoaded",
-    function () {
+document.addEventListener("DOMContentLoaded", function () {
 
-        /* =====================================================
-           ÉLÉMENTS
-        ====================================================== */
+    /* =====================================================
+       TEXTES SELON LA LANGUE
+    ====================================================== */
 
-        const form =
-            document.getElementById(
-                "publish-form"
-            );
+    {% if lang == "ar" %}
 
-        const button =
-            document.getElementById(
-                "publish-button"
-            );
+    const TEXT_CHOOSE_CATEGORY =
+        "يرجى اختيار فئة.";
 
-        const buttonText =
-            document.getElementById(
-                "publish-text"
-            );
+    const TEXT_CHOOSE_SUBCATEGORY =
+        "يرجى اختيار فئة فرعية.";
 
-        const buttonIcon =
-            document.getElementById(
-                "publish-icon"
-            );
+    const TEXT_PUBLISHING =
+        "جارٍ نشر المنتج...";
 
-        const categorySelect =
-            document.getElementById(
-                "category_id"
-            );
+    const TEXT_NO_SUBCATEGORY =
+        "لا توجد فئة فرعية متاحة.";
 
-        const subcategorySelect =
-            document.getElementById(
-                "subcategory_id"
-            );
+    const TEXT_CHOOSE_SUBCATEGORY =
+        "اختر فئة فرعية";
 
+    const TEXT_CHOOSE_CATEGORY_FIRST =
+        "اختر الفئة أولاً";
 
-        /* =====================================================
-           VÉRIFICATION DES ÉLÉMENTS
-        ====================================================== */
+    {% else %}
 
-        if (
-            !form ||
-            !button ||
-            !categorySelect ||
-            !subcategorySelect
-        ) {
+    const TEXT_CHOOSE_CATEGORY =
+        "Veuillez choisir une catégorie.";
 
-            console.error(
-                "❌ Éléments du formulaire introuvables."
-            );
+    const TEXT_CHOOSE_SUBCATEGORY =
+        "Veuillez choisir une sous-catégorie.";
 
-            return;
-        }
+    const TEXT_PUBLISHING =
+        "Publication en cours...";
+
+    const TEXT_NO_SUBCATEGORY =
+        "Aucune sous-catégorie disponible.";
+
+    const TEXT_CHOOSE_SUBCATEGORY =
+        "Choisir une sous-catégorie";
+
+    const TEXT_CHOOSE_CATEGORY_FIRST =
+        "Choisir d'abord une catégorie";
+
+    {% endif %}
 
 
-        /* =====================================================
-           SAUVEGARDER LES SOUS-CATÉGORIES
-        ====================================================== */
+    /* =====================================================
+       ÉLÉMENTS
+    ====================================================== */
 
-        const allSubcategories =
-            Array.from(
-                subcategorySelect.querySelectorAll(
-                    "option[data-category-id]"
-                )
-            ).map(
-                function (option) {
+    const form =
+        document.getElementById("publish-form");
 
-                    return {
+    const publishButton =
+        document.getElementById("publish-button");
 
-                        value:
-                            option.value,
+    const publishText =
+        document.getElementById("publish-text");
 
-                        text:
-                            option.textContent.trim(),
+    const publishIcon =
+        document.getElementById("publish-icon");
 
-                        categoryId:
-                            option.dataset.categoryId
+    const categorySelect =
+        document.getElementById("category_id");
 
-                    };
-
-                }
-            );
+    const subcategorySelect =
+        document.getElementById("subcategory_id");
 
 
-        /* =====================================================
-           AFFICHER LES SOUS-CATÉGORIES
-        ====================================================== */
+    /* =====================================================
+       VÉRIFICATION
+    ====================================================== */
 
-        function updateSubcategories() {
+    if (
+        !form ||
+        !publishButton ||
+        !publishText ||
+        !publishIcon ||
+        !categorySelect ||
+        !subcategorySelect
+    ) {
 
-            const categoryId =
-                categorySelect.value;
+        console.error(
+            "Erreur : éléments du formulaire introuvables."
+        );
 
-
-            /*
-             * Vider complètement
-             * le sélecteur.
-             */
-
-            subcategorySelect.innerHTML = "";
-
-
-            /*
-             * Aucune catégorie sélectionnée.
-             */
-
-            if (!categoryId) {
-
-                const defaultOption =
-                    document.createElement(
-                        "option"
-                    );
-
-                defaultOption.value = "";
-
-                defaultOption.textContent =
-                    "-- Choisir d'abord une catégorie --";
-
-                subcategorySelect.appendChild(
-                    defaultOption
-                );
-
-                subcategorySelect.disabled =
-                    true;
-
-                return;
-            }
+        return;
+    }
 
 
-            /*
-             * Option par défaut.
-             */
+    /* =====================================================
+       SOUS-CATÉGORIES
+    ====================================================== */
+
+    const allSubcategories =
+        Array.from(
+            subcategorySelect.options
+        ).slice(1);
+
+
+    /* =====================================================
+       MISE À JOUR DES SOUS-CATÉGORIES
+    ====================================================== */
+
+    function updateSubcategories() {
+
+        const categoryId =
+            categorySelect.value;
+
+        subcategorySelect.innerHTML = "";
+
+
+        /* -----------------------------------------------
+           AUCUNE CATÉGORIE
+        ------------------------------------------------ */
+
+        if (!categoryId) {
 
             const defaultOption =
-                document.createElement(
-                    "option"
-                );
+                document.createElement("option");
 
             defaultOption.value = "";
 
             defaultOption.textContent =
-                "-- Choisir une sous-catégorie --";
+                TEXT_CHOOSE_CATEGORY_FIRST;
 
             subcategorySelect.appendChild(
                 defaultOption
             );
 
+            subcategorySelect.disabled = true;
 
-            /*
-             * Trouver uniquement
-             * les sous-catégories
-             * de la catégorie choisie.
-             */
-
-            const filtered =
-                allSubcategories.filter(
-                    function (subcategory) {
-
-                        return (
-                            String(
-                                subcategory.categoryId
-                            ) ===
-                            String(
-                                categoryId
-                            )
-                        );
-
-                    }
-                );
+            return;
+        }
 
 
-            /*
-             * Ajouter les sous-catégories.
-             */
+        /* -----------------------------------------------
+           OPTION PAR DÉFAUT
+        ------------------------------------------------ */
 
-            filtered.forEach(
-                function (subcategory) {
+        const defaultOption =
+            document.createElement("option");
 
-                    const option =
-                        document.createElement(
-                            "option"
-                        );
+        defaultOption.value = "";
 
-                    option.value =
-                        subcategory.value;
+        defaultOption.textContent =
+            TEXT_CHOOSE_SUBCATEGORY;
 
-                    option.textContent =
-                        subcategory.text;
+        subcategorySelect.appendChild(
+            defaultOption
+        );
 
-                    subcategorySelect.appendChild(
-                        option
+
+        /* -----------------------------------------------
+           FILTRAGE
+        ------------------------------------------------ */
+
+        const matchingSubcategories =
+            allSubcategories.filter(
+                function (option) {
+
+                    return (
+                        option.dataset.categoryId ===
+                        categoryId
                     );
 
                 }
             );
 
 
-            /*
-             * Activer le sélecteur
-             * uniquement s'il existe
-             * des sous-catégories.
-             */
+        /* -----------------------------------------------
+           AUCUNE SOUS-CATÉGORIE
+        ------------------------------------------------ */
 
-            subcategorySelect.disabled =
-                filtered.length === 0;
+        if (
+            matchingSubcategories.length === 0
+        ) {
+
+            const noOption =
+                document.createElement("option");
+
+            noOption.value = "";
+
+            noOption.textContent =
+                TEXT_NO_SUBCATEGORY;
+
+            noOption.disabled = true;
+
+            subcategorySelect.appendChild(
+                noOption
+            );
+
+            subcategorySelect.disabled = true;
+
+            return;
+        }
 
 
-            /*
-             * Aucune sous-catégorie.
-             */
+        /* -----------------------------------------------
+           AJOUT
+        ------------------------------------------------ */
 
-            if (filtered.length === 0) {
-
-                subcategorySelect.innerHTML = "";
-
-                const emptyOption =
-                    document.createElement(
-                        "option"
-                    );
-
-                emptyOption.value = "";
-
-                emptyOption.textContent =
-                    "-- Aucune sous-catégorie disponible --";
+        matchingSubcategories.forEach(
+            function (option) {
 
                 subcategorySelect.appendChild(
-                    emptyOption
-                );
-
-            }
-
-        }
-
-
-        /* =====================================================
-           CHANGEMENT DE CATÉGORIE
-        ====================================================== */
-
-        categorySelect.addEventListener(
-            "change",
-            updateSubcategories
-        );
-
-
-        /*
-         * Initialisation.
-         */
-
-        updateSubcategories();
-
-
-        /* =====================================================
-           PROTECTION DOUBLE PUBLICATION
-        ====================================================== */
-
-        let submitting = false;
-
-
-        form.addEventListener(
-            "submit",
-            async function (event) {
-
-                /*
-                 * Si déjà envoyé,
-                 * empêcher une deuxième publication.
-                 */
-
-                if (submitting) {
-
-                    event.preventDefault();
-
-                    console.log(
-                        "⚠️ Publication déjà en cours."
-                    );
-
-                    return false;
-                }
-
-
-                /* =================================================
-                   VÉRIFICATION CATÉGORIE
-                ================================================== */
-
-                if (!categorySelect.value) {
-
-                    event.preventDefault();
-
-                    alert(
-                        "Veuillez choisir une catégorie."
-                    );
-
-                    categorySelect.focus();
-
-                    return false;
-                }
-
-
-                /* =================================================
-                   VÉRIFICATION SOUS-CATÉGORIE
-                ================================================== */
-
-                if (!subcategorySelect.value) {
-
-                    event.preventDefault();
-
-                    alert(
-                        "Veuillez choisir une sous-catégorie."
-                    );
-
-                    subcategorySelect.focus();
-
-                    return false;
-                }
-
-
-                /* =================================================
-                   PREMIÈRE SOUMISSION
-                ================================================== */
-
-                submitting = true;
-
-
-                /* =================================================
-                   LECTURE RÉELLE DU FORMULAIRE
-                ================================================== */
-
-                const formData =
-                    new FormData(form);
-
-
-                console.log(
-                    "=========================================="
-                );
-
-                console.log(
-                    "📋 FORMULAIRE REÇU :"
-                );
-
-
-                for (
-                    const [
-                        key,
-                        value
-                    ] of formData.entries()
-                ) {
-
-                    if (
-                        value instanceof File
-                    ) {
-
-                        console.log(
-                            key + " :",
-                            value.name,
-                            value.type,
-                            value.size
-                        );
-
-                    } else {
-
-                        console.log(
-                            key + " :",
-                            value
-                        );
-
-                    }
-
-                }
-
-
-                console.log(
-                    "=========================================="
-                );
-
-
-                /* =================================================
-                   LECTURE LIVRAISON
-                ================================================== */
-
-                const rawDelivery =
-                    formData.get(
-                        "delivery_available"
-                    );
-
-
-                console.log(
-                    "📦 DELIVERY BRUT :",
-                    reprValue(rawDelivery)
-                );
-
-
-                const deliveryValue =
-                    rawDelivery !== null;
-
-
-                console.log(
-                    "📦 DELIVERY FINAL :",
-                    deliveryValue
-                );
-
-                console.log(
-                    "📦 TYPE :",
-                    typeof deliveryValue
-                );
-
-                console.log(
-                    "=========================================="
-                );
-
-
-                /* =================================================
-                   DÉSACTIVER LE BOUTON
-                ================================================== */
-
-                button.disabled = true;
-
-                button.style.pointerEvents =
-                    "none";
-
-
-                /* =================================================
-                   TEXTE DU BOUTON
-                ================================================== */
-
-                if (buttonText) {
-
-                    buttonText.textContent =
-                        "Publication en cours...";
-
-                }
-
-
-                /* =================================================
-                   ICÔNE
-                ================================================== */
-
-                if (buttonIcon) {
-
-                    buttonIcon.className =
-                        "bi bi-hourglass-split";
-
-                }
-
-
-                /* =================================================
-                   APPARENCE
-                ================================================== */
-
-                button.classList.add(
-                    "disabled"
+                    option.cloneNode(true)
                 );
 
             }
         );
 
 
-        /* =====================================================
-           FONCTION AFFICHAGE VALEUR
-        ====================================================== */
-
-        function reprValue(value) {
-
-            if (value === null) {
-
-                return "null";
-
-            }
-
-            if (
-                typeof value === "string"
-            ) {
-
-                return '"' + value + '"';
-
-            }
-
-            return String(value);
-
-        }
+        subcategorySelect.disabled = false;
 
     }
-);
+
+
+    /* =====================================================
+       CHANGEMENT CATÉGORIE
+    ====================================================== */
+
+    categorySelect.addEventListener(
+        "change",
+        updateSubcategories
+    );
+
+
+    /* =====================================================
+       INITIALISATION
+    ====================================================== */
+
+    updateSubcategories();
+
+
+    /* =====================================================
+       PROTECTION DOUBLE ENVOI
+    ====================================================== */
+
+    let submitting = false;
+
+
+    /* =====================================================
+       SOUMISSION
+    ====================================================== */
+
+    form.addEventListener(
+        "submit",
+        function (event) {
+
+            if (submitting) {
+
+                event.preventDefault();
+
+                return;
+            }
+
+
+            /* -------------------------------------------
+               CATÉGORIE
+            -------------------------------------------- */
+
+            if (!categorySelect.value) {
+
+                event.preventDefault();
+
+                alert(
+                    TEXT_CHOOSE_CATEGORY
+                );
+
+                categorySelect.focus();
+
+                return;
+            }
+
+
+            /* -------------------------------------------
+               SOUS-CATÉGORIE
+            -------------------------------------------- */
+
+            if (
+                !subcategorySelect.value ||
+                subcategorySelect.disabled
+            ) {
+
+                event.preventDefault();
+
+                alert(
+                    TEXT_CHOOSE_SUBCATEGORY
+                );
+
+                subcategorySelect.focus();
+
+                return;
+            }
+
+
+            /* -------------------------------------------
+               FORM DATA
+            -------------------------------------------- */
+
+            const formData =
+                new FormData(form);
+
+
+            /* -------------------------------------------
+               LOG
+            -------------------------------------------- */
+
+            console.log(
+                "Données du formulaire :"
+            );
+
+            for (
+                const [key, value]
+                of formData.entries()
+            ) {
+
+                console.log(
+                    key,
+                    value
+                );
+
+            }
+
+
+            /* -------------------------------------------
+               LIVRAISON
+            -------------------------------------------- */
+
+            const deliveryCheckbox =
+                document.getElementById(
+                    "delivery_available"
+                );
+
+            if (deliveryCheckbox) {
+
+                console.log(
+                    "Livraison disponible :",
+                    deliveryCheckbox.checked
+                );
+
+            }
+
+
+            /* -------------------------------------------
+               PROTECTION
+            -------------------------------------------- */
+
+            submitting = true;
+
+            publishButton.disabled = true;
+
+
+            /* -------------------------------------------
+               TEXTE BOUTON
+            -------------------------------------------- */
+
+            publishText.textContent =
+                TEXT_PUBLISHING;
+
+
+            /* -------------------------------------------
+               ICÔNE
+            -------------------------------------------- */
+
+            publishIcon.className =
+                "bi bi-hourglass-split";
+
+        }
+    );
+
+
+    /* =====================================================
+       FONCTION AFFICHAGE VALEUR
+    ====================================================== */
+
+    function reprValue(value) {
+
+        if (value === null) {
+
+            return "null";
+
+        }
+
+        if (typeof value === "string") {
+
+            return '"' + value + '"';
+
+        }
+
+        return String(value);
+
+    }
+
+});
 
 </script>
 
 
-<!-- =========================================================
-     STYLE
-========================================================== -->
+<!-- =====================================================
+     CSS EXISTANT
+====================================================== -->
 
 <style>
 
@@ -983,14 +1087,12 @@ document.addEventListener(
 
 }
 
-
 #publish-button:not(:disabled):hover {
 
     transform:
         translateY(-1px);
 
 }
-
 
 #publish-button:disabled {
 
@@ -1000,13 +1102,11 @@ document.addEventListener(
 
 }
 
-
 #publish-button i {
 
     margin-right: 5px;
 
 }
-
 
 #subcategory_id:disabled {
 
@@ -1017,6 +1117,5 @@ document.addEventListener(
 }
 
 </style>
-
 
 {% endblock %}

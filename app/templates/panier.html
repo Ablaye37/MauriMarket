@@ -1,175 +1,109 @@
 {% extends "base.html" %}
 
-{% block title %}Mon panier - MauriMarket{% endblock %}
+{% block title %}
+{{ t.my_cart }} - MauriMarket
+{% endblock %}
 
 {% block content %}
 
 <div class="container py-5">
 
-    <h2 class="fw-bold mb-4">
-        <i class="bi bi-cart3 text-success"></i>
-        Mon panier
-    </h2>
+<h2 class="fw-bold mb-4">
+    <i class="bi bi-cart3 text-success"></i>
+    {{ t.my_cart }}
+</h2>
 
-    {% if products %}
 
-        <div class="row">
+{% if products %}
 
-            <!-- ========================================= -->
-            <!-- PRODUITS -->
-            <!-- ========================================= -->
+    <div class="row">
 
-            <div class="col-lg-8">
+        <!-- ========================================= -->
+        <!-- PRODUITS -->
+        <!-- ========================================= -->
 
-                {% for product in products %}
+        <div class="col-lg-8">
 
-                <div class="card mb-3 shadow-sm">
+            {% for product in products %}
 
-                    <div class="row g-0 align-items-center">
+            <div class="card mb-3 shadow-sm">
 
-                        <!-- IMAGE -->
-                        <div class="col-md-3">
+                <div class="row g-0 align-items-center">
 
-                            {% if product.image %}
+                    <!-- IMAGE -->
 
-                                <img
-                                    src="{{ product.image }}"
-                                    class="img-fluid rounded-start"
-                                    style="height:140px; width:100%; object-fit:cover;"
-                                    alt="{{ product.title }}"
-                                >
+                    <div class="col-md-3">
 
-                            {% else %}
+                        {% if product.image %}
 
-                                <img
-                                    src="https://placehold.co/300x200?text=MauriMarket"
-                                    class="img-fluid rounded-start"
-                                    style="height:140px; width:100%; object-fit:cover;"
-                                    alt="Produit"
-                                >
+                            <img
+                                src="{{ product.image }}"
+                                class="img-fluid rounded-start"
+                                style="height:140px; width:100%; object-fit:cover;"
+                                alt="{{ product.title }}"
+                            >
+
+                        {% else %}
+
+                            <img
+                                src="https://placehold.co/300x200?text=MauriMarket"
+                                class="img-fluid rounded-start"
+                                style="height:140px; width:100%; object-fit:cover;"
+                                alt="{{ t.product }}"
+                            >
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <!-- INFORMATIONS -->
+
+                    <div class="col-md-6">
+
+                        <div class="card-body">
+
+                            <h5 class="fw-bold">
+                                {{ product.title }}
+                            </h5>
+
+                            <p class="text-success fw-bold mb-1">
+                                {{ product.price }} MRU
+                            </p>
+
+                            {% if product.city %}
+
+                                <p class="text-muted mb-0">
+                                    {{ product.city }}
+                                </p>
 
                             {% endif %}
 
                         </div>
 
-                        <!-- INFORMATIONS -->
-                        <div class="col-md-6">
-
-                            <div class="card-body">
-
-                                <h5 class="fw-bold">
-                                    {{ product.title }}
-                                </h5>
-
-                                <p class="text-success fw-bold mb-1">
-                                    {{ product.price }} MRU
-                                </p>
-
-                                {% if product.city %}
-                                    <p class="text-muted mb-0">
-                                        {{ product.city }}
-                                    </p>
-                                {% endif %}
-
-                            </div>
-
-                        </div>
-
-                        <!-- ACTIONS -->
-                        <div class="col-md-3 text-center">
-
-                            <a
-                                href="/produit/{{ product.id }}"
-                                class="btn btn-outline-success btn-sm mb-2"
-                            >
-                                <i class="bi bi-eye"></i>
-                                Voir
-                            </a>
-
-                            <br>
-
-                            <a
-                                href="/panier/supprimer/{{ product.id }}"
-                                class="btn btn-outline-danger btn-sm"
-                            >
-                                <i class="bi bi-trash"></i>
-                                Supprimer
-                            </a>
-
-                        </div>
-
                     </div>
 
-                </div>
 
-                {% endfor %}
+                    <!-- ACTIONS -->
 
-            </div>
-
-
-            <!-- ========================================= -->
-            <!-- RÉSUMÉ DE LA COMMANDE -->
-            <!-- ========================================= -->
-
-            <div class="col-lg-4">
-
-                <div class="card shadow-sm">
-
-                    <div class="card-body">
-
-                        <h4 class="fw-bold mb-4">
-                            <i class="bi bi-receipt"></i>
-                            Résumé
-                        </h4>
-
-                        <!-- NOMBRE DE PRODUITS -->
-                        <div class="d-flex justify-content-between">
-
-                            <span>
-                                Produits
-                            </span>
-
-                            <strong>
-                                {{ products|length }}
-                            </strong>
-
-                        </div>
-
-                        <hr>
-
-                        <!-- TOTAL -->
-                        <div class="d-flex justify-content-between align-items-center">
-
-                            <span class="fw-bold">
-                                Total
-                            </span>
-
-                            <strong class="text-success fs-4">
-                                {{ total }} MRU
-                            </strong>
-
-                        </div>
-
-                        <!-- ================================= -->
-                        <!-- VALIDER LA COMMANDE -->
-                        <!-- ================================= -->
+                    <div class="col-md-3 text-center">
 
                         <a
-                            href="/commande"
-                            class="btn btn-success w-100 mt-4"
+                            href="/produit/{{ product.id }}?lang={{ lang }}"
+                            class="btn btn-outline-success btn-sm mb-2"
                         >
-                            <i class="bi bi-check-circle me-2"></i>
-                            Valider ma commande
+                            <i class="bi bi-eye"></i>
+                            {{ t.view }}
                         </a>
 
-                        <!-- CONTINUER LES ACHATS -->
+                        <br>
 
                         <a
-                            href="/"
-                            class="btn btn-outline-secondary w-100 mt-2"
+                            href="/panier/supprimer/{{ product.id }}?lang={{ lang }}"
+                            class="btn btn-outline-danger btn-sm"
                         >
-                            <i class="bi bi-arrow-left me-2"></i>
-                            Continuer mes achats
+                            <i class="bi bi-trash"></i>
+                            {{ t.delete }}
                         </a>
 
                     </div>
@@ -178,40 +112,128 @@
 
             </div>
 
-        </div>
-
-    {% else %}
-
-        <!-- ========================================= -->
-        <!-- PANIER VIDE -->
-        <!-- ========================================= -->
-
-        <div class="text-center py-5">
-
-            <i
-                class="bi bi-cart-x"
-                style="font-size:70px; color:#198754;"
-            ></i>
-
-            <h4 class="mt-3">
-                Votre panier est vide
-            </h4>
-
-            <p class="text-muted">
-                Ajoutez des produits pour les retrouver ici.
-            </p>
-
-            <a
-                href="/"
-                class="btn btn-success"
-            >
-                <i class="bi bi-shop me-2"></i>
-                Continuer mes achats
-            </a>
+            {% endfor %}
 
         </div>
 
-    {% endif %}
+
+        <!-- ========================================= -->
+        <!-- RÉSUMÉ DE LA COMMANDE -->
+        <!-- ========================================= -->
+
+        <div class="col-lg-4">
+
+            <div class="card shadow-sm">
+
+                <div class="card-body">
+
+                    <h4 class="fw-bold mb-4">
+                        <i class="bi bi-receipt"></i>
+                        {{ t.order }}
+                    </h4>
+
+
+                    <!-- NOMBRE DE PRODUITS -->
+
+                    <div class="d-flex justify-content-between">
+
+                        <span>
+                            {{ t.products }}
+                        </span>
+
+                        <strong>
+                            {{ products|length }}
+                        </strong>
+
+                    </div>
+
+
+                    <hr>
+
+
+                    <!-- TOTAL -->
+
+                    <div class="d-flex justify-content-between align-items-center">
+
+                        <span class="fw-bold">
+                            {{ t.total }}
+                        </span>
+
+                        <strong class="text-success fs-4">
+                            {{ total }} MRU
+                        </strong>
+
+                    </div>
+
+
+                    <!-- ================================= -->
+                    <!-- VALIDER LA COMMANDE -->
+                    <!-- ================================= -->
+
+                    <a
+                        href="/commande?lang={{ lang }}"
+                        class="btn btn-success w-100 mt-4"
+                    >
+                        <i class="bi bi-check-circle me-2"></i>
+                        {{ t.confirm }}
+                    </a>
+
+
+                    <!-- CONTINUER LES ACHATS -->
+
+                    <a
+                        href="/?lang={{ lang }}"
+                        class="btn btn-outline-secondary w-100 mt-2"
+                    >
+                        <i class="bi bi-arrow-left me-2"></i>
+                        {{ t.back }}
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+{% else %}
+
+
+    <!-- ========================================= -->
+    <!-- PANIER VIDE -->
+    <!-- ========================================= -->
+
+    <div class="text-center py-5">
+
+        <i
+            class="bi bi-cart-x"
+            style="font-size:70px; color:#198754;"
+        ></i>
+
+
+        <h4 class="mt-3">
+            {{ t.empty_cart }}
+        </h4>
+
+
+        <p class="text-muted">
+            {{ t.empty_cart_description }}
+        </p>
+
+
+        <a
+            href="/?lang={{ lang }}"
+            class="btn btn-success"
+        >
+            <i class="bi bi-shop me-2"></i>
+            {{ t.back }}
+        </a>
+
+    </div>
+
+{% endif %}
+
 
 </div>
 

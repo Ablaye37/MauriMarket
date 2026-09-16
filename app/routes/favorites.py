@@ -6,6 +6,13 @@ from app.database.database import SessionLocal
 from app.models.favorite import Favorite
 from app.models.product import Product
 
+# =====================================================
+# TRADUCTIONS
+# =====================================================
+
+from app.translations.fr import TRANSLATIONS as FR
+from app.translations.ar import TRANSLATIONS as AR
+
 
 # =====================================================
 # ROUTER
@@ -24,6 +31,7 @@ router = APIRouter(
 templates = Jinja2Templates(
     directory="app/templates"
 )
+
 
 # =====================================================
 # AJOUTER / RETIRER UN FAVORI
@@ -135,12 +143,31 @@ async def toggle_favorite(
     finally:
 
         db.close()
-        # =====================================================
+
+
+# =====================================================
 # MES FAVORIS
 # =====================================================
 
 @router.get("/mes-favoris")
 async def mes_favoris(request: Request):
+
+    # -------------------------------------------------
+    # LANGUE
+    # -------------------------------------------------
+
+    lang = request.query_params.get(
+        "lang",
+        "fr"
+    )
+
+    if lang not in ["fr", "ar"]:
+        lang = "fr"
+
+    translations = (
+        FR if lang == "fr"
+        else AR
+    )
 
     # -------------------------------------------------
     # VÉRIFIER LA CONNEXION
@@ -195,7 +222,9 @@ async def mes_favoris(request: Request):
             name="favoris.html",
             context={
                 "favorites": favorites,
-                "message": message
+                "message": message,
+                "lang": lang,
+                "t": translations
             }
         )
 

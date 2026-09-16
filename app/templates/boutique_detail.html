@@ -1,16 +1,14 @@
+
 {% extends "base.html" %}
 
 {% block title %}
 {{ boutique.name }} - MauriMarket
-
-
-
-
-
 {% endblock %}
 
 
 {% block content %}
+
+{% set is_ar = lang == "ar" %}
 
 <div class="boutique-detail-page">
 
@@ -25,7 +23,7 @@
 
         <img
             src="{{ boutique.cover_image }}"
-            alt="Couverture de {{ boutique.name }}"
+            alt="{% if is_ar %}غلاف متجر {{ boutique.name }}{% else %}Couverture de {{ boutique.name }}{% endif %}"
         >
 
     </div>
@@ -75,7 +73,13 @@
 
                 <i class="bi bi-tag"></i>
 
-                {{ boutique.sale_type }}
+                {% if boutique.sale_type == "vente" or boutique.sale_type == "Vente" %}
+                    {% if is_ar %}بيع{% else %}Vente{% endif %}
+                {% elif boutique.sale_type == "location" or boutique.sale_type == "Location" %}
+                    {% if is_ar %}إيجار{% else %}Location{% endif %}
+                {% else %}
+                    {{ boutique.sale_type }}
+                {% endif %}
 
             </p>
 
@@ -106,12 +110,17 @@
         <a
             href="/ma-boutique/modifier"
             class="edit-boutique-btn"
+            title="{% if is_ar %}تعديل متجري{% else %}Modifier ma boutique{% endif %}"
         >
 
             <i class="bi bi-pencil"></i>
 
             <span>
-                Modifier ma boutique
+                {% if is_ar %}
+                    تعديل متجري
+                {% else %}
+                    Modifier ma boutique
+                {% endif %}
             </span>
 
         </a>
@@ -124,12 +133,13 @@
         <a
             href="/boutiques"
             class="back-boutiques"
+            title="{% if is_ar %}المتاجر{% else %}Boutiques{% endif %}"
         >
 
             <i class="bi bi-arrow-left"></i>
 
             <span>
-                Boutiques
+                {{ t.shops }}
             </span>
 
         </a>
@@ -146,14 +156,18 @@
         <div>
 
             <h2>
-                Produits
+                {{ t.products }}
             </h2>
 
             <span>
 
                 {{ products|length }}
 
-                produit{% if products|length != 1 %}s{% endif %}
+                {% if products|length == 1 %}
+                    {% if is_ar %}منتج{% else %}produit{% endif %}
+                {% else %}
+                    {% if is_ar %}منتجات{% else %}produits{% endif %}
+                {% endif %}
 
             </span>
 
@@ -166,25 +180,39 @@
 
         <div class="boutique-products-actions">
 
-    <a
-        href="/ma-boutique/publier"
-        class="publish-product-btn"
-    >
-        <i class="bi bi-plus-circle"></i>
-        <span>Publier un produit</span>
-    </a>
+            <a
+                href="/ma-boutique/publier"
+                class="publish-product-btn"
+            >
+                <i class="bi bi-plus-circle"></i>
 
-    
-        <button
-            type="button"
-            class="share-boutique-btn"
-            onclick="shareBoutique()"
-            title="Partager ma boutique"
-        >
-            <i class="bi bi-share"></i>
-            <span>Partager</span>
-        </button>
-</div>
+                <span>
+                    {% if is_ar %}
+                        نشر منتج
+                    {% else %}
+                        Publier un produit
+                    {% endif %}
+                </span>
+
+            </a>
+
+
+            <button
+                type="button"
+                class="share-boutique-btn"
+                onclick="shareBoutique()"
+                title="{% if is_ar %}مشاركة متجري{% else %}Partager ma boutique{% endif %}"
+            >
+
+                <i class="bi bi-share"></i>
+
+                <span>
+                    {{ t.share }}
+                </span>
+
+            </button>
+
+        </div>
 
         {% endif %}
 
@@ -239,7 +267,17 @@
 
                 <span class="product-condition">
 
-                    {{ produit.condition }}
+                    {% if produit.condition == "neuf" or produit.condition == "Neuf" %}
+                        {% if is_ar %}جديد{% else %}Neuf{% endif %}
+                    {% elif produit.condition == "très bon état" or produit.condition == "Très bon état" %}
+                        {% if is_ar %}حالة جيدة جدًا{% else %}Très bon état{% endif %}
+                    {% elif produit.condition == "bon état" or produit.condition == "Bon état" %}
+                        {% if is_ar %}حالة جيدة{% else %}Bon état{% endif %}
+                    {% elif produit.condition == "occasion" or produit.condition == "Occasion" or produit.condition == "utilisé" or produit.condition == "Utilisé" %}
+                        {% if is_ar %}مستعمل{% else %}Occasion{% endif %}
+                    {% else %}
+                        {{ produit.condition }}
+                    {% endif %}
 
                 </span>
 
@@ -302,7 +340,11 @@
                         class="boutique-product-link"
                     >
 
-                        Voir le produit
+                        {% if is_ar %}
+                            عرض المنتج
+                        {% else %}
+                            Voir le produit
+                        {% endif %}
 
                         <i class="bi bi-arrow-right"></i>
 
@@ -324,13 +366,13 @@
                         <a
                             href="/annonce/modifier/{{ produit.id }}"
                             class="product-edit-btn"
-                            title="Modifier ce produit"
+                            title="{% if is_ar %}تعديل هذا المنتج{% else %}Modifier ce produit{% endif %}"
                         >
 
                             <i class="bi bi-pencil"></i>
 
                             <span>
-                                Modifier
+                                {{ t.edit }}
                             </span>
 
                         </a>
@@ -342,19 +384,19 @@
                             method="post"
                             action="/annonce/supprimer/{{ produit.id }}"
                             class="delete-product-form"
-                            onsubmit="return confirm('Voulez-vous vraiment supprimer ce produit ?');"
+                            onsubmit="return confirm('{% if is_ar %}هل تريد حقًا حذف هذا المنتج؟{% else %}Voulez-vous vraiment supprimer ce produit ?{% endif %}');"
                         >
 
                             <button
                                 type="submit"
                                 class="product-delete-btn"
-                                title="Supprimer ce produit"
+                                title="{% if is_ar %}حذف هذا المنتج{% else %}Supprimer ce produit{% endif %}"
                             >
 
                                 <i class="bi bi-trash"></i>
 
                                 <span>
-                                    Supprimer
+                                    {{ t.delete }}
                                 </span>
 
                             </button>
@@ -396,12 +438,24 @@
 
 
         <h2>
-            Aucun produit
+
+            {% if is_ar %}
+                لا توجد منتجات
+            {% else %}
+                Aucun produit
+            {% endif %}
+
         </h2>
 
 
         <p>
-            Cette boutique n'a pas encore publié de produit.
+
+            {% if is_ar %}
+                لم يقم هذا المتجر بنشر أي منتج بعد.
+            {% else %}
+                Cette boutique n'a pas encore publié de produit.
+            {% endif %}
+
         </p>
 
 
@@ -409,25 +463,40 @@
 
         <div class="boutique-products-actions">
 
-    <a
-        href="/ma-boutique/publier"
-        class="publish-product-btn"
-    >
-        <i class="bi bi-plus-circle"></i>
-        <span>Publier un produit</span>
-    </a>
+            <a
+                href="/ma-boutique/publier"
+                class="publish-product-btn"
+            >
 
-    <button
-        type="button"
-        class="share-boutique-btn"
-        onclick="shareBoutique()"
-        title="Partager ma boutique"
-    >
-        <i class="bi bi-share"></i>
-        <span>Partager</span>
-    </button>
+                <i class="bi bi-plus-circle"></i>
 
-</div>
+                <span>
+                    {% if is_ar %}
+                        نشر منتج
+                    {% else %}
+                        Publier un produit
+                    {% endif %}
+                </span>
+
+            </a>
+
+
+            <button
+                type="button"
+                class="share-boutique-btn"
+                onclick="shareBoutique()"
+                title="{% if is_ar %}مشاركة متجري{% else %}Partager ma boutique{% endif %}"
+            >
+
+                <i class="bi bi-share"></i>
+
+                <span>
+                    {{ t.share }}
+                </span>
+
+            </button>
+
+        </div>
 
         {% endif %}
 
@@ -740,6 +809,21 @@
 
 
 /* ============================================================
+   ACTIONS HEADER
+============================================================ */
+
+.boutique-products-actions {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+}
+
+
+/* ============================================================
    BOUTON PUBLIER
 ============================================================ */
 
@@ -829,7 +913,6 @@
     transform: translateY(-1px);
 
 }
-
 
 
 /* ============================================================
@@ -1445,6 +1528,13 @@
     }
 
 
+    .boutique-products-actions {
+
+        gap: 4px;
+
+    }
+
+
     .publish-product-btn {
 
         padding: 7px 9px;
@@ -1455,6 +1545,22 @@
 
 
     .publish-product-btn span {
+
+        display: none;
+
+    }
+
+
+    .share-boutique-btn {
+
+        padding: 7px 9px;
+
+        font-size: 9px;
+
+    }
+
+
+    .share-boutique-btn span {
 
         display: none;
 
@@ -1567,24 +1673,39 @@
 
 </style>
 
+
 <script>
+
 async function shareBoutique() {
 
     const boutiqueUrl =
         window.location.origin + "/boutique/detail/{{ boutique.id }}";
-const shareText =
-    "🛍️ Découvrez {{ boutique.name|e }} sur MauriMarket 🇲🇷";
 
-const whatsappText =
-    "🛍️ Découvrez {{ boutique.name|e }} sur MauriMarket 🇲🇷\n\n" +
-    "Découvrez tous les produits de cette boutique 🛒";
+
+    const shareTitle =
+        "{% if is_ar %}اكتشف متجر {{ boutique.name|e }} على MauriMarket 🇲🇷{% else %}Découvrez {{ boutique.name|e }} sur MauriMarket 🇲🇷{% endif %}";
+
+
+    const shareText =
+        "{% if is_ar %}🛍️ اكتشف {{ boutique.name|e }} على MauriMarket 🇲🇷{% else %}🛍️ Découvrez {{ boutique.name|e }} sur MauriMarket 🇲🇷{% endif %}";
+
+
+    const whatsappText =
+        "{% if is_ar %}🛍️ اكتشف {{ boutique.name|e }} على MauriMarket 🇲🇷\n\nاكتشف جميع منتجات هذا المتجر 🛒{% else %}🛍️ Découvrez {{ boutique.name|e }} sur MauriMarket 🇲🇷\n\nDécouvrez tous les produits de cette boutique 🛒{% endif %}";
+
+
     if (navigator.share) {
+
         try {
 
             await navigator.share({
+
                 title: shareTitle,
+
                 text: shareText,
+
                 url: boutiqueUrl
+
             });
 
             return;
@@ -1592,38 +1713,37 @@ const whatsappText =
         } catch (error) {
 
             if (error.name === "AbortError") {
+
                 return;
+
             }
+
         }
+
     }
+
 
     try {
 
         await navigator.clipboard.writeText(boutiqueUrl);
 
-        alert(" Le lien de la boutique a été copié  !");
+
+        alert(
+            "{% if is_ar %}تم نسخ رابط المتجر بنجاح!{% else %}Le lien de la boutique a été copié !{% endif %}"
+        );
+
 
     } catch (error) {
 
-        alert("Impossible de copier le lien.");
+        alert(
+            "{% if is_ar %}تعذر نسخ الرابط.{% else %}Impossible de copier le lien.{% endif %}"
+        );
+
     }
+
 }
+
 </script>
+
+
 {% endblock %}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

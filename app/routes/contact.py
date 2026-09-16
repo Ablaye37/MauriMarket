@@ -1,9 +1,13 @@
+
 from fastapi import APIRouter, Request, Form
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 
 from app.database.database import SessionLocal
 from app.models.contact_message import ContactMessage
+
+from app.translations.fr import TRANSLATIONS as FR
+from app.translations.ar import TRANSLATIONS as AR
 
 
 router = APIRouter()
@@ -14,6 +18,39 @@ templates = Jinja2Templates(
 
 
 # =====================================================
+# LANGUE
+# =====================================================
+
+def get_language(request: Request):
+    lang = request.query_params.get("lang", "fr")
+
+    if lang not in ("fr", "ar"):
+        lang = "fr"
+
+    translations = AR if lang == "ar" else FR
+
+    return lang, translations
+
+
+# =====================================================
+# REDIRECTION AVEC LANGUE
+# =====================================================
+
+def redirect_with_lang(
+    request: Request,
+    url: str
+):
+    lang, _ = get_language(request)
+
+    separator = "&" if "?" in url else "?"
+
+    return RedirectResponse(
+        f"{url}{separator}lang={lang}",
+        status_code=303
+    )
+
+
+# =====================================================
 # PAGE CONTACT
 # =====================================================
 
@@ -21,11 +58,7 @@ templates = Jinja2Templates(
 async def page_contact(
     request: Request
 ):
-
-    lang = request.query_params.get(
-        "lang",
-        "fr"
-    )
+    lang, translations = get_language(request)
 
     message = request.session.pop(
         "message",
@@ -37,6 +70,7 @@ async def page_contact(
         name="contact.html",
         context={
             "lang": lang,
+            "t": translations,
             "message": message
         }
     )
@@ -60,6 +94,7 @@ async def envoyer_message(
 
     message: str = Form(...)
 ):
+    lang, translations = get_language(request)
 
     db = SessionLocal()
 
@@ -74,13 +109,11 @@ async def envoyer_message(
         print("Message :", message)
         print("======================================")
 
-
         # =================================================
         # CRÉER LE MESSAGE
         # =================================================
 
         nouveau_message = ContactMessage(
-
             name=name.strip(),
 
             phone=phone.strip(),
@@ -96,7 +129,6 @@ async def envoyer_message(
             status="new"
         )
 
-
         # =================================================
         # AJOUTER À LA BASE
         # =================================================
@@ -111,7 +143,6 @@ async def envoyer_message(
             nouveau_message
         )
 
-
         print(
             "✅ MESSAGE CONTACT ENREGISTRÉ"
         )
@@ -121,30 +152,30 @@ async def envoyer_message(
             nouveau_message.id
         )
 
-
         # =================================================
         # MESSAGE DE SUCCÈS
         # =================================================
 
-        request.session["message"] = (
-            "✅ Votre message a été envoyé "
-            "avec succès. Merci de nous avoir contactés !"
+        request.session["message"] = translations.get(
+            "contact_success",
+            translations.get(
+                "success",
+                "Votre message a été envoyé avec succès."
+            )
         )
 
-
-        return RedirectResponse(
-            "/contact?lang=fr",
-            status_code=303
+        return redirect_with_lang(
+            request,
+            "/contact"
         )
-
 
     except Exception as e:
 
         db.rollback()
 
-
-        # IMPORTANT :
-        # afficher la vraie erreur dans le terminal
+        # =================================================
+        # ERREUR
+        # =================================================
 
         print("")
         print("======================================")
@@ -154,18 +185,18 @@ async def envoyer_message(
         print("======================================")
         print("")
 
-
-        request.session["message"] = (
-            "❌ Impossible d'envoyer le message. "
-            "Vérifiez le serveur."
+        request.session["message"] = translations.get(
+            "contact_error",
+            translations.get(
+                "error",
+                "Impossible d'envoyer le message."
+            )
         )
 
-
-        return RedirectResponse(
-            "/contact?lang=fr",
-            status_code=303
+        return redirect_with_lang(
+            request,
+            "/contact"
         )
-
 
     finally:
 

@@ -7,6 +7,9 @@ from app.models.product import Product
 from app.models.order import Order
 from app.models.order_item import OrderItem
 
+from app.translations.fr import TRANSLATIONS as FR
+from app.translations.ar import TRANSLATIONS as AR
+
 from datetime import datetime
 import uuid
 
@@ -18,82 +21,151 @@ templates = Jinja2Templates(
 )
 
 
-# =====================================================
-# AJOUTER AU PANIER
-# =====================================================
+# =========================================================
+# LANGUE
+# =========================================================
+
+def get_language(request: Request):
+    lang = request.query_params.get("lang", "fr")
+
+    if lang not in ["fr", "ar"]:
+        lang = "fr"
+
+    return lang
+
+
+def get_translations(lang):
+    if lang == "ar":
+        return AR
+
+    return FR
+
+
+# =========================================================
+# AJOUTER UN PRODUIT AU PANIER
+# =========================================================
 
 @router.post("/panier/ajouter/{product_id}")
 async def ajouter_au_panier(
     request: Request,
     product_id: int
 ):
+    lang = get_language(request)
+    translations = get_translations(lang)
 
     db = SessionLocal()
 
     try:
-
         product = (
             db.query(Product)
             .filter(Product.id == product_id)
             .first()
         )
-
     finally:
-
         db.close()
 
-    if not product:
+    # ---------------------------------------------------------
+    # PRODUIT INTROUVABLE
+    # ---------------------------------------------------------
 
-        request.session["message"] = (
-            "Produit introuvable"
+    if not product:
+        request.session["message"] = translations.get(
+            "not_found",
+            (
+                "Produit introuvable."
+                if lang == "fr"
+                else "المنتج غير موجود."
+            )
         )
 
         return RedirectResponse(
-            url="/",
+            url=f"/?lang={lang}",
             status_code=303
         )
+
+    # ---------------------------------------------------------
+    # RÉCUPÉRATION DU PANIER
+    # ---------------------------------------------------------
 
     panier = request.session.get(
         "panier",
         []
     )
 
-    if product_id not in panier:
+    if not isinstance(panier, list):
+        panier = []
 
+    # ---------------------------------------------------------
+    # AJOUT DU PRODUIT
+    # ---------------------------------------------------------
+
+    if product_id not in panier:
         panier.append(product_id)
 
     request.session["panier"] = panier
 
-    request.session["message"] = (
-        "Produit ajouté au panier"
+    # ---------------------------------------------------------
+    # MESSAGE SPÉCIFIQUE À L'AJOUT AU PANIER
+    #
+    # IMPORTANT :
+    # On utilise une clé différente de "message".
+    # Cela empêche le message d'apparaître dans /panier.
+    # ---------------------------------------------------------
+
+    request.session["product_added_message"] = translations.get(
+        "product_added_to_cart",
+        (
+            "Produit ajouté au panier avec succès."
+            if lang == "fr"
+            else "تمت إضافة المنتج إلى السلة بنجاح."
+        )
     )
 
+    # ---------------------------------------------------------
+    # RETOUR IMMÉDIAT SUR LA PAGE DU PRODUIT
+    # ---------------------------------------------------------
+
     return RedirectResponse(
-        url=f"/produit/{product_id}",
+        url=f"/produit/{product_id}?lang={lang}",
         status_code=303
     )
 
 
-# =====================================================
+# =========================================================
 # AFFICHER LE PANIER
-# =====================================================
+# =========================================================
 
 @router.get("/panier")
 async def afficher_panier(
     request: Request
 ):
+    lang = get_language(request)
+    translations = get_translations(lang)
 
     panier = request.session.get(
         "panier",
         []
     )
 
+    if not isinstance(panier, list):
+        panier = []
+
+    # ---------------------------------------------------------
+    # IMPORTANT :
+    # Le message "produit ajouté" n'est PAS récupéré ici.
+    #
+    # Il est réservé à la page produit.
+    # ---------------------------------------------------------
+
+    message = request.session.pop(
+        "message",
+        None
+    )
+
     db = SessionLocal()
 
     try:
-
         if panier:
-
             products = (
                 db.query(Product)
                 .filter(
@@ -101,9 +173,7 @@ async def afficher_panier(
                 )
                 .all()
             )
-
         else:
-
             products = []
 
         total = sum(
@@ -112,7 +182,6 @@ async def afficher_panier(
         )
 
     finally:
-
         db.close()
 
     return templates.TemplateResponse(
@@ -120,51 +189,55 @@ async def afficher_panier(
         name="panier.html",
         context={
             "products": products,
-            "total": total
+            "total": total,
+            "lang": lang,
+            "t": translations,
+            "message": message
         }
     )
 
 
-# =====================================================
-# SUPPRIMER DU PANIER
-# =====================================================
+# =========================================================
+# SUPPRIMER UN PRODUIT DU PANIER
+# =========================================================
 
 @router.get("/panier/supprimer/{product_id}")
 async def supprimer_du_panier(
     request: Request,
     product_id: int
 ):
+    lang = get_language(request)
 
     panier = request.session.get(
         "panier",
         []
     )
 
-    if product_id in panier:
+    if not isinstance(panier, list):
+        panier = []
 
+    if product_id in panier:
         panier.remove(product_id)
 
     request.session["panier"] = panier
 
     return RedirectResponse(
-        url="/panier",
+        url=f"/panier?lang={lang}",
         status_code=303
     )
 
 
-# =====================================================
-# PAGE VALIDATION DE COMMANDE
-# =====================================================
-
-# =====================================================
+# =========================================================
 # COMMANDER DIRECTEMENT UN PRODUIT
-# =====================================================
+# =========================================================
 
 @router.post("/commande/direct/{product_id}")
 async def commander_directement(
     request: Request,
     product_id: int
 ):
+    lang = get_language(request)
+    translations = get_translations(lang)
 
     db = SessionLocal()
 
@@ -177,47 +250,86 @@ async def commander_directement(
     finally:
         db.close()
 
+    # ---------------------------------------------------------
+    # PRODUIT INTROUVABLE
+    # ---------------------------------------------------------
+
     if not product:
-        request.session["message"] = (
-            "Produit introuvable ou indisponible."
+        request.session["message"] = translations.get(
+            "not_found",
+            (
+                "Produit introuvable ou indisponible."
+                if lang == "fr"
+                else "المنتج غير موجود أو غير متاح."
+            )
         )
+
         return RedirectResponse(
-            url="/",
+            url=f"/?lang={lang}",
             status_code=303
         )
 
-    request.session["panier"] = [product_id]
+    # ---------------------------------------------------------
+    # REMPLACER LE PANIER PAR CE PRODUIT
+    # ---------------------------------------------------------
+
+    request.session["panier"] = [
+        product_id
+    ]
 
     return RedirectResponse(
-        url="/commande",
+        url=f"/commande?lang={lang}",
         status_code=303
     )
+
+
+# =========================================================
+# PAGE COMMANDE
+# =========================================================
 
 @router.get("/commande")
 async def page_commande(
     request: Request
 ):
+    lang = get_language(request)
+    translations = get_translations(lang)
 
     panier = request.session.get(
         "panier",
         []
     )
 
-    if not panier:
+    if not isinstance(panier, list):
+        panier = []
 
+    # ---------------------------------------------------------
+    # MESSAGE NORMAL DE COMMANDE
+    # ---------------------------------------------------------
+
+    message = request.session.pop(
+        "message",
+        None
+    )
+
+    # ---------------------------------------------------------
+    # PANIER VIDE
+    # ---------------------------------------------------------
+
+    if not panier:
         request.session["message"] = (
             "Votre panier est vide."
+            if lang == "fr"
+            else "سلتك فارغة."
         )
 
         return RedirectResponse(
-            url="/panier",
+            url=f"/panier?lang={lang}",
             status_code=303
         )
 
     db = SessionLocal()
 
     try:
-
         products = (
             db.query(Product)
             .filter(
@@ -226,22 +338,36 @@ async def page_commande(
             .all()
         )
 
-        if not products:
+        # -----------------------------------------------------
+        # PRODUITS INDISPONIBLES
+        # -----------------------------------------------------
 
+        if not products:
             request.session["message"] = (
                 "Les produits de votre panier "
                 "ne sont plus disponibles."
+                if lang == "fr"
+                else "المنتجات الموجودة في سلتك "
+                     "لم تعد متاحة."
             )
 
             return RedirectResponse(
-                url="/panier",
+                url=f"/panier?lang={lang}",
                 status_code=303
             )
+
+        # -----------------------------------------------------
+        # TOTAL
+        # -----------------------------------------------------
 
         total = sum(
             product.price or 0
             for product in products
         )
+
+        # -----------------------------------------------------
+        # UTILISATEUR
+        # -----------------------------------------------------
 
         user_id = request.session.get(
             "user_id"
@@ -259,44 +385,59 @@ async def page_commande(
                 "products": products,
                 "total": total,
                 "user_id": user_id,
-                "user_name": user_name
+                "user_name": user_name,
+                "lang": lang,
+                "t": translations,
+                "message": message
             }
         )
 
     finally:
-
         db.close()
 
 
-# =====================================================
+# =========================================================
 # VALIDER LA COMMANDE
-# =====================================================
+# =========================================================
 
 @router.post("/commande/valider")
 async def valider_commande(
     request: Request,
-    customer_name: str = Form(...),
-    customer_phone: str = Form(...),
-    city: str = Form(...),
+    customer_name: str = Form(""),
+    customer_phone: str = Form(""),
+    city: str = Form(""),
     delivery_address: str = Form(""),
     comment: str = Form("")
 ):
+    lang = get_language(request)
 
     panier = request.session.get(
         "panier",
         []
     )
 
-    if not panier:
+    if not isinstance(panier, list):
+        panier = []
 
+    # ---------------------------------------------------------
+    # PANIER VIDE
+    # ---------------------------------------------------------
+
+    if not panier:
         request.session["message"] = (
             "Votre panier est vide."
+            if lang == "fr"
+            else "سلتك فارغة."
         )
 
         return RedirectResponse(
-            url="/panier",
+            url=f"/panier?lang={lang}",
             status_code=303
         )
+
+    # ---------------------------------------------------------
+    # NETTOYAGE DES CHAMPS
+    # ---------------------------------------------------------
 
     customer_name = customer_name.strip()
     customer_phone = customer_phone.strip()
@@ -304,20 +445,28 @@ async def valider_commande(
     delivery_address = delivery_address.strip()
     comment = comment.strip()
 
-    if not customer_name or not customer_phone or not city:
+    # ---------------------------------------------------------
+    # CHAMPS OBLIGATOIRES
+    # ---------------------------------------------------------
 
+    if not customer_name or not customer_phone or not city:
         request.session["message"] = (
             "Veuillez remplir les champs obligatoires."
+            if lang == "fr"
+            else "يرجى ملء الحقول المطلوبة."
         )
 
         return RedirectResponse(
-            url="/commande",
+            url=f"/commande?lang={lang}",
             status_code=303
         )
 
     db = SessionLocal()
 
     try:
+        # -----------------------------------------------------
+        # PRODUITS DU PANIER
+        # -----------------------------------------------------
 
         products = (
             db.query(Product)
@@ -328,28 +477,37 @@ async def valider_commande(
         )
 
         if not products:
-
             request.session["message"] = (
                 "Aucun produit disponible."
+                if lang == "fr"
+                else "لا يوجد أي منتج متاح."
             )
 
             return RedirectResponse(
-                url="/panier",
+                url=f"/panier?lang={lang}",
                 status_code=303
             )
+
+        # -----------------------------------------------------
+        # TOTAL
+        # -----------------------------------------------------
 
         total = sum(
             product.price or 0
             for product in products
         )
 
+        # -----------------------------------------------------
+        # UTILISATEUR
+        # -----------------------------------------------------
+
         user_id = request.session.get(
             "user_id"
         )
 
-        # -------------------------------------------------
+        # -----------------------------------------------------
         # NUMÉRO DE COMMANDE
-        # -------------------------------------------------
+        # -----------------------------------------------------
 
         order_number = (
             "MM-"
@@ -358,38 +516,27 @@ async def valider_commande(
             + uuid.uuid4().hex[:6].upper()
         )
 
-        # -------------------------------------------------
+        # -----------------------------------------------------
         # CRÉATION DE LA COMMANDE
-        # -------------------------------------------------
+        # -----------------------------------------------------
 
         order = Order(
-
             order_number=order_number,
-
             user_id=user_id,
-
             customer_name=customer_name,
-
             customer_phone=customer_phone,
-
             city=city,
-
             delivery_address=(
                 delivery_address
                 or None
             ),
-
             comment=(
                 comment
                 or None
             ),
-
             total=total,
-
             status="pending",
-
             payment_status="pending",
-
             payment_method="manuel"
         )
 
@@ -397,38 +544,36 @@ async def valider_commande(
 
         db.flush()
 
-        # -------------------------------------------------
-        # AJOUT DES PRODUITS DE LA COMMANDE
-        # -------------------------------------------------
+        # -----------------------------------------------------
+        # ARTICLES DE LA COMMANDE
+        # -----------------------------------------------------
 
         for product in products:
 
             price = product.price or 0
 
             order_item = OrderItem(
-
                 order_id=order.id,
-
                 product_id=product.id,
-
                 product_title=product.title,
-
                 price=price,
-
                 quantity=1,
-
                 subtotal=price
             )
 
             db.add(order_item)
 
+        # -----------------------------------------------------
+        # ENREGISTREMENT
+        # -----------------------------------------------------
+
         db.commit()
 
         db.refresh(order)
 
-        # -------------------------------------------------
-        # VIDER LE PANIER
-        # -------------------------------------------------
+        # -----------------------------------------------------
+        # NETTOYAGE DU PANIER
+        # -----------------------------------------------------
 
         request.session["panier"] = []
 
@@ -439,7 +584,7 @@ async def valider_commande(
         )
 
         return RedirectResponse(
-            url=f"/commande/succes/{order.id}",
+            url=f"/commande/succes/{order.id}?lang={lang}",
             status_code=303
         )
 
@@ -463,31 +608,38 @@ async def valider_commande(
         request.session["message"] = (
             "Impossible d'enregistrer "
             "la commande pour le moment."
+            if lang == "fr"
+            else "تعذر تسجيل الطلب في الوقت الحالي."
         )
 
         return RedirectResponse(
-            url="/commande",
+            url=f"/commande?lang={lang}",
             status_code=303
         )
 
     finally:
-
         db.close()
 
 
-# =====================================================
-# COMMANDE ENREGISTRÉE
-# =====================================================
+# =========================================================
+# SUCCÈS DE LA COMMANDE
+# =========================================================
 
 @router.get("/commande/succes/{order_id}")
 async def commande_succes(
     request: Request,
     order_id: int
 ):
+    lang = get_language(request)
+    translations = get_translations(lang)
 
     db = SessionLocal()
 
     try:
+
+        # -----------------------------------------------------
+        # COMMANDE
+        # -----------------------------------------------------
 
         order = (
             db.query(Order)
@@ -498,11 +650,14 @@ async def commande_succes(
         )
 
         if not order:
-
             return RedirectResponse(
-                url="/",
+                url=f"/?lang={lang}",
                 status_code=303
             )
+
+        # -----------------------------------------------------
+        # ARTICLES
+        # -----------------------------------------------------
 
         items = (
             db.query(OrderItem)
@@ -512,16 +667,26 @@ async def commande_succes(
             .all()
         )
 
+        # -----------------------------------------------------
+        # MESSAGE
+        # -----------------------------------------------------
+
+        message = request.session.pop(
+            "message",
+            None
+        )
+
         return templates.TemplateResponse(
             request=request,
             name="commande_succes.html",
             context={
                 "order": order,
-                "items": items
+                "items": items,
+                "lang": lang,
+                "t": translations,
+                "message": message
             }
         )
 
     finally:
-
         db.close()
-

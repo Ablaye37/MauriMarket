@@ -1,8 +1,10 @@
 {% extends "base.html" %}
 
-{% block title %}Modifier le produit - MauriMarket{% endblock %}
+{% block title %}{{ t.edit_product }} - MauriMarket{% endblock %}
 
 {% block content %}
+
+{% set is_ar = lang == "ar" %}
 
 <style>
     .edit-page {
@@ -28,6 +30,7 @@
     .back-button {
         width: 42px;
         height: 42px;
+        flex-shrink: 0;
         border-radius: 50%;
         display: flex;
         align-items: center;
@@ -42,6 +45,10 @@
     .back-button:hover {
         background: #e2e8f0;
         transform: translateX(-2px);
+    }
+
+    [dir="rtl"] .back-button:hover {
+        transform: translateX(2px);
     }
 
     .edit-title {
@@ -121,6 +128,7 @@
         width: 18px;
         height: 18px;
         cursor: pointer;
+        flex-shrink: 0;
     }
 
     .delivery-box label {
@@ -290,6 +298,10 @@
             border-radius: 15px;
         }
 
+        .edit-topbar {
+            align-items: flex-start;
+        }
+
         .edit-title {
             font-size: 23px;
         }
@@ -315,258 +327,251 @@
     }
 </style>
 
-<div class="edit-page">
+<div class="edit-page" dir="{{ 'rtl' if is_ar else 'ltr' }}">
 
-    <div class="edit-card">
+<div class="edit-card">
 
-        <div class="edit-topbar">
+    <div class="edit-topbar">
 
-            {# IMPORTANT :
-               On regarde directement si le produit appartient à une boutique.
-               Pas besoin de from_boutique.
-            #}
+        {% if product.boutique_id %}
 
-            {% if product.boutique_id %}
-                <a
-                    href="/ma-boutique"
-                    class="back-button"
-                    aria-label="Retour à ma boutique"
-                    title="Retour à ma boutique"
-                >
-                    ←
-                </a>
-            {% else %}
-                <a
-                    href="/mes-annonces"
-                    class="back-button"
-                    aria-label="Retour à mes annonces"
-                    title="Retour à mes annonces"
-                >
-                    ←
-                </a>
-            {% endif %}
+            <a
+                href="/ma-boutique?lang={{ lang }}"
+                class="back-button"
+                aria-label="{{ t.back_to_my_shop }}"
+                title="{{ t.back_to_my_shop }}"
+            >
+                {% if is_ar %}→{% else %}←{% endif %}
+            </a>
 
-            <div>
-                <h1 class="edit-title">Modifier le produit</h1>
-                <p class="edit-subtitle">
-                    Modifiez les informations de votre annonce.
-                </p>
+        {% else %}
+
+            <a
+                href="/mes-annonces?lang={{ lang }}"
+                class="back-button"
+                aria-label="{{ t.back_to_my_listings }}"
+                title="{{ t.back_to_my_listings }}"
+            >
+                {% if is_ar %}→{% else %}←{% endif %}
+            </a>
+
+        {% endif %}
+
+        <div>
+            <h1 class="edit-title">
+                {{ t.edit_product }}
+            </h1>
+
+            <p class="edit-subtitle">
+                {{ t.edit_product_description }}
+            </p>
+        </div>
+
+    </div>
+
+
+    <form
+        action="/annonce/modifier/{{ product.id }}?lang={{ lang }}"
+        method="POST"
+        enctype="multipart/form-data"
+        id="editProductForm"
+    >
+
+        <!-- TITRE -->
+
+        <div class="form-group">
+
+            <label for="title">
+                {{ t.title }}
+                <span class="required">*</span>
+            </label>
+
+            <input
+                type="text"
+                id="title"
+                name="title"
+                class="form-control"
+                value="{% if is_ar %}{{ product.title_ar|default(product.title, true) }}{% else %}{{ product.title|default('', true) }}{% endif %}"
+                required
+                maxlength="200"
+                placeholder="{{ t.product_title_placeholder }}"
+            >
+
+        </div>
+
+
+        <!-- DESCRIPTION -->
+
+        <div class="form-group">
+
+            <label for="description">
+                {{ t.description }}
+                <span class="required">*</span>
+            </label>
+
+            <textarea
+                id="description"
+                name="description"
+                class="form-control"
+                required
+                maxlength="5000"
+                placeholder="{{ t.product_description_placeholder }}"
+            >{% if is_ar %}{{ product.description_ar|default(product.description, true) }}{% else %}{{ product.description|default('', true) }}{% endif %}</textarea>
+
+            <div class="help-text">
+                {{ t.product_description_help }}
             </div>
 
         </div>
 
-        <form
-            action="/annonce/modifier/{{ product.id }}"
-            method="POST"
-            enctype="multipart/form-data"
-            id="editProductForm"
-        >
 
-            <!-- TITRE -->
+        <!-- PRIX + VILLE -->
+
+        <div class="form-row">
+
             <div class="form-group">
-                <label for="title">
-                    Titre <span class="required">*</span>
+
+                <label for="price">
+                    {{ t.price }} (MRU)
+                    <span class="required">*</span>
+                </label>
+
+                <input
+                    type="number"
+                    id="price"
+                    name="price"
+                    class="form-control"
+                    value="{{ product.price|default('', true) }}"
+                    min="0"
+                    step="0.01"
+                    required
+                    placeholder="{{ t.price_placeholder }}"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="city">
+                    {{ t.city }}
+                    <span class="required">*</span>
                 </label>
 
                 <input
                     type="text"
-                    id="title"
-                    name="title"
+                    id="city"
+                    name="city"
                     class="form-control"
-                    value="{{ product.title|default('', true) }}"
+                    value="{% if is_ar %}{{ product.city_ar|default(product.city, true) }}{% else %}{{ product.city|default('', true) }}{% endif %}"
                     required
-                    maxlength="200"
-                    placeholder="Exemple : iPhone 15 Pro Max"
+                    maxlength="100"
+                    placeholder="{{ t.city_placeholder }}"
                 >
-            </div>
-
-
-            <!-- DESCRIPTION -->
-            <div class="form-group">
-                <label for="description">
-                    Description <span class="required">*</span>
-                </label>
-
-                <textarea
-                    id="description"
-                    name="description"
-                    class="form-control"
-                    required
-                    maxlength="5000"
-                    placeholder="Décrivez votre produit..."
-                >{{ product.description|default('', true) }}</textarea>
-
-                <div class="help-text">
-                    Donnez le maximum d'informations utiles à l'acheteur.
-                </div>
-            </div>
-
-
-            <!-- PRIX + VILLE -->
-            <div class="form-row">
-
-                <div class="form-group">
-                    <label for="price">
-                        Prix (MRU) <span class="required">*</span>
-                    </label>
-
-                    <input
-                        type="number"
-                        id="price"
-                        name="price"
-                        class="form-control"
-                        value="{{ product.price|default('', true) }}"
-                        min="0"
-                        step="0.01"
-                        required
-                        placeholder="Exemple : 25000"
-                    >
-                </div>
-
-
-                <div class="form-group">
-                    <label for="city">
-                        Ville <span class="required">*</span>
-                    </label>
-
-                    <input
-                        type="text"
-                        id="city"
-                        name="city"
-                        class="form-control"
-                        value="{{ product.city|default('', true) }}"
-                        required
-                        maxlength="100"
-                        placeholder="Exemple : Nouakchott"
-                    >
-                </div>
 
             </div>
 
-
-            <!-- CONDITION + CATEGORIE -->
-            <div class="form-row">
-
-                <div class="form-group">
-
-                    <label for="condition">
-                        État <span class="required">*</span>
-                    </label>
-
-                    <select
-                        id="condition"
-                        name="condition"
-                        class="form-select"
-                        required
-                    >
-
-                        <option
-                            value="Neuf"
-                            {% if product.condition == "Neuf" %}selected{% endif %}
-                        >
-                            Neuf
-                        </option>
-
-                        <option
-                            value="Comme neuf"
-                            {% if product.condition == "Comme neuf" %}selected{% endif %}
-                        >
-                            Comme neuf
-                        </option>
-
-                        <option
-                            value="Très bon état"
-                            {% if product.condition == "Très bon état" %}selected{% endif %}
-                        >
-                            Très bon état
-                        </option>
-
-                        <option
-                            value="Bon état"
-                            {% if product.condition == "Bon état" %}selected{% endif %}
-                        >
-                            Bon état
-                        </option>
-
-                        <option
-                            value="État moyen"
-                            {% if product.condition == "État moyen" %}selected{% endif %}
-                        >
-                            État moyen
-                        </option>
-
-                        <option
-                            value="À réparer"
-                            {% if product.condition == "À réparer" %}selected{% endif %}
-                        >
-                            À réparer
-                        </option>
-
-                    </select>
-
-                </div>
+        </div>
 
 
-                <div class="form-group">
+        <!-- CONDITION + CATEGORIE -->
 
-                    <label for="category_id">
-                        Catégorie <span class="required">*</span>
-                    </label>
+        <div class="form-row">
 
-                    <select
-                        id="category_id"
-                        name="category_id"
-                        class="form-select"
-                        required
-                    >
-
-                        <option value="">
-                            Sélectionner une catégorie
-                        </option>
-
-                        {% for category in categories %}
-
-                            <option
-                                value="{{ category.id }}"
-                                {% if product.category_id == category.id %}selected{% endif %}
-                            >
-                                {{ category.name }}
-                            </option>
-
-                        {% endfor %}
-
-                    </select>
-
-                </div>
-
-            </div>
-
-
-            <!-- SOUS-CATEGORIE -->
             <div class="form-group">
 
-                <label for="subcategory_id">
-                    Sous-catégorie
+                <label for="condition">
+                    {{ t.condition }}
+                    <span class="required">*</span>
                 </label>
 
                 <select
-                    id="subcategory_id"
-                    name="subcategory_id"
+                    id="condition"
+                    name="condition"
                     class="form-select"
+                    required
+                >
+
+                    <option
+                        value="Neuf"
+                        {% if product.condition == "Neuf" or product.condition_ar == "جديد" %}selected{% endif %}
+                    >
+                        {{ t.condition_new }}
+                    </option>
+
+                    <option
+                        value="Comme neuf"
+                        {% if product.condition == "Comme neuf" or product.condition_ar == "مثل الجديد" %}selected{% endif %}
+                    >
+                        {{ t.condition_like_new }}
+                    </option>
+
+                    <option
+                        value="Très bon état"
+                        {% if product.condition == "Très bon état" or product.condition_ar == "حالة جيدة جدًا" %}selected{% endif %}
+                    >
+                        {{ t.condition_very_good }}
+                    </option>
+
+                    <option
+                        value="Bon état"
+                        {% if product.condition == "Bon état" or product.condition_ar == "حالة جيدة" %}selected{% endif %}
+                    >
+                        {{ t.condition_good }}
+                    </option>
+
+                    <option
+                        value="État moyen"
+                        {% if product.condition == "État moyen" or product.condition_ar == "حالة متوسطة" %}selected{% endif %}
+                    >
+                        {{ t.condition_average }}
+                    </option>
+
+                    <option
+                        value="À réparer"
+                        {% if product.condition == "À réparer" or product.condition_ar == "يحتاج إلى إصلاح" %}selected{% endif %}
+                    >
+                        {{ t.condition_to_repair }}
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- CATEGORIE -->
+
+            <div class="form-group">
+
+                <label for="category_id">
+                    {{ t.category }}
+                    <span class="required">*</span>
+                </label>
+
+                <select
+                    id="category_id"
+                    name="category_id"
+                    class="form-select"
+                    required
                 >
 
                     <option value="">
-                        Sélectionner une sous-catégorie
+                        {{ t.select_category }}
                     </option>
 
-                    {% for subcategory in subcategories %}
+                    {% for category in categories %}
 
                         <option
-                            value="{{ subcategory.id }}"
-                            data-category-id="{{ subcategory.category_id }}"
-                            {% if product.subcategory_id == subcategory.id %}selected{% endif %}
+                            value="{{ category.id }}"
+                            {% if product.category_id == category.id %}selected{% endif %}
                         >
-                            {{ subcategory.name }}
+
+                            {% if is_ar %}
+                                {{ category.name_ar or category.name }}
+                            {% else %}
+                                {{ category.name }}
+                            {% endif %}
+
                         </option>
 
                     {% endfor %}
@@ -575,195 +580,250 @@
 
             </div>
 
+        </div>
 
-            <!-- LIVRAISON -->
-            <div class="form-group">
 
-                <div class="delivery-box">
+        <!-- SOUS-CATEGORIE -->
 
-                    <input
-                        type="checkbox"
-                        id="delivery_available"
-                        name="delivery_available"
-                        value="1"
-                        {% if product.delivery_available %}checked{% endif %}
+        <div class="form-group">
+
+            <label for="subcategory_id">
+                {{ t.subcategory }}
+            </label>
+
+            <select
+                id="subcategory_id"
+                name="subcategory_id"
+                class="form-select"
+            >
+
+                <option value="">
+                    {{ t.select_subcategory }}
+                </option>
+
+                {% for subcategory in subcategories %}
+
+                    <option
+                        value="{{ subcategory.id }}"
+                        data-category-id="{{ subcategory.category_id }}"
+                        {% if product.subcategory_id == subcategory.id %}selected{% endif %}
                     >
 
-                    <label for="delivery_available">
-                        Livraison disponible
-                    </label>
+                        {% if is_ar %}
+                            {{ subcategory.name_ar or subcategory.name }}
+                        {% else %}
+                            {{ subcategory.name }}
+                        {% endif %}
 
-                </div>
+                    </option>
 
-            </div>
+                {% endfor %}
+
+            </select>
+
+        </div>
 
 
-            <!-- IMAGE -->
-            <div class="form-group image-section">
+        <!-- LIVRAISON -->
 
-                <label for="image">
-                    Image du produit
-                </label>
+        <div class="form-group">
 
-                {% if product.image %}
-
-                    <div class="current-image">
-
-                        <p class="help-text">
-                            Image actuelle :
-                        </p>
-
-                        <img
-                            src="{{ product.image }}"
-                            alt="{{ product.title|default('Produit')|e }}"
-                            onerror="this.style.display='none';"
-                        >
-
-                    </div>
-
-                {% endif %}
-
+            <div class="delivery-box">
 
                 <input
-                    type="file"
-                    id="image"
-                    name="image"
-                    accept="image/*"
+                    type="checkbox"
+                    id="delivery_available"
+                    name="delivery_available"
+                    value="1"
+                    {% if product.delivery_available %}checked{% endif %}
                 >
 
-                <div class="help-text">
-                    Laissez vide pour conserver l'image actuelle.
-                </div>
+                <label for="delivery_available">
+                    {{ t.delivery_available }}
+                </label>
+
+            </div>
+
+        </div>
 
 
-                <div
-                    class="image-preview"
-                    id="imagePreview"
-                >
+        <!-- IMAGE -->
+
+        <div class="form-group image-section">
+
+            <label for="image">
+                {{ t.product_image }}
+            </label>
+
+            {% if product.image %}
+
+                <div class="current-image">
+
+                    <p class="help-text">
+                        {{ t.current_image }}
+                    </p>
 
                     <img
-                        id="previewImage"
-                        src=""
-                        alt="Aperçu de la nouvelle image"
+                        src="{{ product.image }}"
+                        alt="{% if is_ar %}{{ product.title_ar or product.title }}{% else %}{{ product.title }}{% endif %}"
+                        onerror="this.style.display='none';"
                     >
-
-                    <div class="preview-title">
-                        Aperçu de la nouvelle image
-                    </div>
 
                 </div>
 
+            {% endif %}
+
+            <input
+                type="file"
+                id="image"
+                name="image"
+                accept="image/*"
+            >
+
+            <div class="help-text">
+                {{ t.keep_current_image }}
             </div>
 
+            <div
+                class="image-preview"
+                id="imagePreview"
+            >
 
-            <!-- APERÇU -->
-            <div class="live-preview">
-
-                <h3>
-                    Aperçu
-                </h3>
-
-                <div class="preview-card">
-
-                    <div
-                        class="preview-card-title"
-                        id="previewTitle"
-                    >
-                        {{ product.title|default('Titre du produit', true) }}
-                    </div>
-
-                    <div
-                        class="preview-card-description"
-                        id="previewDescription"
-                    >
-                        {{ product.description|default('Description du produit', true) }}
-                    </div>
-
-                    <div
-                        class="preview-card-price"
-                        id="previewPrice"
-                    >
-                        {{ product.price|default('0', true) }} MRU
-                    </div>
-
-                    <div class="preview-meta">
-
-                        <span
-                            class="preview-badge"
-                            id="previewCity"
-                        >
-                            {{ product.city|default('Ville', true) }}
-                        </span>
-
-                        <span
-                            class="preview-badge"
-                            id="previewCondition"
-                        >
-                            {{ product.condition|default('État', true) }}
-                        </span>
-
-                        <span
-                            class="preview-badge"
-                            id="previewDelivery"
-                            {% if not product.delivery_available %}
-                            style="display:none;"
-                            {% endif %}
-                        >
-                            Livraison disponible
-                        </span>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <!-- BOUTONS -->
-            <div class="actions">
-
-                {# IMPORTANT :
-                   Annuler revient également au bon endroit
-                   selon l'association réelle du produit.
-                #}
-
-                {% if product.boutique_id %}
-
-                    <a
-                        href="/ma-boutique"
-                        class="btn btn-cancel"
-                    >
-                        Annuler
-                    </a>
-
-                {% else %}
-
-                    <a
-                        href="/mes-annonces"
-                        class="btn btn-cancel"
-                    >
-                        Annuler
-                    </a>
-
-                {% endif %}
-
-
-                <button
-                    type="submit"
-                    class="btn btn-save"
-                    id="saveButton"
+                <img
+                    id="previewImage"
+                    src=""
+                    alt="{{ t.new_image_preview }}"
                 >
-                    Enregistrer les modifications
-                </button>
+
+                <div class="preview-title">
+                    {{ t.new_image_preview }}
+                </div>
 
             </div>
 
-        </form>
+        </div>
 
-    </div>
+
+        <!-- APERÇU -->
+
+        <div class="live-preview">
+
+            <h3>
+                {{ t.preview }}
+            </h3>
+
+            <div class="preview-card">
+
+                <div
+                    class="preview-card-title"
+                    id="previewTitle"
+                >
+                    {% if is_ar %}
+                        {{ product.title_ar|default(product.title, true) }}
+                    {% else %}
+                        {{ product.title|default(t.product_title, true) }}
+                    {% endif %}
+                </div>
+
+                <div
+                    class="preview-card-description"
+                    id="previewDescription"
+                >
+                    {% if is_ar %}
+                        {{ product.description_ar|default(product.description, true) }}
+                    {% else %}
+                        {{ product.description|default(t.product_description, true) }}
+                    {% endif %}
+                </div>
+
+                <div
+                    class="preview-card-price"
+                    id="previewPrice"
+                >
+                    {{ product.price|default('0', true) }} MRU
+                </div>
+
+                <div class="preview-meta">
+
+                    <span
+                        class="preview-badge"
+                        id="previewCity"
+                    >
+                        {% if is_ar %}
+                            {{ product.city_ar|default(product.city, true) }}
+                        {% else %}
+                            {{ product.city|default(t.city, true) }}
+                        {% endif %}
+                    </span>
+
+                    <span
+                        class="preview-badge"
+                        id="previewCondition"
+                    >
+                        {% if is_ar %}
+                            {{ product.condition_ar|default(product.condition, true) }}
+                        {% else %}
+                            {{ product.condition|default(t.condition, true) }}
+                        {% endif %}
+                    </span>
+
+                    <span
+                        class="preview-badge"
+                        id="previewDelivery"
+                        {% if not product.delivery_available %}
+                        style="display:none;"
+                        {% endif %}
+                    >
+                        {{ t.delivery_available }}
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- BOUTONS -->
+
+        <div class="actions">
+
+            {% if product.boutique_id %}
+
+                <a
+                    href="/ma-boutique?lang={{ lang }}"
+                    class="btn btn-cancel"
+                >
+                    {{ t.cancel }}
+                </a>
+
+            {% else %}
+
+                <a
+                    href="/mes-annonces?lang={{ lang }}"
+                    class="btn btn-cancel"
+                >
+                    {{ t.cancel }}
+                </a>
+
+            {% endif %}
+
+            <button
+                type="submit"
+                class="btn btn-save"
+                id="saveButton"
+            >
+                {{ t.save_changes }}
+            </button>
+
+        </div>
+
+    </form>
 
 </div>
+```
 
+</div>
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
@@ -796,38 +856,32 @@ document.addEventListener("DOMContentLoaded", function () {
     /*
      * APERÇU TITRE
      */
+
     if (titleInput) {
-
         titleInput.addEventListener("input", function () {
-
             previewTitle.textContent =
-                this.value.trim() || "Titre du produit";
-
+                this.value.trim() || "{{ t.product_title }}";
         });
-
     }
 
 
     /*
      * APERÇU DESCRIPTION
      */
+
     if (descriptionInput) {
-
         descriptionInput.addEventListener("input", function () {
-
             previewDescription.textContent =
-                this.value.trim() || "Description du produit";
-
+                this.value.trim() || "{{ t.product_description }}";
         });
-
     }
 
 
     /*
      * APERÇU PRIX
      */
-    if (priceInput) {
 
+    if (priceInput) {
         priceInput.addEventListener("input", function () {
 
             const value = this.value.trim();
@@ -836,65 +890,63 @@ document.addEventListener("DOMContentLoaded", function () {
                 value ? value + " MRU" : "0 MRU";
 
         });
-
     }
 
 
     /*
      * APERÇU VILLE
      */
-    if (cityInput) {
 
+    if (cityInput) {
         cityInput.addEventListener("input", function () {
 
             previewCity.textContent =
-                this.value.trim() || "Ville";
+                this.value.trim() || "{{ t.city }}";
 
         });
-
     }
 
 
     /*
      * APERÇU ÉTAT
      */
-    if (conditionInput) {
 
+    if (conditionInput) {
         conditionInput.addEventListener("change", function () {
 
+            const selectedOption =
+                this.options[this.selectedIndex];
+
             previewCondition.textContent =
-                this.value || "État";
+                selectedOption
+                    ? selectedOption.textContent.trim()
+                    : "{{ t.condition }}";
 
         });
-
     }
 
 
     /*
      * APERÇU LIVRAISON
      */
-    if (deliveryInput) {
 
+    if (deliveryInput) {
         deliveryInput.addEventListener("change", function () {
 
             if (this.checked) {
-
                 previewDelivery.style.display = "inline-flex";
-
             } else {
-
                 previewDelivery.style.display = "none";
-
             }
 
         });
-
     }
 
 
     /*
      * APERÇU IMAGE
      */
+
     if (imageInput) {
 
         imageInput.addEventListener("change", function () {
@@ -907,13 +959,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 previewImage.src = "";
 
                 return;
-
             }
 
 
             if (!file.type.startsWith("image/")) {
 
-                alert("Veuillez sélectionner une image valide.");
+                alert("{{ t.select_valid_image }}");
 
                 this.value = "";
 
@@ -921,7 +972,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 previewImage.src = "";
 
                 return;
-
             }
 
 
@@ -944,6 +994,7 @@ document.addEventListener("DOMContentLoaded", function () {
     /*
      * FILTRAGE DES SOUS-CATÉGORIES
      */
+
     function filterSubcategories() {
 
         if (!categorySelect || !subcategorySelect) {
@@ -953,12 +1004,16 @@ document.addEventListener("DOMContentLoaded", function () {
         const categoryId = categorySelect.value;
 
         const options =
-            subcategorySelect.querySelectorAll("option[data-category-id]");
+            subcategorySelect.querySelectorAll(
+                "option[data-category-id]"
+            );
+
 
         options.forEach(function (option) {
 
             const optionCategoryId =
                 option.getAttribute("data-category-id");
+
 
             if (!categoryId || optionCategoryId === categoryId) {
 
@@ -994,27 +1049,28 @@ document.addEventListener("DOMContentLoaded", function () {
     /*
      * PROTECTION CONTRE DOUBLE CLIC
      */
+
     if (form) {
 
         form.addEventListener("submit", function (event) {
 
             if (!form.checkValidity()) {
-
                 return;
-
             }
+
 
             if (saveButton.disabled) {
 
                 event.preventDefault();
-                return;
 
+                return;
             }
+
 
             saveButton.disabled = true;
 
             saveButton.textContent =
-                "Enregistrement...";
+                "{{ t.saving }}";
 
         });
 

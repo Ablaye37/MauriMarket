@@ -1,18 +1,65 @@
 {% extends "base.html" %}
 
-{% block title %}Détail produit - MauriMarket{% endblock %}
+{% block title %}
+{{ t.product_detail_title }} - MauriMarket
+{% endblock %}
 
 {% block content %}
 
-<div class="container py-3">
+{% set is_ar = lang == "ar" %}
 
-    <div class="row g-4">
+{% if is_ar %}
+{% set display_title = product.title_ar or product.title %}
+{% set display_description = product.description_ar or product.description %}
+{% set display_city = product.city_ar or product.city %}
+{% set display_condition = product.condition_ar or product.condition %}
 
-        <!-- =====================================================
+
+{% if product.category %}
+    {% set display_category = product.category.name_ar or product.category.name %}
+{% else %}
+    {% set display_category = none %}
+{% endif %}
+
+
+{% else %}
+{% set display_title = product.title %}
+{% set display_description = product.description %}
+{% set display_city = product.city %}
+{% set display_condition = product.condition %}
+
+
+{% if product.category %}
+    {% set display_category = product.category.name %}
+{% else %}
+    {% set display_category = none %}
+{% endif %}
+
+
+{% endif %}
+
+<div
+    class="product-detail-page"
+    dir="{{ 'rtl' if is_ar else 'ltr' }}"
+>
+
+
+<!-- =====================================================
+     MESSAGE AJOUT AU PANIER
+====================================================== -->
+
+
+
+
+<div class="container py-3 py-md-4">
+
+    <div class="row g-4 align-items-start">
+
+        <!-- =================================================
              IMAGE DU PRODUIT
-        ====================================================== -->
+        ================================================== -->
 
-        <div class="col-lg-5">
+        <div class="col-12 col-lg-5">
 
             <div class="product-image-container">
 
@@ -20,344 +67,374 @@
 
                     <img
                         src="{{ product.image }}"
-                        class="img-fluid rounded shadow product-main-image"
-                        alt="{{ product.title }}"
+                        class="img-fluid rounded shadow-sm product-main-image"
+                        alt="{{ display_title }}"
                     >
 
                 {% else %}
 
                     <img
                         src="https://placehold.co/800x600?text=MauriMarket"
-                        class="img-fluid rounded shadow product-main-image"
-                        alt="Produit"
+                        class="img-fluid rounded shadow-sm product-main-image"
+                        alt="{{ t.product }}"
                     >
 
                 {% endif %}
 
-               </div>
+            </div>
 
         </div>
 
 
-        <!-- =====================================================
+        <!-- =================================================
              INFORMATIONS PRODUIT
-        ====================================================== -->
+        ================================================== -->
 
-        <div class="col-lg-6">
+        <div class="col-12 col-lg-6">
 
-            <!-- TITRE -->
+            <div class="product-content">
 
-            <h2 class="fw-bold mb-3">
-                {{ product.title }}
-            </h2>
+                <!-- TITRE -->
 
-
-            <!-- PRIX -->
-            <h3 class="text-success fw-bold mb-2">
-                 {{ product.price }} MRU
-            </h3>
-
-            <div class="text-muted mb-4">
-              <i class="bi bi-eye"></i>
-                {{ product.views }} vue{% if product.views != 1 %}s{% endif %}
-            </div>
-
-            <!-- =================================================
-                 DESCRIPTION
-            ================================================== -->
-
-            <div class="product-info-block">
-
-                <p class="mb-1">
-                    <strong>Description :</strong>
-                </p>
-
-                <p class="text-muted mb-0">
-
-                    {% if product.description %}
-
-                        {{ product.description }}
-
-                    {% else %}
-
-                        Aucune description disponible.
-
-                    {% endif %}
-
-                </p>
-
-            </div>
+                <h1 class="product-title fw-bold mb-3">
+                    {{ display_title }}
+                </h1>
 
 
-            <hr>
+                <!-- PRIX -->
 
-
-            <!-- =================================================
-                 VILLE
-            ================================================== -->
-
-            <div class="product-detail-line">
-
-                <i class="bi bi-geo-alt-fill text-success"></i>
-
-                <strong>Ville :</strong>
-
-                <span>
-
-                    {% if product.city %}
-
-                        {{ product.city }}
-
-                    {% else %}
-
-                        Non renseignée
-
-                    {% endif %}
-
-                </span>
-
-            </div>
-
-
-            <!-- =================================================
-                 ETAT
-            ================================================== -->
-
-            <div class="product-detail-line">
-
-                <i class="bi bi-box-seam text-success"></i>
-
-                <strong>Etat :</strong>
-
-                <span>
-
-                    {% if product.condition %}
-
-                        {{ product.condition }}
-
-                    {% else %}
-
-                        Non renseigné
-
-                    {% endif %}
-
-                </span>
-
-            </div>
-
-
-            <!-- =================================================
-                 LIVRAISON
-            ================================================== -->
-
-            <div class="product-delivery">
-
-                <div class="delivery-icon">
-
-                    <i class="bi bi-truck"></i>
-
+                <div class="product-price mb-2">
+                    {{ product.price }} MRU
                 </div>
 
 
-                <div class="delivery-content">
+                <!-- VUES -->
 
-                    {% if product.delivery_available == True %}
+                <div class="product-views text-muted mb-4">
 
-                        <strong class="delivery-available">
-                            Livraison disponible
-                        </strong>
+                    <i class="bi bi-eye"></i>
 
+                    <span>
+                        {{ product.views }}
+                    </span>
+
+                    {% if product.views == 1 %}
                         <span>
-                            Ce produit peut être livré.
+                            {{ t.view }}
                         </span>
-
                     {% else %}
-
-                        <strong class="delivery-unavailable">
-                            Livraison non disponible
-                        </strong>
-
                         <span>
-                            Ce produit n'est pas indiqué comme livrable.
+                            {{ t.views }}
                         </span>
-
                     {% endif %}
 
                 </div>
-
-            </div>
-
-
-            <!-- =================================================
-                 CATÉGORIE
-            ================================================== -->
-
-            <div class="product-detail-line">
-
-                <i class="bi bi-tag-fill text-success"></i>
-
-                <strong>Catégorie :</strong>
-
-                <span>
-
-                    {% if product.category %}
-
-                        {{ product.category.name }}
-
-                    {% else %}
-
-                        Non renseignée
-
-                    {% endif %}
-
-                </span>
-
-            </div>
-
-
-            <hr>
-
-
-            <!-- =================================================
-                 VENDEUR
-            ================================================== -->
-
-            <h5 class="fw-bold mb-3">
-
-                <i class="bi bi-person-fill text-success"></i>
-
-                Vendeur
-
-            </h5>
-
-
-            {% if product.user %}
-
-                <div class="seller-info">
-
-                    <p>
-
-                        <strong>Nom :</strong>
-
-                        {{ product.user.full_name }}
-
-                    </p>
-
-
-                    <p>
-
-                        <strong>Téléphone :</strong>
-
-                        {{ product.user.phone }}
-
-                    </p>
-
-                </div>
-
-            {% else %}
-
-                <p class="text-muted">
-
-                    Informations vendeur indisponibles.
-
-                </p>
-
-            {% endif %}
-
-
-            <!-- =================================================
-                 ACTIONS
-            ================================================== -->
-
-            <div class="mt-4 d-flex flex-wrap gap-2">
-
-
-                <!-- RETOUR -->
-
-                <a
-                    href="/"
-                    class="btn btn-outline-secondary"
-                >
-
-                    <i class="bi bi-arrow-left"></i>
-
-                    Retour
-
-                </a>
-
-
-                <!-- AJOUTER AU PANIER -->
-
-                <form
-                    action="/panier/ajouter/{{ product.id }}"
-                    method="post"
-                    class="d-inline"
-                >
-
-                    <button
-                        type="submit"
-                        class="btn btn-warning"
-                    >
-
-                        <i class="bi bi-cart-plus"></i>
-
-                        Ajouter au panier
-
-                    </button>
-
-                </form>
-
-
-                <!-- COMMANDER -->
-
-                <form
-                    action="/commande/direct/{{ product.id }}"
-                    method="post"
-                    class="d-inline"
-                >
-
-                    <button
-                        type="submit"
-                        class="btn btn-success"
-                    >
-
-                        <i class="bi bi-bag-check"></i>
-
-                        Commander
-
-                    </button>
-
-                </form>
 
 
                 <!-- =================================================
-                     WHATSAPP
+                     DESCRIPTION
                 ================================================== -->
 
-                {% if product.user and product.user.phone %}
+                <div class="product-description-section">
 
-                    {% set whatsapp_message =
-                        "Bonjour, je suis intéressé(e) par ce produit sur MauriMarket 🛍️\n\n"
-                        ~ "Produit : " ~ product.title ~ "\n"
-                        ~ "Prix : " ~ product.price ~ " MRU\n"
-                        ~ "Ville : " ~ (product.city if product.city else "Non renseignée") ~ "\n\n"
-                        ~ "Pouvez-vous me confirmer s’il est toujours disponible ?"
-                    %}
+                    <strong class="product-description-title">
+                        {{ t.description }}
+                    </strong>
+
+                    <div class="product-description">
+                        {{ display_description or t.no_description }}
+                    </div>
+
+                </div>
+
+
+                <hr>
+
+
+                <!-- =================================================
+                     VILLE
+                ================================================== -->
+
+                <div class="product-detail-line">
+
+                    <i class="bi bi-geo-alt-fill text-success"></i>
+
+                    <strong>
+                        {{ t.city }} :
+                    </strong>
+
+                    <span>
+
+                        {% if display_city %}
+                            {{ display_city }}
+                        {% else %}
+                            {{ t.not_specified }}
+                        {% endif %}
+
+                    </span>
+
+                </div>
+
+
+                <!-- =================================================
+                     ETAT
+                ================================================== -->
+
+                <div class="product-detail-line">
+
+                    <i class="bi bi-box-seam text-success"></i>
+
+                    <strong>
+                        {{ t.condition }} :
+                    </strong>
+
+                    <span>
+
+                        {% if display_condition %}
+                            {{ display_condition }}
+                        {% else %}
+                            {{ t.not_specified }}
+                        {% endif %}
+
+                    </span>
+
+                </div>
+
+
+                <!-- =================================================
+                     LIVRAISON
+                ================================================== -->
+
+                <div class="product-delivery">
+
+                    <div class="delivery-icon">
+                        <i class="bi bi-truck"></i>
+                    </div>
+
+                    <div class="delivery-content">
+
+                        {% if product.delivery_available == True %}
+
+                            <strong class="delivery-available">
+                                {{ t.delivery_available }}
+                            </strong>
+
+                            <span>
+                                {{ t.product_can_be_delivered }}
+                            </span>
+
+                        {% else %}
+
+                            <strong class="delivery-unavailable">
+                                {{ t.delivery_unavailable }}
+                            </strong>
+
+                            <span>
+                                {{ t.product_not_available_for_delivery }}
+                            </span>
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+
+                <!-- =================================================
+                     CATEGORIE
+                ================================================== -->
+
+                <div class="product-detail-line">
+
+                    <i class="bi bi-tag-fill text-success"></i>
+
+                    <strong>
+                        {{ t.category }} :
+                    </strong>
+
+                    <span>
+
+                        {% if display_category %}
+                            {{ display_category }}
+                        {% else %}
+                            {{ t.not_specified }}
+                        {% endif %}
+
+                    </span>
+
+                </div>
+
+
+                <hr>
+
+
+                <!-- =================================================
+                     VENDEUR
+                ================================================== -->
+
+                <h2 class="seller-title fw-bold mb-3">
+
+                    <i class="bi bi-person-fill text-success"></i>
+
+                    {{ t.seller }}
+
+                </h2>
+
+
+                {% if product.user %}
+
+                    <div class="seller-info">
+
+                        <p>
+
+                            <strong>
+                                {{ t.name }} :
+                            </strong>
+
+                            <span>
+                                {{ product.user.full_name }}
+                            </span>
+
+                        </p>
+
+
+                        <p>
+
+                            <strong>
+                                {{ t.phone }} :
+                            </strong>
+
+                            <span>
+                                {{ product.user.phone }}
+                            </span>
+
+                        </p>
+
+                    </div>
+
+                {% else %}
+
+                    <p class="text-muted">
+                        {{ t.seller_information_unavailable }}
+                    </p>
+
+                {% endif %}
+
+
+                <!-- =================================================
+                     ACTIONS
+                ================================================== -->
+
+                <div class="product-actions">
+
+                    <!-- RETOUR -->
 
                     <a
-                        href="https://wa.me/{{ product.user.phone }}?text={{ whatsapp_message | urlencode }}"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class="btn btn-success"
+                        href="/?lang={{ lang }}"
+                        class="btn btn-outline-secondary"
                     >
 
-                        <i class="bi bi-whatsapp"></i>
+                        <i class="bi bi-arrow-left"></i>
 
-                        Contacter le vendeur
+                        {{ t.back }}
 
                     </a>
 
-                {% endif %}
+
+                    <!-- AJOUTER AU PANIER -->
+
+                    <form
+                        action="/panier/ajouter/{{ product.id }}?lang={{ lang }}"
+                        method="post"
+                    >
+
+                        <button
+                            type="submit"
+                            class="btn btn-warning"
+                        >
+
+                            <i class="bi bi-cart-plus"></i>
+
+                            {{ t.add_to_cart }}
+
+                        </button>
+
+                    </form>
+
+
+                    <!-- COMMANDER -->
+
+                    <form
+                        action="/commande/direct/{{ product.id }}?lang={{ lang }}"
+                        method="post"
+                    >
+
+                        <button
+                            type="submit"
+                            class="btn btn-success"
+                        >
+
+                            <i class="bi bi-bag-check"></i>
+
+                            {{ t.order }}
+
+                        </button>
+
+                    </form>
+
+
+                    <!-- =================================================
+                         WHATSAPP
+                    ================================================== -->
+
+                    {% if product.user and product.user.phone %}
+
+                        {% if is_ar %}
+
+                            {% set whatsapp_product_title = product.title_ar or product.title %}
+
+                            {% set whatsapp_city = product.city_ar or product.city or "غير محددة" %}
+
+                            {% set whatsapp_message =
+                                "مرحبًا، أنا مهتم بهذا المنتج على MauriMarket 🛍️\n\n"
+                                ~ "المنتج : " ~ whatsapp_product_title ~ "\n"
+                                ~ "السعر : " ~ product.price ~ " MRU\n"
+                                ~ "المدينة : " ~ whatsapp_city ~ "\n\n"
+                                ~ "هل يمكنك تأكيد أنه لا يزال متاحًا؟"
+                            %}
+
+                        {% else %}
+
+                            {% set whatsapp_product_title = product.title %}
+
+                            {% set whatsapp_city = product.city or "Non renseignée" %}
+
+                            {% set whatsapp_message =
+                                "Bonjour, je suis intéressé(e) par ce produit sur MauriMarket 🛍️\n\n"
+                                ~ "Produit : " ~ whatsapp_product_title ~ "\n"
+                                ~ "Prix : " ~ product.price ~ " MRU\n"
+                                ~ "Ville : " ~ whatsapp_city ~ "\n\n"
+                                ~ "Pouvez-vous me confirmer s’il est toujours disponible ?"
+                            %}
+
+                        {% endif %}
+
+                        <a
+                            href="https://wa.me/{{ product.user.phone }}?text={{ whatsapp_message | urlencode }}"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="btn btn-whatsapp"
+                        >
+
+                            <i class="bi bi-whatsapp"></i>
+
+                            {{ t.contact_seller }}
+
+                        </a>
+
+                    {% endif %}
+
+                </div>
 
             </div>
 
@@ -366,223 +443,710 @@
     </div>
 
 </div>
+```
 
-
-<!-- =========================================================
-     STYLE
-========================================================== -->
+</div>
 
 <style>
 
-.product-image-container {
-
-    width: 100%;
-
-}
-
-
-.product-main-image {
-
-    width: 100%;
-
-    max-height: 600px;
-
-    object-fit: contain;
-
-    background: #f8f9fa;
-
-}
-
-
 /* =========================================================
-   INFORMATIONS
+   PAGE PRODUIT
 ========================================================= */
 
-.product-info-block {
-
-    margin-bottom: 15px;
-
+.product-detail-page {
+    width: 100%;
+    min-height: 100vh;
 }
 
+.product-detail-page .container {
+    max-width: 1200px;
+}
+
+/* =========================================================
+   MESSAGE AJOUT AU PANIER
+========================================================= */
+
+.product-message-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 15px 15px 0;
+}
+
+.product-success-message {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #b7dfc8;
+    border-radius: 8px;
+    background: #f0faf4;
+    color: #146c43;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.5;
+}
+
+.product-success-message i {
+    flex-shrink: 0;
+    font-size: 17px;
+}
+
+.product-detail-page[dir="rtl"] .product-success-message {
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+}
+
+/* =========================================================
+   IMAGE PRODUIT
+========================================================= */
+
+.product-image-container {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.product-main-image {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 580px;
+    object-fit: contain;
+    background: #f8f9fa;
+    border-radius: 12px;
+}
+
+/* =========================================================
+   CONTENU
+========================================================= */
+
+.product-content {
+    width: 100%;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+/* =========================================================
+   TITRE
+========================================================= */
+
+.product-title {
+    margin: 0;
+    color: #172033;
+    font-size: 30px;
+    font-weight: 700;
+    line-height: 1.3;
+    word-break: break-word;
+}
+
+/* =========================================================
+   PRIX
+========================================================= */
+
+.product-price {
+    margin-top: 4px;
+    color: #198754;
+    font-size: 27px;
+    font-weight: 800;
+    line-height: 1.3;
+}
+
+/* =========================================================
+   VUES
+========================================================= */
+
+.product-views {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 7px;
+    color: #6c757d;
+    font-size: 13px;
+}
+
+.product-views i {
+    font-size: 14px;
+}
+
+/* =========================================================
+   DESCRIPTION
+   AUCUNE HAUTEUR DEFINIE
+========================================================= */
+
+.product-description-section {
+    margin: 18px 0;
+    padding: 0;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+}
+
+.product-description-title {
+    display: block;
+    margin: 0 0 6px 0;
+    padding: 0;
+    color: #172033;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.product-description {
+    margin: 0;
+    padding: 0;
+    color: #667085;
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 1.6;
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+/* =========================================================
+   LIGNES D'INFORMATIONS
+========================================================= */
 
 .product-detail-line {
-
     display: flex;
-
     align-items: center;
-
-    gap: 8px;
-
-    margin-bottom: 14px;
-
-    font-size: 15px;
-
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-bottom: 13px;
+    color: #475467;
+    font-size: 14px;
+    line-height: 1.5;
 }
-
 
 .product-detail-line i {
-
-    font-size: 17px;
-
+    flex-shrink: 0;
+    color: #198754;
+    font-size: 16px;
 }
-
 
 .product-detail-line strong {
-
-    margin-right: 3px;
-
+    color: #172033;
+    font-weight: 600;
 }
 
+.product-detail-line span {
+    color: #475467;
+    font-weight: 400;
+    overflow-wrap: anywhere;
+}
+
+/* =========================================================
+   SEPARATEURS
+========================================================= */
+
+.product-content hr {
+    margin: 20px 0;
+    border: 0;
+    border-top: 1px solid #e9ecef;
+    opacity: 1;
+}
 
 /* =========================================================
    LIVRAISON
 ========================================================= */
 
 .product-delivery {
-
     display: flex;
-
     align-items: center;
-
-    gap: 14px;
-
-    margin-top: 20px;
-
-    margin-bottom: 20px;
-
-    padding: 14px 16px;
-
-    background: #eaf7f0;
-
-    border: 1px solid #cfe9dc;
-
+    gap: 12px;
+    margin: 19px 0;
+    padding: 12px 14px;
+    background: #f4faf7;
+    border: 1px solid #dcefe4;
     border-radius: 10px;
-
 }
-
 
 .delivery-icon {
-
-    width: 42px;
-
-    height: 42px;
-
-    min-width: 42px;
-
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
     display: flex;
-
     align-items: center;
-
     justify-content: center;
-
-    border-radius: 50%;
-
     background: #198754;
-
-    color: white;
-
+    color: #ffffff;
+    border-radius: 50%;
 }
-
 
 .delivery-icon i {
-
-    font-size: 21px;
-
+    font-size: 19px;
 }
-
 
 .delivery-content {
-
     display: flex;
-
     flex-direction: column;
-
+    min-width: 0;
 }
-
 
 .delivery-content strong {
-
-    font-size: 15px;
-
+    font-size: 14px;
     font-weight: 700;
-
+    line-height: 1.4;
 }
-
-
-.delivery-available {
-
-    color: #198754;
-
-}
-
-
-.delivery-unavailable {
-
-    color: #6c757d;
-
-}
-
 
 .delivery-content span {
-
-    margin-top: 3px;
-
+    margin-top: 2px;
     color: #667085;
-
-    font-size: 13px;
-
+    font-size: 12px;
+    line-height: 1.5;
 }
 
+.delivery-available {
+    color: #198754;
+}
+
+.delivery-unavailable {
+    color: #6c757d;
+}
 
 /* =========================================================
    VENDEUR
 ========================================================= */
 
-.seller-info p {
+.seller-title {
+    margin: 0 0 12px;
+    color: #172033;
+    font-size: 19px;
+    font-weight: 700;
+}
 
-    margin-bottom: 8px;
+.seller-title i {
+    color: #198754;
+}
+
+.seller-info {
+    padding: 0;
+    background: transparent;
+}
+
+.seller-info p {
+    margin: 0 0 7px;
+    color: #475467;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.seller-info p:last-child {
+    margin-bottom: 0;
+}
+
+.seller-info strong {
+    color: #172033;
+    font-weight: 600;
+}
+
+/* =========================================================
+   ACTIONS
+========================================================= */
+
+.product-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 24px;
+}
+
+.product-actions form {
+    margin: 0;
+}
+
+.product-actions .btn {
+    min-height: 44px;
+    padding: 10px 17px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1;
+    white-space: nowrap;
+    transition:
+        background-color 0.18s ease,
+        border-color 0.18s ease,
+        color 0.18s ease,
+        box-shadow 0.18s ease,
+        transform 0.18s ease;
+}
+
+.product-actions .btn i {
+    font-size: 16px;
+    line-height: 1;
+}
+
+.product-actions .btn-outline-secondary {
+    background: #ffffff;
+    border: 1px solid #d0d5dd;
+    color: #344054;
+    box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+}
+
+.product-actions .btn-outline-secondary:hover {
+    background: #f9fafb;
+    border-color: #98a2b3;
+    color: #172033;
+    box-shadow: 0 2px 5px rgba(16, 24, 40, 0.08);
+    transform: translateY(-1px);
+}
+
+.product-actions .btn-warning {
+    background: #ffffff;
+    border: 1px solid #d0d5dd;
+    color: #344054;
+    box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+}
+
+.product-actions .btn-warning:hover {
+    background: #f9fafb;
+    border-color: #98a2b3;
+    color: #172033;
+    box-shadow: 0 2px 5px rgba(16, 24, 40, 0.08);
+    transform: translateY(-1px);
+}
+
+.product-actions .btn-success {
+    background: #198754;
+    border: 1px solid #198754;
+    color: #ffffff;
+    box-shadow: 0 2px 4px rgba(25, 135, 84, 0.18);
+}
+
+.product-actions .btn-success:hover {
+    background: #157347;
+    border-color: #157347;
+    color: #ffffff;
+    box-shadow: 0 4px 9px rgba(25, 135, 84, 0.24);
+    transform: translateY(-1px);
+}
+
+/* =========================================================
+   WHATSAPP
+========================================================= */
+
+.btn-whatsapp {
+    background: #ffffff;
+    border: 1px solid #25d366;
+    color: #128c4a;
+    box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+}
+
+.btn-whatsapp:hover,
+.btn-whatsapp:focus,
+.btn-whatsapp:active {
+    background: #f1fff6;
+    border-color: #20bd5a;
+    color: #0d7a40;
+    box-shadow: 0 3px 8px rgba(37, 211, 102, 0.18);
+    transform: translateY(-1px);
+}
+
+.product-actions .btn:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 2px rgba(16, 24, 40, 0.08);
+}
+
+/* =========================================================
+   RTL ARABE
+========================================================= */
+
+.product-detail-page[dir="rtl"] {
+    text-align: right;
+}
+
+.product-detail-page[dir="rtl"] .product-content {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.product-detail-page[dir="rtl"] .product-detail-line {
+    flex-direction: row;
+}
+
+.product-detail-page[dir="rtl"] .product-delivery {
+    direction: rtl;
+}
+
+.product-detail-page[dir="rtl"] .product-views {
+    justify-content: flex-start;
+}
+
+.product-detail-page[dir="rtl"] .product-actions {
+    justify-content: flex-start;
+}
+
+.product-detail-page[dir="rtl"] .bi-arrow-left {
+    transform: rotate(180deg);
+}
+
+.product-detail-page[dir="rtl"] .product-description {
+    text-align: right;
+}
+
+/* =========================================================
+   ECRANS MOYENS
+========================================================= */
+
+@media (max-width: 1100px) {
+
+    .product-title {
+        font-size: 27px;
+    }
+
+    .product-price {
+        font-size: 25px;
+    }
+
+    .product-main-image {
+        max-height: 520px;
+    }
 
 }
 
+/* =========================================================
+   TABLETTE
+========================================================= */
+
+@media (max-width: 991.98px) {
+
+    .product-detail-page .container {
+        max-width: 850px;
+    }
+
+    .product-message-container {
+        padding-left: 14px;
+        padding-right: 14px;
+    }
+
+    .product-content {
+        padding: 0;
+    }
+
+    .product-title {
+        font-size: 26px;
+    }
+
+    .product-price {
+        font-size: 24px;
+    }
+
+    .product-main-image {
+        max-height: 480px;
+    }
+
+}
 
 /* =========================================================
    MOBILE
 ========================================================= */
 
-@media (max-width: 768px) {
+@media (max-width: 767.98px) {
+
+    .product-message-container {
+        padding: 12px 14px 0;
+    }
+
+    .product-success-message {
+        padding: 11px 13px;
+        font-size: 13px;
+        border-radius: 8px;
+    }
+
+    .product-success-message i {
+        font-size: 16px;
+    }
+
+    .product-detail-page .container {
+        padding-left: 14px;
+        padding-right: 14px;
+    }
+
+    .product-image-container {
+        margin-bottom: 4px;
+    }
 
     .product-main-image {
-
-        max-height: 400px;
-
+        width: 100%;
+        max-height: 390px;
+        min-height: 0;
+        border-radius: 10px;
     }
 
+    .product-content {
+        padding: 0;
+    }
+
+    .product-title {
+        margin-top: 4px;
+        font-size: 23px;
+        line-height: 1.35;
+    }
+
+    .product-price {
+        margin-top: 5px;
+        font-size: 22px;
+    }
+
+    .product-views {
+        margin-top: 6px;
+        font-size: 12px;
+    }
+
+    .product-description {
+        font-size: 14px;
+        line-height: 1.6;
+    }
 
     .product-detail-line {
-
-        font-size: 14px;
-
+        margin-bottom: 11px;
+        font-size: 13px;
+        gap: 6px;
     }
 
+    .product-detail-line i {
+        font-size: 15px;
+    }
+
+    .product-content hr {
+        margin: 17px 0;
+    }
 
     .product-delivery {
-
-        padding: 12px;
-
+        margin: 16px 0;
+        padding: 11px 12px;
+        gap: 10px;
     }
 
+    .delivery-icon {
+        width: 38px;
+        height: 38px;
+        min-width: 38px;
+    }
+
+    .delivery-icon i {
+        font-size: 17px;
+    }
 
     .delivery-content strong {
-
-        font-size: 14px;
-
+        font-size: 13px;
     }
 
-
     .delivery-content span {
+        font-size: 11px;
+    }
 
-        font-size: 12px;
+    .seller-title {
+        font-size: 18px;
+        margin-bottom: 10px;
+    }
 
+    .seller-info p {
+        font-size: 13px;
+    }
+
+    .product-actions {
+        width: 100%;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 9px;
+        margin-top: 22px;
+    }
+
+    .product-actions form {
+        width: 100%;
+    }
+
+    .product-actions .btn,
+    .product-actions form .btn {
+        width: 100%;
+        min-height: 45px;
+        padding: 11px 15px;
+        border-radius: 8px;
+        font-size: 14px;
+    }
+
+    .product-actions .btn i {
+        font-size: 16px;
+    }
+
+}
+
+/* =========================================================
+   PETIT MOBILE
+========================================================= */
+
+@media (max-width: 420px) {
+
+    .product-message-container {
+        padding-left: 11px;
+        padding-right: 11px;
+    }
+
+    .product-detail-page .container {
+        padding-left: 11px;
+        padding-right: 11px;
+    }
+
+    .product-main-image {
+        max-height: 320px;
+    }
+
+    .product-title {
+        font-size: 21px;
+    }
+
+    .product-price {
+        font-size: 21px;
+    }
+
+    .product-description {
+        font-size: 14px;
+        line-height: 1.55;
+    }
+
+    .product-detail-line {
+        font-size: 13px;
+    }
+
+    .product-delivery {
+        padding: 10px;
+    }
+
+    .seller-title {
+        font-size: 17px;
+    }
+
+}
+
+/* =========================================================
+   TRES PETIT ECRAN
+========================================================= */
+
+@media (max-width: 360px) {
+
+    .product-main-image {
+        max-height: 280px;
+    }
+
+    .product-title {
+        font-size: 20px;
+    }
+
+    .product-price {
+        font-size: 20px;
+    }
+
+    .product-actions .btn,
+    .product-actions form .btn {
+        font-size: 13px;
     }
 
 }
@@ -590,3 +1154,4 @@
 </style>
 
 {% endblock %}
+

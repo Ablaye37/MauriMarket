@@ -10,6 +10,9 @@ from app.models.subcategory import SubCategory
 from app.models.boutique import Boutique
 from app.models.order_item import OrderItem
 
+from app.translations.fr import TRANSLATIONS as FR
+from app.translations.ar import TRANSLATIONS as AR
+
 from supabase import create_client
 from dotenv import load_dotenv
 
@@ -93,10 +96,6 @@ async def upload_product_image(
     image: UploadFile
 ):
 
-    # --------------------------------------------------------
-    # Aucun fichier
-    # --------------------------------------------------------
-
     if not image or not image.filename:
 
         print(
@@ -106,10 +105,6 @@ async def upload_product_image(
         return None
 
 
-    # --------------------------------------------------------
-    # Vérifier Supabase
-    # --------------------------------------------------------
-
     if not supabase:
 
         print(
@@ -118,10 +113,6 @@ async def upload_product_image(
 
         return None
 
-
-    # --------------------------------------------------------
-    # Vérifier le type d'image
-    # --------------------------------------------------------
 
     extension = ALLOWED_IMAGE_TYPES.get(
         image.content_type
@@ -137,10 +128,6 @@ async def upload_product_image(
         return None
 
 
-    # --------------------------------------------------------
-    # Lire le fichier
-    # --------------------------------------------------------
-
     content = await image.read()
 
     if not content:
@@ -152,20 +139,12 @@ async def upload_product_image(
         return None
 
 
-    # --------------------------------------------------------
-    # Générer un nom unique
-    # --------------------------------------------------------
-
     filename = (
         f"product_"
         f"{uuid4().hex}"
         f"{extension}"
     )
 
-
-    # --------------------------------------------------------
-    # Envoyer sur Supabase
-    # --------------------------------------------------------
 
     try:
 
@@ -234,10 +213,6 @@ async def upload_product_image(
         return None
 
 
-    # --------------------------------------------------------
-    # Récupérer URL publique
-    # --------------------------------------------------------
-
     try:
 
         public_url = (
@@ -301,19 +276,44 @@ def get_global_context(
             .first()
         )
 
+
+    # --------------------------------------------------------
+    # LANGUE
+    # --------------------------------------------------------
+
+    lang = request.query_params.get(
+        "lang",
+        "fr"
+    )
+
+    if lang not in ["fr", "ar"]:
+
+        lang = "fr"
+
+
+    translations = (
+        FR
+        if lang == "fr"
+        else AR
+    )
+
+
     return {
 
-        "user_name": user_name,
+        "user_name":
+            user_name,
 
-        "user_id": user_id,
+        "user_id":
+            user_id,
 
-        "panier_count": len(panier),
+        "panier_count":
+            len(panier),
 
         "lang":
-            request.query_params.get(
-                "lang",
-                "fr"
-            ),
+            lang,
+
+        "t":
+            translations,
 
         "has_boutique":
             boutique is not None,
@@ -434,8 +434,6 @@ async def publish_page(
 # ============================================================
 # PUBLIER DEPUIS MA BOUTIQUE
 # GET /ma-boutique/publier
-#
-# BOUTIQUE UNIQUEMENT
 # ============================================================
 
 @router.get("/ma-boutique/publier")
@@ -542,13 +540,21 @@ async def publish_product(
 
     title: str = Form(...),
 
+    title_ar: str = Form(""),
+
     description: str = Form(...),
+
+    description_ar: str = Form(""),
 
     price: float = Form(...),
 
     city: str = Form(...),
 
+    city_ar: str = Form(""),
+
     condition: str = Form(...),
+
+    condition_ar: str = Form(""),
 
     category_id: int = Form(...),
 
@@ -573,22 +579,22 @@ async def publish_product(
 
     try:
 
-        # ----------------------------------------------------
-        # NETTOYAGE
-        # ----------------------------------------------------
-
         title = title.strip()
+
+        title_ar = title_ar.strip()
 
         description = description.strip()
 
+        description_ar = description_ar.strip()
+
         city = city.strip()
+
+        city_ar = city_ar.strip()
 
         condition = condition.strip()
 
+        condition_ar = condition_ar.strip()
 
-        # ----------------------------------------------------
-        # VÉRIFIER CATÉGORIE
-        # ----------------------------------------------------
 
         category = (
             db.query(Category)
@@ -606,10 +612,6 @@ async def publish_product(
             )
 
 
-        # ----------------------------------------------------
-        # VÉRIFIER SOUS-CATÉGORIE
-        # ----------------------------------------------------
-
         subcategory = (
             db.query(SubCategory)
             .filter(
@@ -626,10 +628,6 @@ async def publish_product(
             )
 
 
-        # ----------------------------------------------------
-        # VÉRIFIER RELATION
-        # ----------------------------------------------------
-
         if (
             subcategory.category_id
             != category_id
@@ -645,30 +643,30 @@ async def publish_product(
             )
 
 
-        # ----------------------------------------------------
-        # IMAGE SUPABASE
-        # ----------------------------------------------------
-
         image_path = await upload_product_image(
             image
         )
 
 
-        # ----------------------------------------------------
-        # CRÉER ANNONCE SIMPLE
-        # ----------------------------------------------------
-
         product = Product(
 
             title=title,
 
+            title_ar=title_ar or None,
+
             description=description,
+
+            description_ar=description_ar or None,
 
             price=price,
 
             city=city,
 
+            city_ar=city_ar or None,
+
             condition=condition,
+
+            condition_ar=condition_ar or None,
 
             category_id=category_id,
 
@@ -678,8 +676,6 @@ async def publish_product(
 
             image=image_path,
 
-            # IMPORTANT :
-            # aucune boutique
             boutique_id=None
         )
 
@@ -702,6 +698,16 @@ async def publish_product(
         print(
             "ID :",
             product.id
+        )
+
+        print(
+            "TITRE FR :",
+            product.title
+        )
+
+        print(
+            "TITRE AR :",
+            product.title_ar
         )
 
         print(
@@ -728,12 +734,6 @@ async def publish_product(
             "=========================================="
         )
 
-
-        # ----------------------------------------------------
-        # IMPORTANT
-        # APRÈS UNE ANNONCE SIMPLE :
-        # /mes-annonces
-        # ----------------------------------------------------
 
         return RedirectResponse(
             "/mes-annonces",
@@ -764,8 +764,6 @@ async def publish_product(
 # ============================================================
 # TRAITEMENT PUBLICATION MA BOUTIQUE
 # POST /ma-boutique/publier
-#
-# BOUTIQUE UNIQUEMENT
 # ============================================================
 
 @router.post("/ma-boutique/publier")
@@ -775,13 +773,21 @@ async def publish_boutique_product(
 
     title: str = Form(...),
 
+    title_ar: str = Form(""),
+
     description: str = Form(...),
+
+    description_ar: str = Form(""),
 
     price: float = Form(...),
 
     city: str = Form(...),
 
+    city_ar: str = Form(""),
+
     condition: str = Form(...),
+
+    condition_ar: str = Form(""),
 
     category_id: int = Form(...),
 
@@ -806,10 +812,6 @@ async def publish_boutique_product(
 
     try:
 
-        # ----------------------------------------------------
-        # RÉCUPÉRER LA BOUTIQUE
-        # ----------------------------------------------------
-
         boutique = (
             db.query(Boutique)
             .filter(
@@ -826,22 +828,22 @@ async def publish_boutique_product(
             )
 
 
-        # ----------------------------------------------------
-        # NETTOYAGE
-        # ----------------------------------------------------
-
         title = title.strip()
+
+        title_ar = title_ar.strip()
 
         description = description.strip()
 
+        description_ar = description_ar.strip()
+
         city = city.strip()
+
+        city_ar = city_ar.strip()
 
         condition = condition.strip()
 
+        condition_ar = condition_ar.strip()
 
-        # ----------------------------------------------------
-        # VÉRIFIER CATÉGORIE
-        # ----------------------------------------------------
 
         category = (
             db.query(Category)
@@ -859,10 +861,6 @@ async def publish_boutique_product(
             )
 
 
-        # ----------------------------------------------------
-        # VÉRIFIER SOUS-CATÉGORIE
-        # ----------------------------------------------------
-
         subcategory = (
             db.query(SubCategory)
             .filter(
@@ -879,10 +877,6 @@ async def publish_boutique_product(
             )
 
 
-        # ----------------------------------------------------
-        # VÉRIFIER RELATION
-        # ----------------------------------------------------
-
         if (
             subcategory.category_id
             != category_id
@@ -898,30 +892,30 @@ async def publish_boutique_product(
             )
 
 
-        # ----------------------------------------------------
-        # IMAGE SUPABASE
-        # ----------------------------------------------------
-
         image_path = await upload_product_image(
             image
         )
 
 
-        # ----------------------------------------------------
-        # CRÉER PRODUIT DANS LA BOUTIQUE
-        # ----------------------------------------------------
-
         product = Product(
 
             title=title,
 
+            title_ar=title_ar or None,
+
             description=description,
+
+            description_ar=description_ar or None,
 
             price=price,
 
             city=city,
 
+            city_ar=city_ar or None,
+
             condition=condition,
+
+            condition_ar=condition_ar or None,
 
             category_id=category_id,
 
@@ -931,8 +925,6 @@ async def publish_boutique_product(
 
             image=image_path,
 
-            # IMPORTANT :
-            # produit lié à la boutique
             boutique_id=boutique.id
         )
 
@@ -958,6 +950,16 @@ async def publish_boutique_product(
         )
 
         print(
+            "TITRE FR :",
+            product.title
+        )
+
+        print(
+            "TITRE AR :",
+            product.title_ar
+        )
+
+        print(
             "BOUTIQUE ID :",
             boutique.id
         )
@@ -976,11 +978,6 @@ async def publish_boutique_product(
             "=========================================="
         )
 
-
-        # ----------------------------------------------------
-        # IMPORTANT
-        # UNE PUBLICATION BOUTIQUE RESTE DANS LA BOUTIQUE
-        # ----------------------------------------------------
 
         return RedirectResponse(
             "/ma-boutique",
@@ -1011,9 +1008,6 @@ async def publish_boutique_product(
 # ============================================================
 # MES ANNONCES
 # GET /mes-annonces
-#
-# AFFICHER UNIQUEMENT LES ANNONCES SIMPLES
-# boutique_id IS NULL
 # ============================================================
 
 @router.get("/mes-annonces")
@@ -1036,10 +1030,6 @@ async def mes_annonces(
 
     try:
 
-        # ----------------------------------------------------
-        # RÉCUPÉRER UNIQUEMENT LES ANNONCES SIMPLES
-        # ----------------------------------------------------
-
         products = (
             db.query(Product)
             .filter(
@@ -1056,19 +1046,11 @@ async def mes_annonces(
         )
 
 
-        # ----------------------------------------------------
-        # CONTEXTE GLOBAL
-        # ----------------------------------------------------
-
         global_context = get_global_context(
             request,
             db
         )
 
-
-        # ----------------------------------------------------
-        # AFFICHER MES ANNONCES
-        # ----------------------------------------------------
 
         return templates.TemplateResponse(
 
@@ -1107,9 +1089,6 @@ async def mes_annonces(
 # ============================================================
 # DÉTAIL DU PRODUIT
 # GET /produit/{product_id}
-#
-# À chaque ouverture :
-# +1 vue
 # ============================================================
 
 @router.get("/produit/{product_id}")
@@ -1124,10 +1103,6 @@ async def product_detail(
     db = SessionLocal()
 
     try:
-
-        # ----------------------------------------------------
-        # RÉCUPÉRER LE PRODUIT
-        # ----------------------------------------------------
 
         product = (
             db.query(Product)
@@ -1144,15 +1119,19 @@ async def product_detail(
 
         if not product:
 
+            lang = request.query_params.get(
+                "lang",
+                "fr"
+            )
+
+            if lang not in ["fr", "ar"]:
+                lang = "fr"
+
             return RedirectResponse(
-                "/",
+                f"/?lang={lang}",
                 status_code=303
             )
 
-
-        # ----------------------------------------------------
-        # AJOUTER UNE VUE
-        # ----------------------------------------------------
 
         product.views += 1
 
@@ -1161,19 +1140,11 @@ async def product_detail(
         db.refresh(product)
 
 
-        # ----------------------------------------------------
-        # CONTEXTE GLOBAL
-        # ----------------------------------------------------
-
         global_context = get_global_context(
             request,
             db
         )
 
-
-        # ----------------------------------------------------
-        # AFFICHER LE PRODUIT
-        # ----------------------------------------------------
 
         return templates.TemplateResponse(
 
@@ -1200,8 +1171,16 @@ async def product_detail(
             repr(e)
         )
 
+        lang = request.query_params.get(
+            "lang",
+            "fr"
+        )
+
+        if lang not in ["fr", "ar"]:
+            lang = "fr"
+
         return RedirectResponse(
-            "/",
+            f"/?lang={lang}",
             status_code=303
         )
 
@@ -1241,10 +1220,6 @@ async def modifier_annonce_page(
 
     try:
 
-        # ----------------------------------------------------
-        # RÉCUPÉRER LE PRODUIT
-        # ----------------------------------------------------
-
         product = (
             db.query(Product)
             .filter(
@@ -1268,10 +1243,6 @@ async def modifier_annonce_page(
             )
 
 
-        # ----------------------------------------------------
-        # CATÉGORIES
-        # ----------------------------------------------------
-
         categories = get_categories(
             db
         )
@@ -1281,19 +1252,11 @@ async def modifier_annonce_page(
         )
 
 
-        # ----------------------------------------------------
-        # CONTEXTE GLOBAL
-        # ----------------------------------------------------
-
         global_context = get_global_context(
             request,
             db
         )
 
-
-        # ----------------------------------------------------
-        # AFFICHER LE FORMULAIRE
-        # ----------------------------------------------------
 
         return templates.TemplateResponse(
 
@@ -1349,13 +1312,21 @@ async def modifier_annonce(
 
     title: str = Form(...),
 
+    title_ar: str = Form(""),
+
     description: str = Form(...),
+
+    description_ar: str = Form(""),
 
     price: float = Form(...),
 
     city: str = Form(...),
 
+    city_ar: str = Form(""),
+
     condition: str = Form(...),
+
+    condition_ar: str = Form(""),
 
     category_id: int = Form(...),
 
@@ -1381,10 +1352,6 @@ async def modifier_annonce(
 
     try:
 
-        # ----------------------------------------------------
-        # RÉCUPÉRER LE PRODUIT
-        # ----------------------------------------------------
-
         product = (
             db.query(Product)
             .filter(
@@ -1403,37 +1370,22 @@ async def modifier_annonce(
             )
 
 
-        # ----------------------------------------------------
-        # DÉTERMINER LE TYPE
-        #
-        # SIMPLE :
-        # boutique_id = None
-        #
-        # BOUTIQUE :
-        # boutique_id != None
-        # ----------------------------------------------------
-
-        is_simple_announcement = (
-            product.boutique_id is None
-        )
-
-
-        # ----------------------------------------------------
-        # NETTOYAGE
-        # ----------------------------------------------------
-
         title = title.strip()
+
+        title_ar = title_ar.strip()
 
         description = description.strip()
 
+        description_ar = description_ar.strip()
+
         city = city.strip()
+
+        city_ar = city_ar.strip()
 
         condition = condition.strip()
 
+        condition_ar = condition_ar.strip()
 
-        # ----------------------------------------------------
-        # VÉRIFIER CATÉGORIE
-        # ----------------------------------------------------
 
         category = (
             db.query(Category)
@@ -1446,22 +1398,11 @@ async def modifier_annonce(
 
         if not category:
 
-            if is_simple_announcement:
-
-                return RedirectResponse(
-                    f"/annonce/modifier/{product_id}",
-                    status_code=303
-                )
-
             return RedirectResponse(
                 f"/annonce/modifier/{product_id}",
                 status_code=303
             )
 
-
-        # ----------------------------------------------------
-        # VÉRIFIER SOUS-CATÉGORIE
-        # ----------------------------------------------------
 
         subcategory = (
             db.query(SubCategory)
@@ -1480,10 +1421,6 @@ async def modifier_annonce(
             )
 
 
-        # ----------------------------------------------------
-        # VÉRIFIER RELATION
-        # ----------------------------------------------------
-
         if (
             subcategory.category_id
             != category_id
@@ -1500,18 +1437,34 @@ async def modifier_annonce(
 
 
         # ----------------------------------------------------
-        # MODIFIER LES INFORMATIONS
+        # MISE À JOUR DES INFORMATIONS
         # ----------------------------------------------------
 
         product.title = title
 
+        product.title_ar = (
+            title_ar or None
+        )
+
         product.description = description
+
+        product.description_ar = (
+            description_ar or None
+        )
 
         product.price = price
 
         product.city = city
 
+        product.city_ar = (
+            city_ar or None
+        )
+
         product.condition = condition
+
+        product.condition_ar = (
+            condition_ar or None
+        )
 
         product.category_id = category_id
 
@@ -1520,9 +1473,6 @@ async def modifier_annonce(
 
         # ----------------------------------------------------
         # NOUVELLE IMAGE
-        #
-        # Si aucune nouvelle image :
-        # ancienne image conservée.
         # ----------------------------------------------------
 
         if image and image.filename:
@@ -1547,10 +1497,6 @@ async def modifier_annonce(
                 )
 
 
-        # ----------------------------------------------------
-        # ENREGISTRER
-        # ----------------------------------------------------
-
         db.commit()
 
         db.refresh(product)
@@ -1570,8 +1516,13 @@ async def modifier_annonce(
         )
 
         print(
-            "TITRE :",
+            "TITRE FR :",
             product.title
+        )
+
+        print(
+            "TITRE AR :",
+            product.title_ar
         )
 
         print(
@@ -1588,10 +1539,6 @@ async def modifier_annonce(
             "=========================================="
         )
 
-
-        # ----------------------------------------------------
-        # RETOUR SELON LE TYPE
-        # ----------------------------------------------------
 
         if product.boutique_id is None:
 
@@ -1629,22 +1576,6 @@ async def modifier_annonce(
 # ============================================================
 # SUPPRIMER UNE ANNONCE
 # POST /annonce/supprimer/{product_id}
-#
-# SÉCURITÉ :
-#
-# - Vérifie que le produit appartient à l'utilisateur.
-#
-# - Si le produit n'a jamais été commandé :
-#       suppression définitive.
-#
-# - S'il existe dans OrderItem :
-#       désactivation uniquement.
-#
-# - Annonce simple :
-#       retour /mes-annonces
-#
-# - Produit boutique :
-#       retour /ma-boutique
 # ============================================================
 
 @router.post("/annonce/supprimer/{product_id}")
@@ -1672,10 +1603,6 @@ async def supprimer_annonce(
 
     try:
 
-        # ----------------------------------------------------
-        # RÉCUPÉRER LE PRODUIT
-        # ----------------------------------------------------
-
         product = (
             db.query(Product)
             .filter(
@@ -1699,18 +1626,10 @@ async def supprimer_annonce(
             )
 
 
-        # ----------------------------------------------------
-        # MÉMORISER LE TYPE AVANT SUPPRESSION
-        # ----------------------------------------------------
-
         is_simple_announcement = (
             product.boutique_id is None
         )
 
-
-        # ----------------------------------------------------
-        # VÉRIFIER SI LE PRODUIT EST DANS UNE COMMANDE
-        # ----------------------------------------------------
 
         order_item = (
             db.query(OrderItem)
@@ -1720,15 +1639,6 @@ async def supprimer_annonce(
             .first()
         )
 
-
-        # ----------------------------------------------------
-        # CAS 1 :
-        # PRODUIT DÉJÀ COMMANDÉ
-        #
-        # On ne supprime PAS le produit.
-        # On le désactive pour préserver
-        # l'historique des commandes.
-        # ----------------------------------------------------
 
         if order_item:
 
@@ -1768,13 +1678,6 @@ async def supprimer_annonce(
                 "=========================================="
             )
 
-
-        # ----------------------------------------------------
-        # CAS 2 :
-        # PRODUIT JAMAIS COMMANDÉ
-        #
-        # Suppression définitive.
-        # ----------------------------------------------------
 
         else:
 
@@ -1816,10 +1719,6 @@ async def supprimer_annonce(
             db.commit()
 
 
-        # ----------------------------------------------------
-        # RETOUR SELON LE TYPE
-        # ----------------------------------------------------
-
         if is_simple_announcement:
 
             return RedirectResponse(
@@ -1860,11 +1759,6 @@ async def supprimer_annonce(
             "=========================================="
         )
 
-
-        # ----------------------------------------------------
-        # EN CAS D'ERREUR :
-        # essayer de retourner au bon espace.
-        # ----------------------------------------------------
 
         try:
 

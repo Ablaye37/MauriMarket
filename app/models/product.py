@@ -30,30 +30,49 @@ class Product(Base):
     # =====================================================
     # INFORMATIONS PRODUIT
     # =====================================================
-
     title = Column(
-        String(200),
-        nullable=False
+    String(200),
+    nullable=False
     )
+
+    title_ar = Column(
+    String(200),
+    nullable=True
+)
 
     description = Column(
-        Text,
-        nullable=True
+    Text,
+    nullable=True
     )
 
+    description_ar = Column(
+    Text,
+    nullable=True
+    )   
+
     price = Column(
-        Float,
-        nullable=False
+    Float,
+    nullable=False
     )
 
     city = Column(
-        String(100),
-        nullable=True
+    String(100),
+    nullable=True
+    )
+
+    city_ar = Column(
+    String(100),
+    nullable=True
     )
 
     condition = Column(
-        String(50),
-        nullable=True
+    String(50),
+    nullable=True
+    )
+
+    condition_ar = Column(
+    String(50),
+    nullable=True
     )
 
     # =====================================================

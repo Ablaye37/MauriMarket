@@ -1,7 +1,11 @@
 {% extends "base.html" %}
 
 {% block title %}
+{% if lang == "ar" %}
+التوصيل - MauriMarket
+{% else %}
 Livraison - MauriMarket
+{% endif %}
 {% endblock %}
 
 {% block content %}
@@ -14,21 +18,31 @@ Livraison - MauriMarket
 
 <section class="delivery-hero">
 
-    <div class="delivery-hero-icon">
-        <i class="bi bi-truck"></i>
-    </div>
+```
+<div class="delivery-hero-icon">
+    <i class="bi bi-truck"></i>
+</div>
 
-    <h1>
+<h1>
+    {% if lang == "ar" %}
+        توصيل MauriMarket
+    {% else %}
         Livraison MauriMarket
-    </h1>
+    {% endif %}
+</h1>
 
-    <p>
+<p>
+    {% if lang == "ar" %}
+        اشترِ بسهولة عبر MauriMarket واستلم منتجاتك
+        في المكان الذي يناسبك.
+    {% else %}
         Achetez facilement sur MauriMarket et recevez
         vos produits à l'endroit qui vous convient.
-    </p>
+    {% endif %}
+</p>
+```
 
 </section>
-
 
 <!-- =================================================
      COMMENT ÇA MARCHE
@@ -36,103 +50,152 @@ Livraison - MauriMarket
 
 <section class="delivery-section">
 
-    <h2>
+```
+<h2>
+    {% if lang == "ar" %}
+        كيف يعمل التوصيل؟
+    {% else %}
         Comment fonctionne la livraison ?
-    </h2>
+    {% endif %}
+</h2>
 
-    <div class="delivery-steps">
+<div class="delivery-steps">
 
-        <div class="delivery-step">
+    <!-- ÉTAPE 1 -->
 
-            <div class="step-icon">
-                <i class="bi bi-cart-plus"></i>
-            </div>
+    <div class="delivery-step">
 
-            <div>
+        <div class="step-icon">
+            <i class="bi bi-cart-plus"></i>
+        </div>
 
-                <h3>
+        <div>
+
+            <h3>
+                {% if lang == "ar" %}
+                    1. اختر منتجك
+                {% else %}
                     1. Choisissez votre produit
-                </h3>
+                {% endif %}
+            </h3>
 
-                <p>
+            <p>
+                {% if lang == "ar" %}
+                    تصفح الإعلانات المتاحة واختر منتجًا
+                    يوفر خدمة التوصيل.
+                {% else %}
                     Consultez les annonces disponibles et
                     choisissez un produit proposant la livraison.
-                </p>
-
-            </div>
-
-        </div>
-
-
-        <div class="delivery-step">
-
-            <div class="step-icon">
-                <i class="bi bi-geo-alt"></i>
-            </div>
-
-            <div>
-
-                <h3>
-                    2. Indiquez votre lieu
-                </h3>
-
-                <p>
-                    Lors de votre commande, indiquez votre
-                    adresse ou votre lieu de livraison.
-                </p>
-
-            </div>
-
-        </div>
-
-
-        <div class="delivery-step">
-
-            <div class="step-icon">
-                <i class="bi bi-box-seam"></i>
-            </div>
-
-            <div>
-
-                <h3>
-                    3. Votre commande est préparée
-                </h3>
-
-                <p>
-                    Le vendeur prépare votre commande et
-                    celle-ci est prise en charge pour la livraison.
-                </p>
-
-            </div>
-
-        </div>
-
-
-        <div class="delivery-step">
-
-            <div class="step-icon">
-                <i class="bi bi-house-check"></i>
-            </div>
-
-            <div>
-
-                <h3>
-                    4. Recevez votre commande
-                </h3>
-
-                <p>
-                    Votre commande vous est livrée au lieu
-                    indiqué lors de votre achat.
-                </p>
-
-            </div>
+                {% endif %}
+            </p>
 
         </div>
 
     </div>
 
-</section>
 
+    <!-- ÉTAPE 2 -->
+
+    <div class="delivery-step">
+
+        <div class="step-icon">
+            <i class="bi bi-geo-alt"></i>
+        </div>
+
+        <div>
+
+            <h3>
+                {% if lang == "ar" %}
+                    2. حدد مكان التوصيل
+                {% else %}
+                    2. Indiquez votre lieu
+                {% endif %}
+            </h3>
+
+            <p>
+                {% if lang == "ar" %}
+                    عند إجراء الطلب، حدد عنوانك أو
+                    المكان الذي تريد استلام طلبك فيه.
+                {% else %}
+                    Lors de votre commande, indiquez votre
+                    adresse ou votre lieu de livraison.
+                {% endif %}
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- ÉTAPE 3 -->
+
+    <div class="delivery-step">
+
+        <div class="step-icon">
+            <i class="bi bi-box-seam"></i>
+        </div>
+
+        <div>
+
+            <h3>
+                {% if lang == "ar" %}
+                    3. يتم تجهيز طلبك
+                {% else %}
+                    3. Votre commande est préparée
+                {% endif %}
+            </h3>
+
+            <p>
+                {% if lang == "ar" %}
+                    يقوم البائع بتجهيز طلبك، ثم يتم تسليمه
+                    إلى خدمة التوصيل.
+                {% else %}
+                    Le vendeur prépare votre commande et
+                    celle-ci est prise en charge pour la livraison.
+                {% endif %}
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- ÉTAPE 4 -->
+
+    <div class="delivery-step">
+
+        <div class="step-icon">
+            <i class="bi bi-house-check"></i>
+        </div>
+
+        <div>
+
+            <h3>
+                {% if lang == "ar" %}
+                    4. استلم طلبك
+                {% else %}
+                    4. Recevez votre commande
+                {% endif %}
+            </h3>
+
+            <p>
+                {% if lang == "ar" %}
+                    يتم توصيل طلبك إلى المكان الذي حددته
+                    أثناء عملية الشراء.
+                {% else %}
+                    Votre commande vous est livrée au lieu
+                    indiqué lors de votre achat.
+                {% endif %}
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
+```
+
+</section>
 
 <!-- =================================================
      PAIEMENT
@@ -140,28 +203,38 @@ Livraison - MauriMarket
 
 <section class="delivery-payment">
 
-    <div class="payment-icon">
+```
+<div class="payment-icon">
 
-        <i class="bi bi-cash-coin"></i>
+    <i class="bi bi-cash-coin"></i>
 
-    </div>
+</div>
 
-    <div>
+<div>
 
-        <h2>
+    <h2>
+        {% if lang == "ar" %}
+            الدفع عند الاستلام
+        {% else %}
             Paiement à la livraison
-        </h2>
+        {% endif %}
+    </h2>
 
-        <p>
+    <p>
+        {% if lang == "ar" %}
+            بالنسبة للطلبات المعنية، يمكنك الدفع مباشرة
+            عند استلام طلبك.
+        {% else %}
             Pour les commandes concernées, vous pouvez
             payer directement lors de la réception de votre
             commande.
-        </p>
+        {% endif %}
+    </p>
 
-    </div>
+</div>
+```
 
 </section>
-
 
 <!-- =================================================
      INFORMATIONS
@@ -169,55 +242,88 @@ Livraison - MauriMarket
 
 <section class="delivery-info">
 
-    <div class="info-card">
+```
+<!-- INFO 1 -->
 
-        <i class="bi bi-truck"></i>
+<div class="info-card">
 
-        <h3>
+    <i class="bi bi-truck"></i>
+
+    <h3>
+        {% if lang == "ar" %}
+            التوصيل متاح
+        {% else %}
             Livraison disponible
-        </h3>
+        {% endif %}
+    </h3>
 
-        <p>
+    <p>
+        {% if lang == "ar" %}
+            توفر خدمة التوصيل يعتمد على المنتج والبائع.
+        {% else %}
             La disponibilité de la livraison dépend du
             produit et du vendeur.
-        </p>
+        {% endif %}
+    </p>
 
-    </div>
+</div>
 
 
-    <div class="info-card">
+<!-- INFO 2 -->
 
-        <i class="bi bi-geo-alt"></i>
+<div class="info-card">
 
-        <h3>
+    <i class="bi bi-geo-alt"></i>
+
+    <h3>
+        {% if lang == "ar" %}
+            عنوان التوصيل
+        {% else %}
             Adresse de livraison
-        </h3>
+        {% endif %}
+    </h3>
 
-        <p>
+    <p>
+        {% if lang == "ar" %}
+            اذكر بوضوح الحي أو المنطقة أو نقطة
+            الالتقاء الخاصة بك.
+        {% else %}
             Indiquez clairement votre quartier, votre zone
             ou votre point de rendez-vous.
-        </p>
+        {% endif %}
+    </p>
 
-    </div>
+</div>
 
 
-    <div class="info-card">
+<!-- INFO 3 -->
 
-        <i class="bi bi-telephone"></i>
+<div class="info-card">
 
-        <h3>
+    <i class="bi bi-telephone"></i>
+
+    <h3>
+        {% if lang == "ar" %}
+            هل تحتاج إلى مساعدة؟
+        {% else %}
             Besoin d'aide ?
-        </h3>
+        {% endif %}
+    </h3>
 
-        <p>
+    <p>
+        {% if lang == "ar" %}
+            تواصل مع MauriMarket إذا كانت لديك أي
+            أسئلة حول طلبك.
+        {% else %}
             Contactez MauriMarket si vous avez une question
             concernant votre commande.
-        </p>
+        {% endif %}
+    </p>
 
-    </div>
+</div>
+```
 
 </section>
-
 
 <!-- =================================================
      CTA
@@ -225,26 +331,39 @@ Livraison - MauriMarket
 
 <section class="delivery-cta">
 
-    <h2>
+```
+<h2>
+    {% if lang == "ar" %}
+        ابحث عن منتجك القادم
+    {% else %}
         Trouvez votre prochain produit
-    </h2>
+    {% endif %}
+</h2>
 
-    <p>
+<p>
+    {% if lang == "ar" %}
+        اكتشف الإعلانات والمنتجات المتاحة على MauriMarket.
+    {% else %}
         Découvrez les annonces disponibles sur MauriMarket.
-    </p>
+    {% endif %}
+</p>
 
-    <a
-        href="/?lang={{ lang }}"
-        class="delivery-button">
+<a
+    href="/?lang={{ lang }}"
+    class="delivery-button">
 
-        <i class="bi bi-search"></i>
+    <i class="bi bi-search"></i>
 
+    {% if lang == "ar" %}
+        اكتشف المنتجات
+    {% else %}
         Découvrir les produits
+    {% endif %}
 
-    </a>
+</a>
+```
 
 </section>
-
 
 </div>
 
@@ -664,6 +783,45 @@ Livraison - MauriMarket
 
 
 /* =====================================================
+   RTL ARABE
+===================================================== */
+
+html[dir="rtl"] .delivery-page {
+
+    direction: rtl;
+
+}
+
+
+html[dir="rtl"] .delivery-step {
+
+    text-align: right;
+
+}
+
+
+html[dir="rtl"] .delivery-payment {
+
+    text-align: right;
+
+}
+
+
+html[dir="rtl"] .delivery-button {
+
+    flex-direction: row-reverse;
+
+}
+
+
+html[dir="rtl"] .delivery-step {
+
+    flex-direction: row;
+
+}
+
+
+/* =====================================================
    MOBILE
 ===================================================== */
 
@@ -691,6 +849,13 @@ Livraison - MauriMarket
     }
 
 
+    .delivery-hero p {
+
+        font-size: 14px;
+
+    }
+
+
     .delivery-steps {
 
         grid-template-columns: 1fr;
@@ -708,6 +873,43 @@ Livraison - MauriMarket
     .delivery-payment {
 
         align-items: flex-start;
+
+    }
+
+
+    .delivery-payment h2 {
+
+        font-size: 18px;
+
+    }
+
+
+    .delivery-payment p {
+
+        font-size: 13px;
+
+    }
+
+
+    .delivery-cta {
+
+        padding: 30px 15px;
+
+    }
+
+
+    .delivery-cta h2 {
+
+        font-size: 21px;
+
+    }
+
+
+    .delivery-button {
+
+        width: 100%;
+
+        justify-content: center;
 
     }
 

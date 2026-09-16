@@ -1,10 +1,18 @@
+
 {% extends "base.html" %}
 
-{% block title %}Demande de boutique - MauriMarket{% endblock %}
+{% block title %}
+{{ t.shop_request }} - MauriMarket
+{% endblock %}
 
 {% block content %}
 
-<div class="container py-5">
+{% set is_ar = lang == "ar" %}
+
+<div
+    class="container py-5"
+    dir="{{ 'rtl' if is_ar else 'ltr' }}"
+>
 
     <div class="row justify-content-center">
 
@@ -14,48 +22,64 @@
 
                 <div class="card-body p-4 p-md-5 text-center">
 
+                    <!-- =====================================================
+                         ICÔNE
+                    ====================================================== -->
+
                     <div class="mb-4">
 
                         {% if demande and demande.status == "pending" %}
 
-                            <i class="bi bi-hourglass-split text-warning"
-                               style="font-size: 60px;"></i>
+                            <i
+                                class="bi bi-hourglass-split text-warning"
+                                style="font-size: 60px;"
+                            ></i>
 
                         {% elif demande and demande.status == "rejected" %}
 
-                            <i class="bi bi-x-circle text-danger"
-                               style="font-size: 60px;"></i>
+                            <i
+                                class="bi bi-x-circle text-danger"
+                                style="font-size: 60px;"
+                            ></i>
 
                         {% else %}
 
-                            <i class="bi bi-shop text-success"
-                               style="font-size: 60px;"></i>
+                            <i
+                                class="bi bi-shop text-success"
+                                style="font-size: 60px;"
+                            ></i>
 
                         {% endif %}
 
                     </div>
 
 
-                    {% if message %}
+                    <!-- =====================================================
+                         MESSAGE
+                    ====================================================== -->
 
-                        <div class="alert alert-success">
-                            {{ message }}
-                        </div>
+                    
 
-                    {% endif %}
 
+                    <!-- =====================================================
+                         DEMANDE EXISTANTE
+                    ====================================================== -->
 
                     {% if demande %}
+
+
+                        <!-- =================================================
+                             EN ATTENTE
+                        ================================================== -->
 
                         {% if demande.status == "pending" %}
 
                             <h2 class="fw-bold">
-                                Demande en attente
+                                {{ t.request_pending }}
                             </h2>
 
                             <p class="text-muted">
-                                Votre demande de boutique a bien été
-                                envoyée à l'administrateur.
+                                {{ t.shop_request_sent }}
                             </p>
 
                             <div class="alert alert-warning mt-4">
@@ -66,73 +90,90 @@
 
                                 <br>
 
-                                Type :
+                                {{ t.type }} :
                                 {{ demande.sale_type }}
 
                             </div>
 
                             <p class="small text-muted mb-0">
-                                Vous pourrez accéder à votre boutique
-                                dès que votre demande sera acceptée.
+                                {{ t.shop_access_after_approval }}
                             </p>
 
+
+                        <!-- =================================================
+                             REFUSÉE
+                        ================================================== -->
 
                         {% elif demande.status == "rejected" %}
 
                             <h2 class="fw-bold text-danger">
-                                Demande refusée
+                                {{ t.request_rejected }}
                             </h2>
 
                             <p class="text-muted">
-                                Votre demande précédente a été refusée.
-                                Vous pouvez envoyer une nouvelle demande.
+                                {{ t.previous_request_rejected }}
                             </p>
 
                             <a
-                                href="/boutique/creer"
+                                href="/boutique/creer?lang={{ lang }}"
                                 class="btn btn-success mt-3"
                             >
                                 <i class="bi bi-shop"></i>
-                                Nouvelle demande
+
+                                {{ t.new_request }}
+
                             </a>
 
+
+                        <!-- =================================================
+                             APPROUVÉE
+                        ================================================== -->
 
                         {% elif demande.status == "approved" %}
 
                             <h2 class="fw-bold text-success">
-                                Demande acceptée
+                                {{ t.request_approved }}
                             </h2>
 
                             <p class="text-muted">
-                                Votre boutique est maintenant active.
+                                {{ t.shop_now_active }}
                             </p>
 
                             <a
-                                href="/ma-boutique"
+                                href="/ma-boutique?lang={{ lang }}"
                                 class="btn btn-success"
                             >
                                 <i class="bi bi-shop"></i>
-                                Ma boutique
+
+                                {{ t.my_shop }}
+
                             </a>
 
                         {% endif %}
 
+
+                    <!-- =====================================================
+                         AUCUNE DEMANDE
+                    ====================================================== -->
+
                     {% else %}
 
                         <h2 class="fw-bold">
-                            Aucune demande
+                            {{ t.no_request }}
                         </h2>
 
                         <p class="text-muted">
-                            Vous n'avez pas encore demandé de boutique.
+                            {{ t.no_shop_request_yet }}
                         </p>
 
                         <a
-                            href="/boutique/creer"
+                            href="/boutique/creer?lang={{ lang }}"
                             class="btn btn-success"
                         >
                             <i class="bi bi-shop"></i>
-                            Demander une boutique
+
+                            {{ t.request_shop }}
+
                         </a>
 
                     {% endif %}
@@ -148,3 +189,4 @@
 </div>
 
 {% endblock %}
+

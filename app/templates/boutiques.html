@@ -1,38 +1,69 @@
 {% extends "base.html" %}
 
 {% block title %}
+{% if lang == "ar" %}
+المتاجر - MauriMarket
+{% else %}
 Boutiques - MauriMarket
+{% endif %}
 {% endblock %}
+
 
 {% block content %}
 
-<div class="boutiques-page">
+<div
+    class="boutiques-page"
+    dir="{{ 'rtl' if lang == 'ar' else 'ltr' }}"
+    lang="{{ lang }}"
+>
+
 
     <!-- =====================================================
-         EN-TÊTE UNIQUE
+         EN-TÊTE
     ====================================================== -->
 
     <div class="boutiques-header">
 
-        <!-- GAUCHE : TITRE -->
+
+        <!-- =================================================
+             TITRE
+        ================================================== -->
 
         <div class="boutiques-title">
 
             <h1>
+
                 <i class="bi bi-shop"></i>
-                Boutiques
+
+                {% if lang == "ar" %}
+                    المتاجر
+                {% else %}
+                    Boutiques
+                {% endif %}
+
             </h1>
 
+
             <p>
-                Découvrez les boutiques disponibles sur MauriMarket.
+
+                {% if lang == "ar" %}
+                    اكتشف المتاجر المتوفرة على MauriMarket.
+                {% else %}
+                    Découvrez les boutiques disponibles sur MauriMarket.
+                {% endif %}
+
             </p>
 
         </div>
 
 
-        <!-- DROITE : RECHERCHE + CRÉER -->
+
+        <!-- =================================================
+             RECHERCHE + CRÉER
+        ================================================== -->
 
         <div class="boutiques-header-right">
+
 
             <!-- RECHERCHE -->
 
@@ -44,30 +75,51 @@ Boutiques - MauriMarket
 
                 <i class="bi bi-search search-icon"></i>
 
+
                 <input
                     type="text"
                     name="q"
                     value="{{ search_query or '' }}"
-                    placeholder="Rechercher..."
+
+                    {% if lang == "ar" %}
+                        placeholder="بحث..."
+                    {% else %}
+                        placeholder="Rechercher..."
+                    {% endif %}
+
                     autocomplete="off"
                 >
+
 
                 {% if search_query %}
 
                 <a
-                    href="/boutiques"
+                    href="/boutiques{% if lang == 'ar' %}?lang=ar{% endif %}"
                     class="search-clear"
-                    title="Effacer"
+
+                    {% if lang == "ar" %}
+                        title="مسح"
+                    {% else %}
+                        title="Effacer"
+                    {% endif %}
                 >
+
                     <i class="bi bi-x"></i>
+
                 </a>
 
                 {% endif %}
 
+
                 <button
                     type="submit"
                     class="boutiques-search-button"
-                    title="Rechercher"
+
+                    {% if lang == "ar" %}
+                        title="بحث"
+                    {% else %}
+                        title="Rechercher"
+                    {% endif %}
                 >
 
                     <i class="bi bi-search"></i>
@@ -77,26 +129,37 @@ Boutiques - MauriMarket
             </form>
 
 
+
             <!-- CRÉER UNE BOUTIQUE -->
 
             {% if request.session.get("user_id") %}
 
             <a
-                href="/boutique/creer"
+                href="/boutique/creer{% if lang == 'ar' %}?lang=ar{% endif %}"
                 class="create-boutique-btn"
             >
 
                 <i class="bi bi-plus-circle"></i>
 
-                <span>Créer ma boutique</span>
+                <span>
+
+                    {% if lang == "ar" %}
+                        إنشاء متجري
+                    {% else %}
+                        Créer ma boutique
+                    {% endif %}
+
+                </span>
 
             </a>
 
             {% endif %}
 
+
         </div>
 
     </div>
+
 
 
     <!-- =====================================================
@@ -107,19 +170,51 @@ Boutiques - MauriMarket
 
     <div class="search-result-info">
 
-        <span>
-            Résultats pour
-            <strong>"{{ search_query }}"</strong>
-        </span>
 
         <span>
-            {{ boutiques|length }}
-            boutique{% if boutiques|length != 1 %}s{% endif %}
+
+            {% if lang == "ar" %}
+
+                النتائج عن
+
+                <strong>
+                    "{{ search_query }}"
+                </strong>
+
+            {% else %}
+
+                Résultats pour
+
+                <strong>
+                    "{{ search_query }}"
+                </strong>
+
+            {% endif %}
+
         </span>
+
+
+        <span>
+
+            {{ boutiques|length }}
+
+            {% if lang == "ar" %}
+
+                متجر
+
+            {% else %}
+
+                boutique{% if boutiques|length != 1 %}s{% endif %}
+
+            {% endif %}
+
+        </span>
+
 
     </div>
 
     {% endif %}
+
 
 
     <!-- =====================================================
@@ -128,11 +223,15 @@ Boutiques - MauriMarket
 
     {% if boutiques %}
 
+
     <div class="boutiques-grid">
+
 
         {% for boutique in boutiques %}
 
+
         <div class="boutique-card">
+
 
             <!-- =================================================
                  LOGO
@@ -156,65 +255,120 @@ Boutiques - MauriMarket
             </div>
 
 
+
             <!-- =================================================
                  INFORMATIONS
             ================================================== -->
 
             <div class="boutique-info">
 
-                <h2>
+
+                <!-- NOM -->
+
+                <h2 title="{{ boutique.name }}">
                     {{ boutique.name }}
                 </h2>
 
 
+
+                <!-- CATÉGORIE -->
+
+                {% if boutique.category %}
+
+                <p
+                    class="boutique-category"
+                    title="{{ boutique.category }}"
+                >
+
+                    <i class="bi bi-grid"></i>
+
+                    <span>
+                        {{ boutique.category }}
+                    </span>
+
+                </p>
+
+                {% endif %}
+
+
+
+                <!-- TYPE DE VENTE -->
+
                 {% if boutique.sale_type %}
 
-                <p>
+                <p
+                    class="boutique-sale-type"
+                    title="{{ boutique.sale_type }}"
+                >
 
                     <i class="bi bi-tag"></i>
 
-                    {{ boutique.sale_type }}
+                    <span>
+                        {{ boutique.sale_type }}
+                    </span>
 
                 </p>
 
                 {% endif %}
 
+
+
+                <!-- VILLE -->
 
                 {% if boutique.city %}
 
-                <p class="boutique-city">
+                <p
+                    class="boutique-city"
+                    title="{{ boutique.city }}"
+                >
 
                     <i class="bi bi-geo-alt"></i>
 
-                    {{ boutique.city }}
+                    <span>
+                        {{ boutique.city }}
+                    </span>
 
                 </p>
 
                 {% endif %}
+
+
+
+                <!-- =================================================
+                     VOIR LA BOUTIQUE
+                ================================================== -->
+
+                <a
+                    href="/boutique/detail/{{ boutique.id }}"
+                    class="view-boutique-btn"
+                >
+
+                    <span class="view-text">
+
+                        {% if lang == "ar" %}
+                            عرض المتجر
+                        {% else %}
+                            Voir la boutique
+                        {% endif %}
+
+                    </span>
+
+                    <i class="bi bi-arrow-right"></i>
+
+                </a>
+
 
             </div>
 
 
-            <!-- =================================================
-                 VOIR LA BOUTIQUE
-            ================================================== -->
-
-            <a
-                href="/boutique/detail/{{ boutique.id }}"
-                class="view-boutique-btn"
-            >
-
-                Voir la boutique
-
-                <i class="bi bi-arrow-right"></i>
-
-            </a>
-
         </div>
+
 
         {% endfor %}
 
+
     </div>
+
 
 
     <!-- =====================================================
@@ -223,84 +377,161 @@ Boutiques - MauriMarket
 
     {% else %}
 
+
     <div class="empty-boutiques">
+
 
         {% if search_query %}
 
+
             <i class="bi bi-search"></i>
 
+
             <h2>
-                Aucune boutique trouvée
+
+                {% if lang == "ar" %}
+                    لم يتم العثور على أي متجر
+                {% else %}
+                    Aucune boutique trouvée
+                {% endif %}
+
             </h2>
 
+
             <p>
-                Aucune boutique ne correspond à
-                <strong>"{{ search_query }}"</strong>.
+
+                {% if lang == "ar" %}
+
+                    لا يوجد متجر يطابق
+
+                    <strong>
+                        "{{ search_query }}"
+                    </strong>
+
+                {% else %}
+
+                    Aucune boutique ne correspond à
+
+                    <strong>
+                        "{{ search_query }}"
+                    </strong>.
+
+                {% endif %}
+
             </p>
 
+
             <a
-                href="/boutiques"
+                href="/boutiques{% if lang == 'ar' %}?lang=ar{% endif %}"
                 class="empty-reset-btn"
             >
 
                 <i class="bi bi-arrow-left"></i>
 
-                Voir toutes les boutiques
+                {% if lang == "ar" %}
+                    عرض جميع المتاجر
+                {% else %}
+                    Voir toutes les boutiques
+                {% endif %}
 
             </a>
 
+
         {% else %}
+
 
             <i class="bi bi-shop"></i>
 
+
             <h2>
-                Aucune boutique pour le moment
+
+                {% if lang == "ar" %}
+                    لا توجد متاجر حالياً
+                {% else %}
+                    Aucune boutique pour le moment
+                {% endif %}
+
             </h2>
 
+
             <p>
-                Soyez le premier à créer votre boutique
-                sur MauriMarket.
+
+                {% if lang == "ar" %}
+
+                    كن أول من ينشئ متجره على MauriMarket.
+
+                {% else %}
+
+                    Soyez le premier à créer votre boutique
+                    sur MauriMarket.
+
+                {% endif %}
+
             </p>
+
 
             {% if request.session.get("user_id") %}
 
+
             <a
-                href="/boutique/creer"
+                href="/boutique/creer{% if lang == 'ar' %}?lang=ar{% endif %}"
                 class="create-boutique-btn"
             >
 
                 <i class="bi bi-plus-circle"></i>
 
-                Créer ma boutique
+                <span>
+
+                    {% if lang == "ar" %}
+                        إنشاء متجري
+                    {% else %}
+                        Créer ma boutique
+                    {% endif %}
+
+                </span>
 
             </a>
+
 
             {% else %}
 
+
             <a
-                href="/login"
+                href="/login{% if lang == 'ar' %}?lang=ar{% endif %}"
                 class="create-boutique-btn"
             >
 
-                Se connecter
+                {% if lang == "ar" %}
+                    تسجيل الدخول
+                {% else %}
+                    Se connecter
+                {% endif %}
 
             </a>
 
+
             {% endif %}
+
 
         {% endif %}
 
+
     </div>
+
 
     {% endif %}
 
+
 </div>
+
 
 
 <!-- =========================================================
      STYLE
 ========================================================= -->
+
 <style>
+
 
 /* =========================================================
    PAGE
@@ -308,8 +539,10 @@ Boutiques - MauriMarket
 
 .boutiques-page {
     width: 100%;
-    padding: 5px 20px 35px;
+    max-width: 100%;
+    padding: 8px 20px 35px;
     box-sizing: border-box;
+    overflow-x: hidden;
 }
 
 
@@ -318,22 +551,33 @@ Boutiques - MauriMarket
 ========================================================= */
 
 .boutiques-header {
+    width: 100%;
+
     display: flex;
     align-items: center;
     justify-content: space-between;
+
     gap: 20px;
+
     margin-bottom: 15px;
+
+    box-sizing: border-box;
 }
 
 .boutiques-title {
+    flex: 1 1 auto;
     min-width: 0;
 }
 
 .boutiques-title h1 {
     margin: 0;
+
     color: #172033;
+
     font-size: 22px;
     font-weight: 800;
+
+    line-height: 1.2;
 }
 
 .boutiques-title h1 i {
@@ -342,22 +586,29 @@ Boutiques - MauriMarket
 }
 
 .boutiques-title p {
-    margin: 3px 0 0;
+    margin: 4px 0 0;
+
     color: #7b8492;
+
     font-size: 11px;
+    line-height: 1.4;
 }
 
 
 /* =========================================================
-   PARTIE DROITE
+   HEADER DROITE
 ========================================================= */
 
 .boutiques-header-right {
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    gap: 10px;
+
+    gap: 8px;
+
     flex-shrink: 0;
+
+    min-width: 0;
 }
 
 
@@ -367,34 +618,50 @@ Boutiques - MauriMarket
 
 .boutiques-search {
     position: relative;
+
     width: 210px;
     height: 34px;
-    flex-shrink: 0;
+
+    flex-shrink: 1;
+
+    box-sizing: border-box;
 }
 
 .boutiques-search .search-icon {
     position: absolute;
+
     left: 10px;
     top: 50%;
+
     transform: translateY(-50%);
+
     color: #198754;
+
     font-size: 12px;
+
     pointer-events: none;
+
     z-index: 2;
 }
 
 .boutiques-search input {
     width: 100%;
     height: 34px;
+
     box-sizing: border-box;
+
     padding: 0 38px 0 30px;
 
     background: #ffffff;
+
     border: 1px solid #dfe4e8;
+
     border-radius: 7px;
 
     outline: none;
+
     color: #263238;
+
     font-size: 10px;
 }
 
@@ -404,16 +671,50 @@ Boutiques - MauriMarket
 
 .boutiques-search input:focus {
     border-color: #198754;
-    box-shadow: 0 0 0 2px rgba(25,135,84,0.08);
+
+    box-shadow:
+        0 0 0 2px rgba(25,135,84,0.08);
 }
 
 
 /* =========================================================
-   BOUTON RECHERCHER
+   EFFACER RECHERCHE
+========================================================= */
+
+.search-clear {
+    position: absolute;
+
+    right: 34px;
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    width: 20px;
+    height: 20px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #9aa3ad;
+
+    text-decoration: none;
+
+    z-index: 3;
+}
+
+.search-clear:hover {
+    color: #dc3545;
+}
+
+
+/* =========================================================
+   BOUTON RECHERCHE
 ========================================================= */
 
 .boutiques-search-button {
     position: absolute;
+
     right: 4px;
     top: 4px;
 
@@ -425,14 +726,17 @@ Boutiques - MauriMarket
     justify-content: center;
 
     padding: 0;
+
     border: 0;
+
     border-radius: 5px;
 
     background: #198754;
     color: #ffffff;
 
     cursor: pointer;
-    z-index: 3;
+
+    z-index: 4;
 }
 
 .boutiques-search-button:hover {
@@ -450,20 +754,29 @@ Boutiques - MauriMarket
 
 .create-boutique-btn {
     display: inline-flex;
+
     align-items: center;
     justify-content: center;
 
     gap: 6px;
-    padding: 8px 12px;
+
+    min-height: 34px;
+
+    padding: 7px 11px;
+
+    box-sizing: border-box;
 
     background: #198754;
+
     color: #ffffff;
 
     border-radius: 7px;
+
     text-decoration: none;
 
     font-size: 10px;
     font-weight: 700;
+
     white-space: nowrap;
 
     transition: 0.2s ease;
@@ -476,18 +789,21 @@ Boutiques - MauriMarket
 
 
 /* =========================================================
-   INFO RECHERCHE
+   RÉSULTATS
 ========================================================= */
 
 .search-result-info {
     display: flex;
+
     align-items: center;
     justify-content: space-between;
 
     gap: 10px;
+
     margin-bottom: 10px;
 
     color: #7b8492;
+
     font-size: 10px;
 }
 
@@ -501,6 +817,8 @@ Boutiques - MauriMarket
 ========================================================= */
 
 .boutiques-grid {
+    width: 100%;
+
     display: grid;
 
     grid-template-columns:
@@ -508,33 +826,43 @@ Boutiques - MauriMarket
 
     gap: 12px;
 
-    width: 100%;
+    box-sizing: border-box;
 }
 
 
 /* =========================================================
-   CARTE BOUTIQUE
+   CARTE
 ========================================================= */
 
 .boutique-card {
+    width: 100%;
     min-width: 0;
-    min-height: 100px;
-
-    padding: 12px;
-
-    display: flex;
-    align-items: center;
-
-    gap: 10px;
 
     box-sizing: border-box;
+
+    padding: 13px 10px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: flex-start;
+
+    text-align: center;
 
     background: #ffffff;
 
     border: 1px solid #e5e7eb;
-    border-radius: 9px;
 
-    transition: 0.2s ease;
+    border-radius: 10px;
+
+    overflow: hidden;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        border-color 0.2s ease;
 }
 
 .boutique-card:hover {
@@ -552,37 +880,41 @@ Boutiques - MauriMarket
 ========================================================= */
 
 .boutique-icon {
-    width: 48px;
-    height: 48px;
+    width: 52px;
+    height: 52px;
 
-    min-width: 48px;
-    max-width: 48px;
+    min-width: 52px;
+    max-width: 52px;
 
     flex-shrink: 0;
 
     display: flex;
+
     align-items: center;
     justify-content: center;
 
     overflow: hidden;
 
+    margin-bottom: 8px;
+
     background: #eaf6f0;
+
     color: #198754;
 
     border-radius: 50%;
 }
 
 .boutique-icon img {
-    display: block;
-
     width: 100%;
     height: 100%;
+
+    display: block;
 
     object-fit: cover;
 }
 
 .boutique-icon i {
-    font-size: 20px;
+    font-size: 21px;
 }
 
 
@@ -591,45 +923,97 @@ Boutiques - MauriMarket
 ========================================================= */
 
 .boutique-info {
-    flex: 1;
+    width: 100%;
+    max-width: 100%;
 
     min-width: 0;
 
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    text-align: center;
+
     overflow: hidden;
+
+    box-sizing: border-box;
 }
 
+
+/* =========================================================
+   NOM DE LA BOUTIQUE
+========================================================= */
+
 .boutique-info h2 {
-    margin: 0 0 4px;
+    width: 100%;
+    max-width: 100%;
+
+    margin: 0 0 5px;
+
+    padding: 0 2px;
+
+    box-sizing: border-box;
 
     color: #172033;
 
     font-size: 13px;
     font-weight: 700;
 
-    white-space: nowrap;
+    line-height: 1.25;
+
+    text-align: center;
+
+    display: -webkit-box;
+
+    -webkit-box-orient: vertical;
+
+    -webkit-line-clamp: 2;
+
     overflow: hidden;
-    text-overflow: ellipsis;
+
+    word-break: break-word;
+
+    overflow-wrap: anywhere;
 }
 
+
+/* =========================================================
+   INFORMATIONS
+========================================================= */
+
 .boutique-info p {
-    margin: 0;
+    width: 100%;
+    max-width: 100%;
+
+    min-width: 0;
+
+    margin: 2px 0 0;
+
+    padding: 0 2px;
+
+    box-sizing: border-box;
 
     color: #7b8492;
 
-    font-size: 10px;
+    font-size: 9px;
+
+    line-height: 1.3;
+
+    text-align: center;
 
     white-space: nowrap;
+
     overflow: hidden;
+
     text-overflow: ellipsis;
 }
 
 .boutique-info p i {
     margin-right: 3px;
-    color: #198754;
-}
 
-.boutique-city {
-    margin-top: 3px !important;
+    color: #198754;
 }
 
 
@@ -639,24 +1023,31 @@ Boutiques - MauriMarket
 
 .view-boutique-btn {
     display: inline-flex;
+
     align-items: center;
     justify-content: center;
 
     gap: 4px;
 
-    padding: 6px 8px;
+    max-width: 100%;
 
-    flex-shrink: 0;
+    margin-top: 8px;
+
+    padding: 5px 9px;
+
+    box-sizing: border-box;
 
     border: 1px solid #198754;
+
     border-radius: 6px;
 
     color: #198754;
+
     background: #ffffff;
 
     text-decoration: none;
 
-    font-size: 9px;
+    font-size: 8px;
     font-weight: 700;
 
     white-space: nowrap;
@@ -675,6 +1066,10 @@ Boutiques - MauriMarket
 ========================================================= */
 
 .empty-boutiques {
+    width: 100%;
+
+    box-sizing: border-box;
+
     padding: 45px 20px;
 
     text-align: center;
@@ -682,6 +1077,7 @@ Boutiques - MauriMarket
     background: #ffffff;
 
     border: 1px solid #e5e7eb;
+
     border-radius: 10px;
 }
 
@@ -710,6 +1106,8 @@ Boutiques - MauriMarket
     color: #7b8492;
 
     font-size: 11px;
+
+    line-height: 1.5;
 }
 
 .empty-reset-btn {
@@ -723,6 +1121,7 @@ Boutiques - MauriMarket
     padding: 8px 12px;
 
     color: #198754;
+
     background: #eaf6f0;
 
     border-radius: 7px;
@@ -754,14 +1153,13 @@ Boutiques - MauriMarket
 
 
 /* =========================================================
-   PETIT ÉCRAN
-   → 2 BOUTIQUES PAR LIGNE
+   PETITE TABLETTE
 ========================================================= */
 
 @media (max-width: 800px) {
 
     .boutiques-page {
-        padding: 12px 10px 30px;
+        padding: 10px 10px 30px;
     }
 
     .boutiques-header {
@@ -776,23 +1174,21 @@ Boutiques - MauriMarket
     }
 
     .boutique-card {
-        min-height: 90px;
-
-        padding: 8px;
-
-        gap: 7px;
+        padding: 10px 7px;
     }
 
     .boutique-icon {
-        width: 38px;
-        height: 38px;
+        width: 42px;
+        height: 42px;
 
-        min-width: 38px;
-        max-width: 38px;
+        min-width: 42px;
+        max-width: 42px;
+
+        margin-bottom: 6px;
     }
 
     .boutique-icon i {
-        font-size: 16px;
+        font-size: 17px;
     }
 
     .boutique-info h2 {
@@ -800,12 +1196,11 @@ Boutiques - MauriMarket
     }
 
     .boutique-info p {
-        font-size: 9px;
+        font-size: 8px;
     }
 
     .view-boutique-btn {
-        padding: 5px 6px;
-        font-size: 8px;
+        font-size: 7px;
     }
 
 }
@@ -813,7 +1208,6 @@ Boutiques - MauriMarket
 
 /* =========================================================
    MOBILE
-   → TOUJOURS 2 BOUTIQUES PAR LIGNE
 ========================================================= */
 
 @media (max-width: 600px) {
@@ -822,9 +1216,19 @@ Boutiques - MauriMarket
         padding: 10px 8px 25px;
     }
 
+
+    /* HEADER */
+
     .boutiques-header {
-        align-items: flex-start;
-        gap: 8px;
+        align-items: center;
+
+        gap: 7px;
+
+        margin-bottom: 12px;
+    }
+
+    .boutiques-title {
+        min-width: 0;
     }
 
     .boutiques-title h1 {
@@ -836,30 +1240,45 @@ Boutiques - MauriMarket
     }
 
     .boutiques-title p {
-        font-size: 10px;
+        font-size: 9px;
     }
+
+
+    /* DROITE */
 
     .boutiques-header-right {
         gap: 5px;
     }
 
+
+    /* RECHERCHE */
+
     .boutiques-search {
-        width: 150px;
+        width: 140px;
     }
 
+
+    /* CRÉER */
+
     .create-boutique-btn {
-        padding: 7px 8px;
-        font-size: 9px;
+        width: 32px;
+        height: 32px;
+
+        min-height: 32px;
+
+        padding: 0;
+
+        border-radius: 6px;
+
+        font-size: 14px;
     }
 
     .create-boutique-btn span {
         display: none;
     }
 
-    /*
-       IMPORTANT :
-       On garde 2 colonnes sur téléphone
-    */
+
+    /* GRILLE */
 
     .boutiques-grid {
         grid-template-columns:
@@ -868,13 +1287,124 @@ Boutiques - MauriMarket
         gap: 7px;
     }
 
-    .boutique-card {
-        min-height: 78px;
 
-        padding: 7px;
+    /* CARTE */
+
+    .boutique-card {
+        width: 100%;
+        min-width: 0;
+
+        padding: 9px 5px;
+
+        border-radius: 9px;
+    }
+
+
+    /* LOGO */
+
+    .boutique-icon {
+        width: 38px;
+        height: 38px;
+
+        min-width: 38px;
+        max-width: 38px;
+
+        margin-bottom: 6px;
+    }
+
+    .boutique-icon i {
+        font-size: 16px;
+    }
+
+
+    /* INFOS */
+
+    .boutique-info {
+        width: 100%;
+        min-width: 0;
+    }
+
+
+    /* NOM */
+
+    .boutique-info h2 {
+        width: 100%;
+
+        font-size: 10px;
+
+        line-height: 1.2;
+
+        margin-bottom: 4px;
+
+        -webkit-line-clamp: 2;
+    }
+
+
+    /* INFOS */
+
+    .boutique-info p {
+        width: 100%;
+
+        font-size: 7.5px;
+
+        line-height: 1.25;
+    }
+
+
+    /* BOUTON */
+
+    .view-boutique-btn {
+        margin-top: 6px;
+
+        width: auto;
+
+        padding: 4px 7px;
+
+        font-size: 7px;
+    }
+
+}
+
+
+/* =========================================================
+   TRÈS PETIT MOBILE
+========================================================= */
+
+@media (max-width: 400px) {
+
+    .boutiques-page {
+        padding-left: 6px;
+        padding-right: 6px;
+    }
+
+
+    .boutiques-title p {
+        display: none;
+    }
+
+
+    .boutiques-header {
+        gap: 5px;
+    }
+
+
+    .boutiques-search {
+        width: 125px;
+    }
+
+
+    .boutiques-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
 
         gap: 6px;
     }
+
+
+    .boutique-card {
+        padding: 8px 4px;
+    }
+
 
     .boutique-icon {
         width: 34px;
@@ -884,82 +1414,74 @@ Boutiques - MauriMarket
         max-width: 34px;
     }
 
+
     .boutique-icon i {
-        font-size: 15px;
+        font-size: 14px;
     }
+
 
     .boutique-info h2 {
-        font-size: 10px;
+        font-size: 9px;
+
+        line-height: 1.2;
+
+        -webkit-line-clamp: 2;
     }
+
 
     .boutique-info p {
-        font-size: 8px;
+        font-size: 7px;
     }
 
+
     .view-boutique-btn {
-        padding: 4px 5px;
-        font-size: 7px;
+        padding: 4px 6px;
+
+        font-size: 6.5px;
     }
 
 }
 
 
 /* =========================================================
-   TRÈS PETIT MOBILE
-   → TOUJOURS 2 COLONNES
+   ARABE
 ========================================================= */
 
-@media (max-width: 400px) {
+[dir="rtl"] .boutiques-search .search-icon {
+    left: auto;
+    right: 10px;
+}
 
-    .boutiques-title p {
-        display: none;
-    }
+[dir="rtl"] .boutiques-search input {
+    padding-left: 38px;
+    padding-right: 30px;
+}
 
-    .boutiques-header {
-        gap: 6px;
-    }
+[dir="rtl"] .boutiques-search-button {
+    right: auto;
+    left: 4px;
+}
 
-    .boutiques-search {
-        width: 135px;
-    }
+[dir="rtl"] .search-clear {
+    right: auto;
+    left: 34px;
+}
 
-    .boutiques-grid {
-        grid-template-columns:
-            repeat(2, minmax(0, 1fr));
+[dir="rtl"] .boutique-info p i {
+    margin-right: 0;
+    margin-left: 3px;
+}
 
-        gap: 6px;
-    }
+[dir="rtl"] .view-boutique-btn i {
+    transform: rotate(180deg);
+}
 
-    .boutique-card {
-        min-height: 72px;
-
-        padding: 6px;
-
-        gap: 5px;
-    }
-
-    .boutique-icon {
-        width: 32px;
-        height: 32px;
-
-        min-width: 32px;
-        max-width: 32px;
-    }
-
-    .boutique-info h2 {
-        font-size: 9px;
-    }
-
-    .boutique-info p {
-        font-size: 7px;
-    }
-
-    .view-boutique-btn {
-        padding: 4px;
-        font-size: 7px;
-    }
-
+[dir="rtl"] .boutique-info,
+[dir="rtl"] .boutique-info h2,
+[dir="rtl"] .boutique-info p {
+    text-align: center;
 }
 
 </style>
+
 {% endblock %}

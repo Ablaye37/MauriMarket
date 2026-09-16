@@ -1,23 +1,38 @@
 {% extends "base.html" %}
 
-{% block title %}MauriMarket - Accueil{% endblock %}
+{% block title %}
+{{ t.site_name }} - {{ t.home }}
+{% endblock %}
 
 {% block content %}
 
 {% if message %}
-<!--<div id="success-message" class="success-message-overlay">
-    <div class="success-message-box">
-        <div class="success-icon">
-            <i class="bi bi-check-circle-fill"></i>
-        </div>
-        <div class="success-message-text">
-            <strong>{{ message }}</strong>
-            <span>Bienvenue sur MauriMarket</span>
-        </div>
+<!-- =====================================================
+     MESSAGE DE SUCCÈS
+======================================================-->
+<div id="success-message" class="success-message-overlay">
+
+<div class="success-message-box">
+
+    <div class="success-icon">
+        <i class="bi bi-check-circle-fill"></i>
     </div>
-</div>-->
+
+    <div class="success-message-text">
+        <strong>{{ message }}</strong>
+
+        <span>
+            {{ t.site_name }}
+        </span>
+    </div> 
+
+
+</div>
+
+</div>
 
 <style>
+
 .success-message-overlay {
     position: fixed;
     inset: 0;
@@ -32,7 +47,7 @@
     background: white;
     padding: 25px 35px;
     border-radius: 18px;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.25);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
     display: flex;
     align-items: center;
     gap: 18px;
@@ -64,462 +79,216 @@
 }
 
 @keyframes successAppear {
+
     from {
         opacity: 0;
         transform: scale(0.85);
     }
+
     to {
         opacity: 1;
         transform: scale(1);
     }
+
 }
+
 </style>
 
 <script>
+
 setTimeout(function () {
-    const message = document.getElementById("success-message");
+
+    const message =
+        document.getElementById("success-message");
 
     if (message) {
+
         message.style.opacity = "0";
         message.style.transition = "opacity 0.5s ease";
 
         setTimeout(function () {
             message.remove();
         }, 500);
-    }
-}, 5000);
-</script>
-{% endif %}
 
+    }
+
+}, 5000);
+
+</script>
+
+{% endif %}
 
 <div class="container-fluid marketplace-content">
 
-    <div class="row g-3">
+<div class="row g-3">
 
-        <!-- =====================================================
-             SIDEBAR CATÉGORIES
-        ====================================================== -->
 
-        <aside class="col-lg-3 col-xl-2">
+    <!-- =====================================================
+         SIDEBAR CATÉGORIES
+    ====================================================== -->
 
-            <div class="category-sidebar">
+    <aside class="col-lg-3 col-xl-2">
 
-                <!-- TOUTES LES CATÉGORIES -->
+        <div class="category-sidebar">
 
-                <button
-                    type="button"
-                    class="sidebar-title all-categories-toggle"
-                    onclick="toggleCategories()"
-                >
 
-                    <i class="bi bi-list"></i>
+            <!-- TOUTES LES CATÉGORIES -->
 
-                    <span>
-                        Toutes les catégories
-                    </span>
+            <button
+                type="button"
+                class="sidebar-title all-categories-toggle"
+                onclick="toggleCategories()"
+            >
 
-                    <i
-                        id="categories-arrow"
-                        class="bi bi-chevron-down ms-auto"
-                    ></i>
+                <i class="bi bi-list"></i>
 
-                </button>
+                <span>
+                    {{ t.all_categories }}
+                </span>
 
+                <i
+                    id="categories-arrow"
+                    class="bi bi-chevron-down ms-auto"
+                ></i>
 
-                <!-- LISTE DES CATÉGORIES -->
+            </button>
 
-                <div
-                    id="categories-list"
-                    class="sidebar-list"
-                    style="display: none;"
-                >
 
-                    {% for item in categories_data %}
+            <!-- LISTE DES CATÉGORIES -->
 
-                        {% set category = item.category %}
+            <div
+                id="categories-list"
+                class="sidebar-list"
+                style="display: none;"
+            >
 
-                        <div class="category-item">
+                {% for item in categories_data %}
 
-                            <button
-                                type="button"
-                                class="sidebar-category category-toggle"
-                                data-category-id="{{ category.id }}"
-                                onclick="toggleSubcategories(this.dataset.categoryId)"
-                            >
+                    {% set category = item.category %}
 
-                                <!-- ICÔNE CATÉGORIE -->
+                    <div class="category-item">
 
-                                {% if "Téléphone" in category.name %}
+                        <button
+                            type="button"
+                            class="sidebar-category category-toggle"
+                            data-category-id="{{ category.id }}"
+                            onclick="toggleSubcategories(this.dataset.categoryId)"
+                        >
 
-                                    <span>📱</span>
 
-                                {% elif "Informatique" in category.name %}
+                            <!-- ICÔNE CATÉGORIE -->
 
-                                    <span>💻</span>
+                            {% if "Téléphone" in category.name %}
 
-                                {% elif "Véhicule" in category.name %}
+                                <span>📱</span>
 
-                                    <span>🚗</span>
+                            {% elif "Informatique" in category.name %}
 
-                                {% elif "Mode" in category.name %}
+                                <span>💻</span>
 
-                                    <span>👕</span>
+                            {% elif "Véhicule" in category.name %}
 
-                                {% elif "Maison" in category.name %}
+                                <span>🚗</span>
 
-                                    <span>🏠</span>
+                            {% elif "Mode" in category.name %}
 
-                                {% elif "Gaming" in category.name %}
+                                <span>👕</span>
 
-                                    <span>🎮</span>
+                            {% elif "Maison" in category.name %}
 
-                                {% elif "Enfants" in category.name %}
+                                <span>🏠</span>
 
-                                    <span>👶</span>
+                            {% elif "Gaming" in category.name %}
 
-                                {% elif "Services" in category.name %}
+                                <span>🎮</span>
 
-                                    <span>🔧</span>
+                            {% elif "Enfants" in category.name %}
 
-                                {% elif "Immobilier" in category.name %}
+                                <span>👶</span>
 
-                                    <span>🏢</span>
+                            {% elif "Services" in category.name %}
 
-                                {% else %}
+                                <span>🔧</span>
 
-                                    <span>📦</span>
+                            {% elif "Immobilier" in category.name %}
 
-                                {% endif %}
-
-
-                                <span>
-                                    {{ category.name }}
-                                </span>
-
-                                <i class="bi bi-chevron-right ms-auto"></i>
-
-                            </button>
-
-
-                            <!-- SOUS-CATÉGORIES -->
-
-                            <div
-                                id="subcategories-{{ category.id }}"
-                                class="subcategories-list"
-                                style="display: none;"
-                            >
-
-                                {% if item.subcategories %}
-
-                                    {% for subcategory in item.subcategories %}
-
-                                        <a
-                                            href="/sous-categorie/{{ subcategory.id }}?lang={{ lang }}"
-                                            class="subcategory-link"
-                                        >
-
-                                            <span>•</span>
-
-                                            <span>
-                                                {{ subcategory.name }}
-                                            </span>
-
-                                        </a>
-
-                                    {% endfor %}
-
-                                {% else %}
-
-                                    <div class="no-subcategory">
-
-                                        Aucune sous-catégorie
-
-                                    </div>
-
-                                {% endif %}
-
-                            </div>
-
-                        </div>
-
-                    {% endfor %}
-
-                </div>
-
-
-                <!-- =================================================
-                     BOUTIQUES
-                ================================================== -->
-
-                <div class="sidebar-divider"></div>
-
-                <a
-                    href="/boutiques?lang={{ lang }}"
-                    class="sidebar-shop"
-                >
-
-                    <span>🏪</span>
-
-                    <span>
-                        Découvrir les boutiques
-                    </span>
-
-                    <i class="bi bi-arrow-right"></i>
-
-                </a>
-
-            </div>
-
-        </aside>
-
-
-        <!-- =====================================================
-             PRODUITS
-        ====================================================== -->
-
-        <section class="col-lg-9 col-xl-10">
-
-            <!-- =================================================
-                 EN-TÊTE PRODUITS
-            ================================================== -->
-
-            <div class="products-header">
-
-                <div>
-
-                    {% if q %}
-
-                        <h1>
-                            Résultats pour « {{ q }} »
-                        </h1>
-
-                        <p class="products-search-info">
-                            Produits correspondant à votre recherche
-                        </p>
-
-                    {% else %}
-
-                        <h1>
-                            Produits récents
-                        </h1>
-
-                    {% endif %}
-
-                </div>
-
-
-                <a
-                    href="/?lang={{ lang }}"
-                    class="view-all"
-                >
-
-                    Voir tout
-
-                    <i class="bi bi-arrow-right"></i>
-
-                </a>
-
-            </div>
-
-
-            <!-- =================================================
-                 GRILLE PRODUITS
-            ================================================== -->
-
-            <div class="row products-grid">
-
-                {% for product in products %}
-
-                    <div class="product-column">
-
-                        <article class="product-card">
-
-                            <!-- =================================================
-                                 LIEN PRODUIT
-                            ================================================== -->
-
-                            {% if product.boutique_id and product.boutique %}
-
-                                <a
-                                    href="/boutique/detail/{{ product.boutique.id }}?lang={{ lang }}"
-                                    class="product-image-link"
-                                >
+                                <span>🏢</span>
 
                             {% else %}
 
-                                <a
-                                    href="/produit/{{ product.id }}?lang={{ lang }}"
-                                    class="product-image-link"
-                                >
+                                <span>📦</span>
 
                             {% endif %}
 
 
-                                <!-- =================================================
-                                     IMAGE
-                                ================================================== -->
+                            <!-- NOM DE LA CATÉGORIE -->
 
-                                <div class="product-image-wrapper">
+                            <span>
 
-                                    {% if product.image %}
+                                {% if lang == "ar" and category.name_ar %}
 
-                                        <img
-                                            src="{{ product.image }}"
-                                            alt="{{ product.title }}"
-                                            class="product-image"
-                                            loading="lazy"
-                                        >
+                                    {{ category.name_ar }}
 
-                                    {% else %}
+                                {% else %}
 
-                                        <div class="product-no-image">
+                                    {{ category.name }}
 
-                                            <i class="bi bi-image"></i>
+                                {% endif %}
 
-                                        </div>
+                            </span>
 
-                                    {% endif %}
 
-<form
-    action="/favorites/toggle/{{ product.id }}"
-    method="post"
-    class="favorite-form"
-    onclick="event.stopPropagation();"
->
-    <button
-        class="favorite-button"
-        type="submit"
-        aria-label="Ajouter ou retirer des favoris"
-        onclick="event.stopPropagation();"
-    >
-        <i class="bi bi-heart"></i>
-    </button>
-</form>
-                                    <!-- ÉTAT -->
+                            <i
+                                class="bi bi-chevron-right ms-auto"
+                            ></i>
 
-                                    {% if product.condition %}
+                        </button>
 
-                                        <span class="condition-badge">
 
-                                            {{ product.condition }}
+                        <!-- SOUS-CATÉGORIES -->
+
+                        <div
+                            id="subcategories-{{ category.id }}"
+                            class="subcategories-list"
+                            style="display: none;"
+                        >
+
+                            {% if item.subcategories %}
+
+                                {% for subcategory in item.subcategories %}
+
+                                    <a
+                                        href="/sous-categorie/{{ subcategory.id }}?lang={{ lang }}"
+                                        class="subcategory-link"
+                                    >
+
+                                        <span>•</span>
+
+                                        <span>
+
+                                            {% if lang == "ar" and subcategory.name_ar %}
+
+                                                {{ subcategory.name_ar }}
+
+                                            {% else %}
+
+                                                {{ subcategory.name }}
+
+                                            {% endif %}
 
                                         </span>
 
-                                    {% endif %}
+                                    </a>
 
-                                </div>
-
-
-                                <!-- =================================================
-                                     INFORMATIONS PRODUIT
-                                ================================================== -->
-
-                                <div class="product-info">
-
-                                    <h3 class="product-title">
-                                        {{ product.title }}
-                                    </h3>
-
-
-                                    <div class="product-price">
-                                        {{ product.price }} MRU
-                                    </div>
-
-
-                                    {% if product.city %}
-
-                                        <div class="product-location">
-
-                                            <i class="bi bi-geo-alt"></i>
-
-                                            {{ product.city }}
-
-                                        </div>
-
-                                    {% endif %}
-
-
-                                    {% if product.boutique_id and product.boutique %}
-
-                                        <div
-                                            class="product-boutique-badge"
-                                            title="Produit vendu par {{ product.boutique.name }}"
-                                        >
-
-                                            <i class="bi bi-shop"></i>
-
-                                            <span>
-                                                {{ product.boutique.name }}
-                                            </span>
-
-                                        </div>
-
-                                    {% endif %}
-
-                                </div>
-
-                            </a>
-
-                        </article>
-
-                    </div>
-
-
-                {% else %}
-
-                    <!-- =================================================
-                         AUCUN PRODUIT
-                    ================================================== -->
-
-                    <div class="col-12">
-
-                        <div class="empty-products">
-
-                            <div class="empty-icon">
-                                📦
-                            </div>
-
-
-                            {% if q %}
-
-                                <h3>
-                                    Aucun résultat
-                                </h3>
-
-                                <p>
-                                    Aucun produit ne correspond à
-                                    « {{ q }} ».
-                                </p>
-
-
-                                <a
-                                    href="/?lang={{ lang }}"
-                                    class="btn btn-success"
-                                >
-
-                                    Voir tous les produits
-
-                                </a>
+                                {% endfor %}
 
                             {% else %}
 
-                                <h3>
-                                    Aucune annonce pour le moment
-                                </h3>
+                                <div class="no-subcategory">
 
-                                <p>
-                                    Soyez le premier à publier une annonce.
-                                </p>
+                                    {{ t.no_subcategory_home }}
 
-
-                                <a
-                                    href="/publier?lang={{ lang }}"
-                                    class="btn btn-success"
-                                >
-
-                                    Publier une annonce
-
-                                </a>
+                                </div>
 
                             {% endif %}
 
@@ -533,131 +302,444 @@ setTimeout(function () {
 
 
             <!-- =================================================
-                 PAGINATION
+                 BOUTIQUES
             ================================================== -->
 
-            {% if total_pages > 1 %}
+            <div class="sidebar-divider"></div>
 
-                <nav
-                    class="products-pagination"
-                    aria-label="Pagination des produits"
-                >
+            <a
+                href="/boutiques?lang={{ lang }}"
+                class="sidebar-shop"
+            >
 
-                    <div class="pagination-info">
+                <span>🏪</span>
 
-                        Page {{ page }} sur {{ total_pages }}
+                <span>
+                    {{ t.discover_shops }}
+                </span>
 
-                    </div>
+                <i class="bi bi-arrow-right"></i>
+
+            </a>
+
+        </div>
+
+    </aside>
 
 
-                    <div class="pagination-buttons">
+    <!-- =====================================================
+         PRODUITS
+    ====================================================== -->
+
+    <section class="col-lg-9 col-xl-10">
 
 
-                        <!-- PRÉCÉDENT -->
+        <!-- =================================================
+             EN-TÊTE PRODUITS
+        ================================================== -->
 
-                        {% if page > 1 %}
+        <div class="products-header">
+
+            <div>
+
+                {% if q %}
+
+                    <h1>
+
+                        {{ t.search_results
+                           | replace("{q}", q) }}
+
+                    </h1>
+
+                    <p class="products-search-info">
+
+                        {{ t.products_matching_search }}
+
+                    </p>
+
+                {% else %}
+
+                    <h1>
+
+                        {{ t.recent_products }}
+
+                    </h1>
+
+                {% endif %}
+
+            </div>
+
+
+            <a
+                href="/?lang={{ lang }}"
+                class="view-all"
+            >
+
+                {{ t.view_all }}
+
+                <i class="bi bi-arrow-right"></i>
+
+            </a>
+
+        </div>
+
+
+        <!-- =================================================
+             GRILLE PRODUITS
+        ================================================== -->
+
+        <div class="row products-grid">
+
+            {% for product in products %}
+
+                <div class="product-column">
+
+                    <article class="product-card">
+
+
+                        <!-- LIEN PRODUIT -->
+
+                        {% if product.boutique_id and product.boutique %}
 
                             <a
-                                href="/?page={{ page - 1 }}{% if q %}&q={{ q | urlencode }}{% endif %}&lang={{ lang }}"
-                                class="pagination-button pagination-prev"
+                                href="/boutique/detail/{{ product.boutique.id }}?lang={{ lang }}"
+                                class="product-image-link"
                             >
-
-                                <i class="bi bi-chevron-left"></i>
-
-                                <span>
-                                    Précédent
-                                </span>
-
-                            </a>
 
                         {% else %}
 
-                            <span
-                                class="pagination-button pagination-disabled"
+                            <a
+                                href="/produit/{{ product.id }}?lang={{ lang }}"
+                                class="product-image-link"
                             >
-
-                                <i class="bi bi-chevron-left"></i>
-
-                                <span>
-                                    Précédent
-                                </span>
-
-                            </span>
 
                         {% endif %}
 
 
-                        <!-- NUMÉROS DES PAGES -->
+                            <!-- IMAGE -->
 
-                        {% for page_number in range(1, total_pages + 1) %}
+                            <div class="product-image-wrapper">
 
-                            {% if page_number == page %}
+                                {% if product.image %}
 
-                                <span
-                                    class="pagination-button pagination-active"
+                                    <img
+                                        src="{{ product.image }}"
+                                        alt="{{ product.title }}"
+                                        class="product-image"
+                                        loading="lazy"
+                                    >
+
+                                {% else %}
+
+                                    <div class="product-no-image">
+
+                                        <i class="bi bi-image"></i>
+
+                                    </div>
+
+                                {% endif %}
+
+
+                                <!-- FAVORIS -->
+
+                                <form
+                                    action="/favorites/toggle/{{ product.id }}"
+                                    method="post"
+                                    class="favorite-form"
+                                    onclick="event.stopPropagation();"
                                 >
-                                    {{ page_number }}
-                                </span>
 
-                            {% else %}
+                                    <button
+                                        class="favorite-button"
+                                        type="submit"
+                                        aria-label="{{ t.favorite_toggle }}"
+                                        onclick="event.stopPropagation();"
+                                    >
 
-                                <a
-                                    href="/?page={{ page_number }}{% if q %}&q={{ q | urlencode }}{% endif %}&lang={{ lang }}"
-                                    class="pagination-button"
-                                >
-                                    {{ page_number }}
-                                </a>
+                                        <i class="bi bi-heart"></i>
 
-                            {% endif %}
+                                    </button>
 
-                        {% endfor %}
+                                </form>
 
 
-                        <!-- SUIVANT -->
+                                <!-- ÉTAT -->
 
-                        {% if page < total_pages %}
+                                {% if product.condition %}
+
+                                    <span class="condition-badge">
+
+                                        {{ product.condition }}
+
+                                    </span>
+
+                                {% endif %}
+
+                            </div>
+
+
+                            <!-- INFORMATIONS PRODUIT -->
+
+                            <div class="product-info">
+
+                                <h3 class="product-title">
+
+                                    {{ product.title }}
+
+                                </h3>
+
+
+                                <div class="product-price">
+
+                                    {{ product.price }} MRU
+
+                                </div>
+
+
+                                {% if product.city %}
+
+                                    <div class="product-location">
+
+                                        <i class="bi bi-geo-alt"></i>
+
+                                        {{ product.city }}
+
+                                    </div>
+
+                                {% endif %}
+
+
+                                {% if product.boutique_id and product.boutique %}
+
+                                    <div
+                                        class="product-boutique-badge"
+                                        title="{{ t.product }} {{ t.shop }} : {{ product.boutique.name }}"
+                                    >
+
+                                        <i class="bi bi-shop"></i>
+
+                                        <span>
+
+                                            {{ product.boutique.name }}
+
+                                        </span>
+
+                                    </div>
+
+                                {% endif %}
+
+                            </div>
+
+                        </a>
+
+                    </article>
+
+                </div>
+
+
+            {% else %}
+
+
+                <!-- =================================================
+                     AUCUN PRODUIT
+                ================================================== -->
+
+                <div class="col-12">
+
+                    <div class="empty-products">
+
+                        <div class="empty-icon">
+                            📦
+                        </div>
+
+
+                        {% if q %}
+
+                            <h3>
+                                {{ t.no_results }}
+                            </h3>
+
+                            <p>
+
+                                {{ t.no_product_match
+                                   | replace("{q}", q) }}
+
+                            </p>
+
 
                             <a
-                                href="/?page={{ page + 1 }}{% if q %}&q={{ q | urlencode }}{% endif %}&lang={{ lang }}"
-                                class="pagination-button pagination-next"
+                                href="/?lang={{ lang }}"
+                                class="btn btn-success"
                             >
 
-                                <span>
-                                    Suivant
-                                </span>
-
-                                <i class="bi bi-chevron-right"></i>
+                                {{ t.view_all_products }}
 
                             </a>
 
+
                         {% else %}
 
-                            <span
-                                class="pagination-button pagination-disabled"
+                            <h3>
+                                {{ t.no_ads }}
+                            </h3>
+
+                            <p>
+                                {{ t.be_first_to_publish }}
+                            </p>
+
+
+                            <a
+                                href="/publier?lang={{ lang }}"
+                                class="btn btn-success"
                             >
 
-                                <span>
-                                    Suivant
-                                </span>
+                                {{ t.publish_ad }}
 
-                                <i class="bi bi-chevron-right"></i>
-
-                            </span>
+                            </a>
 
                         {% endif %}
 
                     </div>
 
-                </nav>
+                </div>
 
-            {% endif %}
+            {% endfor %}
 
-        </section>
+        </div>
 
-    </div>
+
+        <!-- =================================================
+             PAGINATION
+        ================================================== -->
+
+        {% if total_pages > 1 %}
+
+            <nav
+                class="products-pagination"
+                aria-label="{{ t.pagination_products }}"
+            >
+
+                <div class="pagination-info">
+
+                    {{ t.page_of
+                       | replace("{page}", page|string)
+                       | replace("{total_pages}", total_pages|string) }}
+
+                </div>
+
+
+                <div class="pagination-buttons">
+
+
+                    <!-- PRÉCÉDENT -->
+
+                    {% if page > 1 %}
+
+                        <a
+                            href="/?page={{ page - 1 }}{% if q %}&q={{ q | urlencode }}{% endif %}&lang={{ lang }}"
+                            class="pagination-button pagination-prev"
+                        >
+
+                            <i class="bi bi-chevron-left"></i>
+
+                            <span>
+                                {{ t.previous }}
+                            </span>
+
+                        </a>
+
+                    {% else %}
+
+                        <span
+                            class="pagination-button pagination-disabled"
+                        >
+
+                            <i class="bi bi-chevron-left"></i>
+
+                            <span>
+                                {{ t.previous }}
+                            </span>
+
+                        </span>
+
+                    {% endif %}
+
+
+                    <!-- NUMÉROS DES PAGES -->
+
+                    {% for page_number in range(1, total_pages + 1) %}
+
+                        {% if page_number == page %}
+
+                            <span
+                                class="pagination-button pagination-active"
+                            >
+
+                                {{ page_number }}
+
+                            </span>
+
+                        {% else %}
+
+                            <a
+                                href="/?page={{ page_number }}{% if q %}&q={{ q | urlencode }}{% endif %}&lang={{ lang }}"
+                                class="pagination-button"
+                            >
+
+                                {{ page_number }}
+
+                            </a>
+
+                        {% endif %}
+
+                    {% endfor %}
+
+
+                    <!-- SUIVANT -->
+
+                    {% if page < total_pages %}
+
+                        <a
+                            href="/?page={{ page + 1 }}{% if q %}&q={{ q | urlencode }}{% endif %}&lang={{ lang }}"
+                            class="pagination-button pagination-next"
+                        >
+
+                            <span>
+                                {{ t.next }}
+                            </span>
+
+                            <i class="bi bi-chevron-right"></i>
+
+                        </a>
+
+                    {% else %}
+
+                        <span
+                            class="pagination-button pagination-disabled"
+                        >
+
+                            <span>
+                                {{ t.next }}
+                            </span>
+
+                            <i class="bi bi-chevron-right"></i>
+
+                        </span>
+
+                    {% endif %}
+
+                </div>
+
+            </nav>
+
+        {% endif %}
+
+    </section>
 
 </div>
+```
 
+</div>
 
 <!-- ============================================================
      STYLE — INFORMATIONS RECHERCHE
@@ -666,15 +748,10 @@ setTimeout(function () {
 <style>
 
 .products-search-info {
-
     margin-top: 4px;
-
     margin-bottom: 0;
-
     color: #6c757d;
-
     font-size: 14px;
-
 }
 
 
@@ -683,157 +760,88 @@ setTimeout(function () {
 ============================================================ */
 
 .products-pagination {
-
     display: flex;
-
     flex-direction: column;
-
     align-items: center;
-
     justify-content: center;
-
     gap: 12px;
-
     margin-top: 35px;
-
     margin-bottom: 25px;
-
 }
-
 
 .pagination-info {
-
     color: #6c757d;
-
     font-size: 14px;
-
     font-weight: 500;
-
 }
-
 
 .pagination-buttons {
-
     display: flex;
-
     align-items: center;
-
     justify-content: center;
-
     flex-wrap: wrap;
-
     gap: 6px;
-
 }
 
-
 .pagination-button {
-
     display: inline-flex;
-
     align-items: center;
-
     justify-content: center;
-
     min-width: 40px;
-
     height: 40px;
-
     padding: 0 12px;
-
     color: #198754;
-
     background: #ffffff;
-
     border: 1px solid #d9e8df;
-
     border-radius: 8px;
-
     text-decoration: none;
-
     font-size: 14px;
-
     font-weight: 600;
-
     transition:
         background-color 0.2s ease,
         color 0.2s ease,
         border-color 0.2s ease,
         transform 0.2s ease;
-
 }
-
 
 .pagination-button:hover {
-
     color: #ffffff;
-
     background: #198754;
-
     border-color: #198754;
-
     transform: translateY(-1px);
-
 }
-
 
 .pagination-active {
-
     color: #ffffff;
-
     background: #198754;
-
     border-color: #198754;
-
     cursor: default;
-
 }
-
 
 .pagination-active:hover {
-
     color: #ffffff;
-
     background: #198754;
-
     border-color: #198754;
-
     transform: none;
-
 }
-
 
 .pagination-disabled {
-
     color: #adb5bd;
-
     background: #f8f9fa;
-
     border-color: #e9ecef;
-
     cursor: not-allowed;
-
 }
-
 
 .pagination-disabled:hover {
-
     color: #adb5bd;
-
     background: #f8f9fa;
-
     border-color: #e9ecef;
-
     transform: none;
-
 }
-
 
 .pagination-prev,
 .pagination-next {
-
     gap: 6px;
-
 }
 
 
@@ -842,69 +850,38 @@ setTimeout(function () {
 ============================================================ */
 
 .product-boutique-badge {
-
     display: inline-flex;
-
     align-items: center;
-
     gap: 5px;
-
     max-width: 100%;
-
     margin-top: 8px;
-
     padding: 5px 8px;
-
     color: #198754;
-
     background: #eaf7f0;
-
     border: 1px solid #ccebd9;
-
     border-radius: 6px;
-
     font-size: 9px;
-
     font-weight: 700;
-
     line-height: 1;
-
 }
-
 
 .product-boutique-badge i {
-
     flex-shrink: 0;
-
     font-size: 10px;
-
 }
-
 
 .product-boutique-badge span {
-
     overflow: hidden;
-
     text-overflow: ellipsis;
-
     white-space: nowrap;
-
     font-size: 9px;
-
     font-weight: 700;
-
 }
 
-
-.product-card:hover
-.product-boutique-badge {
-
+.product-card:hover .product-boutique-badge {
     color: #146c43;
-
     background: #dff3e8;
-
     border-color: #b8dfc8;
-
 }
 
 
@@ -915,79 +892,48 @@ setTimeout(function () {
 @media (max-width: 600px) {
 
     .products-search-info {
-
         font-size: 12px;
-
     }
-
 
     .products-pagination {
-
         margin-top: 25px;
-
         margin-bottom: 20px;
-
         gap: 10px;
-
     }
-
 
     .pagination-buttons {
-
         gap: 4px;
-
     }
-
 
     .pagination-button {
-
         min-width: 36px;
-
         height: 36px;
-
         padding: 0 9px;
-
         font-size: 13px;
-
     }
-
 
     .pagination-prev span,
     .pagination-next span {
-
         display: none;
-
     }
-
 
     .product-boutique-badge {
-
         gap: 4px;
-
         margin-top: 7px;
-
         padding: 4px 7px;
-
     }
-
 
     .product-boutique-badge i {
-
         font-size: 9px;
-
     }
 
-
     .product-boutique-badge span {
-
         font-size: 8px;
-
     }
 
 }
 
 </style>
-
 
 <!-- ============================================================
      JAVASCRIPT
@@ -1030,7 +976,9 @@ function toggleCategories() {
         arrow.classList.add(
             "bi-chevron-down"
         );
+
     }
+
 }
 
 
@@ -1054,16 +1002,9 @@ function toggleSubcategories(categoryId) {
         list.style.display = "none";
 
     }
+
 }
-
-
-// =====================================================
-// FAVORIS
-// =====================================================
-
 
 </script>
 
-
 {% endblock %}
-

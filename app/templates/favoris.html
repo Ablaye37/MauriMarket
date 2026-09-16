@@ -1,46 +1,118 @@
+
 {% extends "base.html" %}
 
-{% block title %}Mes favoris - MauriMarket{% endblock %}
+{% block title %}
+    {% if lang == "ar" %}
+        المفضلة - MauriMarket
+    {% else %}
+        Mes favoris - MauriMarket
+    {% endif %}
+{% endblock %}
+
 
 {% block content %}
 
-<div class="container-fluid marketplace-content">
+<div
+    class="container-fluid marketplace-content"
+    dir="{{ 'rtl' if lang == 'ar' else 'ltr' }}"
+>
+
+
+    <!-- =====================================================
+         EN-TÊTE
+    ====================================================== -->
 
     <div class="products-header">
+
         <div>
-            <h1>❤️ Mes favoris</h1>
+
+            <h1>
+
+                {% if lang == "ar" %}
+                    ❤️ المفضلة
+                {% else %}
+                    ❤️ Mes favoris
+                {% endif %}
+
+            </h1>
+
 
             {% if favorites %}
+
                 <p class="products-search-info">
-                    {{ favorites|length }} produit{% if favorites|length > 1 %}s{% endif %} enregistré{% if favorites|length > 1 %}s{% endif %}
+
+                    {{ favorites|length }}
+
+                    {% if lang == "ar" %}
+
+                        {% if favorites|length > 1 %}
+                            منتجات
+                        {% else %}
+                            منتج
+                        {% endif %}
+
+                        محفوظ{% if favorites|length > 1 %}ة{% endif %}
+
+                    {% else %}
+
+                        produit{% if favorites|length > 1 %}s{% endif %}
+                        enregistré{% if favorites|length > 1 %}s{% endif %}
+
+                    {% endif %}
+
                 </p>
+
             {% else %}
+
                 <p class="products-search-info">
-                    Retrouvez ici les produits que vous aimez.
+
+                    {% if lang == "ar" %}
+                        ستجد هنا المنتجات التي تعجبك.
+                    {% else %}
+                        Retrouvez ici les produits que vous aimez.
+                    {% endif %}
+
                 </p>
+
             {% endif %}
+
         </div>
+
     </div>
 
+
+
+    <!-- =====================================================
+         PRODUITS FAVORIS
+    ====================================================== -->
 
     {% if favorites %}
 
         <div class="row products-grid">
 
+
             {% for favorite in favorites %}
 
                 {% set product = favorite.product %}
+
 
                 <div class="product-column">
 
                     <article class="product-card">
 
+
                         <a
-                            href="/produit/{{ product.id }}"
+                            href="/produit/{{ product.id }}?lang={{ lang }}"
                             class="product-image-link"
                         >
 
+
+                            <!-- =================================================
+                                 IMAGE
+                            ================================================== -->
+
                             <div class="product-image-wrapper">
+
 
                                 {% if product.image %}
 
@@ -54,17 +126,22 @@
                                 {% else %}
 
                                     <div class="product-no-image">
+
                                         <i class="bi bi-image"></i>
+
                                     </div>
 
                                 {% endif %}
 
 
-                                <!-- RETIRER DES FAVORIS -->
+
+                                <!-- =================================================
+                                     RETIRER DES FAVORIS
+                                ================================================== -->
 
                                 <form
                                     method="POST"
-                                    action="/favorites/toggle/{{ product.id }}"
+                                    action="/favorites/toggle/{{ product.id }}?lang={{ lang }}"
                                     class="favorite-form"
                                     onclick="event.stopPropagation();"
                                 >
@@ -72,7 +149,7 @@
                                     <button
                                         class="favorite-button favorite-active"
                                         type="submit"
-                                        aria-label="Retirer des favoris"
+                                        aria-label="{% if lang == 'ar' %}إزالة من المفضلة{% else %}Retirer des favoris{% endif %}"
                                     >
 
                                         <i class="bi bi-heart-fill"></i>
@@ -82,27 +159,54 @@
                                 </form>
 
 
+
+                                <!-- =================================================
+                                     ÉTAT DU PRODUIT
+                                ================================================== -->
+
                                 {% if product.condition %}
 
                                     <span class="condition-badge">
+
                                         {{ product.condition }}
+
                                     </span>
 
                                 {% endif %}
 
+
                             </div>
 
 
+
+                            <!-- =================================================
+                                 INFORMATIONS PRODUIT
+                            ================================================== -->
+
                             <div class="product-info">
 
+
+                                <!-- TITRE -->
+
                                 <h3 class="product-title">
+
                                     {{ product.title }}
+
                                 </h3>
 
+
+
+                                <!-- PRIX -->
+
                                 <div class="product-price">
+
                                     {{ product.price }} MRU
+
                                 </div>
 
+
+
+                                <!-- VILLE -->
 
                                 {% if product.city %}
 
@@ -117,36 +221,48 @@
                                 {% endif %}
 
 
+
+                                <!-- BOUTIQUE -->
+
                                 {% if product.boutique_id and product.boutique %}
 
                                     <div
                                         class="product-boutique-badge"
-                                        title="Produit vendu par {{ product.boutique.name }}"
+                                        title="{% if lang == 'ar' %}منتج يباع من طرف {{ product.boutique.name }}{% else %}Produit vendu par {{ product.boutique.name }}{% endif %}"
                                     >
 
                                         <i class="bi bi-shop"></i>
 
                                         <span>
+
                                             {{ product.boutique.name }}
+
                                         </span>
 
                                     </div>
 
                                 {% endif %}
 
+
                             </div>
 
+
                         </a>
+
 
                     </article>
 
                 </div>
 
+
             {% endfor %}
+
 
         </div>
 
+
     {% else %}
+
 
         <!-- =====================================================
              AUCUN FAVORI
@@ -154,31 +270,63 @@
 
         <div class="empty-products">
 
+
             <div class="empty-icon">
+
                 ❤️
+
             </div>
 
+
             <h3>
-                Vous n'avez aucun favori
+
+                {% if lang == "ar" %}
+                    لا توجد منتجات في المفضلة
+                {% else %}
+                    Vous n'avez aucun favori
+                {% endif %}
+
             </h3>
 
+
             <p>
-                Ajoutez des produits à vos favoris pour les retrouver facilement.
+
+                {% if lang == "ar" %}
+                    أضف المنتجات إلى المفضلة للعثور عليها بسهولة لاحقًا.
+                {% else %}
+                    Ajoutez des produits à vos favoris pour les retrouver facilement.
+                {% endif %}
+
             </p>
 
+
             <a
-                href="/"
+                href="/?lang={{ lang }}"
                 class="btn btn-success"
             >
-                Découvrir les produits
+
+                {% if lang == "ar" %}
+                    اكتشاف المنتجات
+                {% else %}
+                    Découvrir les produits
+                {% endif %}
+
             </a>
+
 
         </div>
 
+
     {% endif %}
+
 
 </div>
 
+
+
+<!-- =====================================================
+     STYLE
+====================================================== -->
 
 <style>
 
@@ -204,6 +352,46 @@
 }
 
 
+/* =====================================================
+   RTL
+===================================================== */
+
+html[dir="rtl"] .marketplace-content {
+    direction: rtl;
+}
+
+html[dir="rtl"] .products-header,
+html[dir="rtl"] .product-info {
+    text-align: right;
+}
+
+html[dir="rtl"] .product-location,
+html[dir="rtl"] .product-boutique-badge {
+    direction: rtl;
+}
+
+html[dir="rtl"] .empty-products {
+    text-align: center;
+}
+
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media (max-width: 576px) {
+
+    .empty-products {
+        padding: 45px 15px;
+    }
+
+    .empty-icon {
+        font-size: 48px;
+    }
+
+}
+
 </style>
+
 
 {% endblock %}

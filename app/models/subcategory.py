@@ -9,9 +9,16 @@ class SubCategory(Base):
 
     id = Column(Integer, primary_key=True, index=True)
 
+    # Nom français
     name = Column(
         String(100),
         nullable=False
+    )
+
+    # Nom arabe
+    name_ar = Column(
+        String(100),
+        nullable=True
     )
 
     category_id = Column(
