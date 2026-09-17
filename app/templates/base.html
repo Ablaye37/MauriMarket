@@ -1,8 +1,10 @@
 
 <!DOCTYPE html>
 
-<html lang="{{ lang if lang in ['fr', 'ar'] else 'fr' }}"
-      dir="{{ 'rtl' if lang == 'ar' else 'ltr' }}">
+<html
+    lang="{{ lang if lang in ['fr', 'ar'] else 'fr' }}"
+    dir="{{ 'rtl' if lang == 'ar' else 'ltr' }}"
+>
 
 <head>
 
@@ -44,6 +46,7 @@ html,
 body {
     width: 100%;
     max-width: 100%;
+    min-width: 0;
     margin: 0;
     padding: 0;
     overflow-x: hidden;
@@ -169,6 +172,7 @@ body {
     gap: 8px;
     flex: 0 1 auto;
     min-width: 0;
+    white-space: nowrap;
 }
 
 .header-action {
@@ -220,6 +224,7 @@ body {
     position: relative;
     display: flex;
     align-items: center;
+    flex: 0 0 auto;
 }
 
 .account-button {
@@ -318,23 +323,27 @@ body {
 
 
 /* =====================================================
-   SÉLECTEUR DE LANGUE
+   SÉLECTEUR DE LANGUE FR / AR
 ===================================================== */
 
 .language-menu {
     position: relative;
-    display: flex;
+    display: flex !important;
     align-items: center;
-    flex: 0 0 auto;
+    flex: 0 0 auto !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    z-index: 99999;
 }
 
 .language-button {
-    display: inline-flex;
+    display: inline-flex !important;
     align-items: center;
     justify-content: center;
     gap: 6px;
-    height: 38px;
+    width: auto;
     min-width: 72px;
+    height: 38px;
     padding: 6px 10px;
     border: 1px solid #e1e5e9;
     border-radius: 8px;
@@ -342,8 +351,12 @@ body {
     color: #20252b;
     font-size: 12px;
     font-weight: 700;
+    line-height: 1;
+    white-space: nowrap;
     cursor: pointer;
     transition: .2s ease;
+    visibility: visible !important;
+    opacity: 1 !important;
 }
 
 .language-button:hover {
@@ -353,7 +366,16 @@ body {
 }
 
 .language-button .language-flag {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     font-size: 17px;
+    line-height: 1;
+}
+
+.language-button .language-code {
+    display: inline-block !important;
+    font-size: 12px;
     line-height: 1;
 }
 
@@ -367,18 +389,23 @@ body {
     transform: rotate(180deg);
 }
 
+
+/* =====================================================
+   MENU LANGUE
+===================================================== */
+
 .language-dropdown {
     position: absolute;
     top: calc(100% + 6px);
     right: 0;
-    width: 145px;
+    width: 150px;
     padding: 5px;
     background: #fff;
     border: 1px solid #e5e7eb;
     border-radius: 9px;
     box-shadow: 0 8px 24px rgba(0, 0, 0, .12);
     display: none;
-    z-index: 99999;
+    z-index: 100000;
 }
 
 .language-menu:hover .language-dropdown,
@@ -397,6 +424,8 @@ body {
     text-decoration: none;
     font-size: 12px;
     font-weight: 600;
+    line-height: 1.2;
+    white-space: nowrap;
     transition: .2s ease;
 }
 
@@ -411,10 +440,14 @@ body {
 }
 
 .language-option .language-flag {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     font-size: 17px;
+    line-height: 1;
 }
 
-.language-option .language-check {
+.language-check {
     margin-left: auto;
     font-size: 13px;
     color: #198754;
@@ -580,10 +613,11 @@ html[dir="rtl"] .language-dropdown {
 }
 
 html[dir="rtl"] .language-option {
+    direction: rtl;
     text-align: right;
 }
 
-html[dir="rtl"] .language-option .language-check {
+html[dir="rtl"] .language-check {
     margin-left: 0;
     margin-right: auto;
 }
@@ -620,6 +654,15 @@ html[dir="rtl"] .language-option .language-check {
     .category-navbar-inner {
         flex-wrap: wrap;
     }
+
+    .language-menu {
+        display: flex !important;
+        flex: 0 0 auto !important;
+    }
+
+    .language-button {
+        display: inline-flex !important;
+    }
 }
 
 
@@ -653,8 +696,12 @@ html[dir="rtl"] .language-option .language-check {
     }
 
     .header-actions {
+        display: flex !important;
+        align-items: center;
+        justify-content: flex-end;
         gap: 2px;
         max-width: 100%;
+        min-width: 0;
     }
 
     .header-action {
@@ -690,12 +737,20 @@ html[dir="rtl"] .language-option .language-check {
 
     /* LANGUE MOBILE */
 
+    .language-menu {
+        display: flex !important;
+        align-items: center;
+        flex: 0 0 auto !important;
+    }
+
     .language-button {
-        width: 48px;
-        min-width: 48px;
+        display: inline-flex !important;
+        width: auto;
+        min-width: 62px;
         height: 34px;
-        padding: 4px 6px;
-        gap: 3px;
+        padding: 4px 7px;
+        gap: 4px;
+        font-size: 11px;
     }
 
     .language-button .language-flag {
@@ -703,6 +758,7 @@ html[dir="rtl"] .language-option .language-check {
     }
 
     .language-button .language-code {
+        display: inline-block !important;
         font-size: 10px;
     }
 
@@ -711,7 +767,7 @@ html[dir="rtl"] .language-option .language-check {
     }
 
     .language-dropdown {
-        width: 140px;
+        width: 145px;
     }
 
 
@@ -835,10 +891,12 @@ html[dir="rtl"] .language-option .language-check {
     }
 
     .language-button {
-        width: 44px;
-        min-width: 44px;
+        display: inline-flex !important;
+        width: auto;
+        min-width: 58px;
         height: 32px;
-        padding: 3px 5px;
+        padding: 3px 6px;
+        gap: 3px;
     }
 
     .language-button .language-flag {
@@ -846,7 +904,12 @@ html[dir="rtl"] .language-option .language-check {
     }
 
     .language-button .language-code {
+        display: inline-block !important;
         font-size: 9px;
+    }
+
+    .language-button .language-arrow {
+        font-size: 8px;
     }
 
     .category-navbar-inner {
@@ -895,8 +958,10 @@ html[dir="rtl"] .language-option .language-check {
              LOGO
         ================================================== -->
 
-        <a href="/?lang={{ current_lang }}"
-           class="brand">
+        <a
+            href="/?lang={{ current_lang }}"
+            class="brand"
+        >
 
             <img
                 src="/static/images/logo.png"
@@ -1019,7 +1084,6 @@ html[dir="rtl"] .language-option .language-check {
 
                     {% if current_user_id %}
 
-
                         <div class="account-user">
 
                             <i class="bi bi-person-circle"></i>
@@ -1071,7 +1135,6 @@ html[dir="rtl"] .language-option .language-check {
 
                     {% else %}
 
-
                         <a href="/login?lang={{ current_lang }}">
 
                             <i class="bi bi-box-arrow-in-right"></i>
@@ -1089,7 +1152,6 @@ html[dir="rtl"] .language-option .language-check {
 
                         </a>
 
-
                     {% endif %}
 
                 </div>
@@ -1103,18 +1165,16 @@ html[dir="rtl"] .language-option .language-check {
 
             <div class="language-menu">
 
-
                 <button
                     type="button"
                     class="language-button"
                     aria-label="Changer de langue"
+                    aria-expanded="false"
                 >
 
                     {% if current_lang == "ar" %}
 
-                        <span class="language-flag">
-                            🇲🇷
-                        </span>
+                        <span class="language-flag">🇲🇷</span>
 
                         <span class="language-code">
                             AR
@@ -1122,9 +1182,7 @@ html[dir="rtl"] .language-option .language-check {
 
                     {% else %}
 
-                        <span class="language-flag">
-                            🇫🇷
-                        </span>
+                        <span class="language-flag">🇫🇷</span>
 
                         <span class="language-code">
                             FR
@@ -1139,95 +1197,52 @@ html[dir="rtl"] .language-option .language-check {
 
                 <div class="language-dropdown">
 
+                    <a
+                        href="{{ request.url.path }}?lang=fr{% if request.query_params.get('q') %}&q={{ request.query_params.get('q') }}{% endif %}"
+                        class="language-option {% if current_lang == 'fr' %}active{% endif %}"
+                    >
 
-                    {% if current_lang == "fr" %}
+                        <span class="language-flag">
+                            🇫🇷
+                        </span>
 
+                        <span>
+                            Français
+                        </span>
 
-                        <!-- FRANÇAIS ACTIF -->
-
-                        <a
-                            href="{{ request.url.path }}?lang=fr{% if request.query_params.get('q') %}&q={{ request.query_params.get('q') }}{% endif %}"
-                            class="language-option active"
-                        >
-
-                            <span class="language-flag">
-                                🇫🇷
-                            </span>
-
-                            <span>
-                                Français
-                            </span>
+                        {% if current_lang == "fr" %}
 
                             <i class="bi bi-check language-check"></i>
 
-                        </a>
+                        {% endif %}
+
+                    </a>
 
 
-                        <!-- ARABE -->
+                    <a
+                        href="{{ request.url.path }}?lang=ar{% if request.query_params.get('q') %}&q={{ request.query_params.get('q') }}{% endif %}"
+                        class="language-option {% if current_lang == 'ar' %}active{% endif %}"
+                    >
 
-                        <a
-                            href="{{ request.url.path }}?lang=ar{% if request.query_params.get('q') %}&q={{ request.query_params.get('q') }}{% endif %}"
-                            class="language-option"
-                        >
+                        <span class="language-flag">
+                            🇲🇷
+                        </span>
 
-                            <span class="language-flag">
-                                🇲🇷
-                            </span>
+                        <span>
+                            العربية
+                        </span>
 
-                            <span>
-                                العربية
-                            </span>
-
-                        </a>
-
-
-                    {% else %}
-
-
-                        <!-- FRANÇAIS -->
-
-                        <a
-                            href="{{ request.url.path }}?lang=fr{% if request.query_params.get('q') %}&q={{ request.query_params.get('q') }}{% endif %}"
-                            class="language-option"
-                        >
-
-                            <span class="language-flag">
-                                🇫🇷
-                            </span>
-
-                            <span>
-                                Français
-                            </span>
-
-                        </a>
-
-
-                        <!-- ARABE ACTIF -->
-
-                        <a
-                            href="{{ request.url.path }}?lang=ar{% if request.query_params.get('q') %}&q={{ request.query_params.get('q') }}{% endif %}"
-                            class="language-option active"
-                        >
-
-                            <span class="language-flag">
-                                🇲🇷
-                            </span>
-
-                            <span>
-                                العربية
-                            </span>
+                        {% if current_lang == "ar" %}
 
                             <i class="bi bi-check language-check"></i>
 
-                        </a>
+                        {% endif %}
 
-
-                    {% endif %}
+                    </a>
 
                 </div>
 
             </div>
-
 
         </div>
 
@@ -1379,7 +1394,6 @@ html[dir="rtl"] .language-option .language-check {
 
 document.addEventListener("DOMContentLoaded", function () {
 
-
     /* =================================================
        MENU COMPTE
     ================================================== */
@@ -1433,7 +1447,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 event.stopPropagation();
 
-                languageMenu.classList.toggle("open");
+                const isOpen =
+                    languageMenu.classList.toggle("open");
+
+                languageButton.setAttribute(
+                    "aria-expanded",
+                    isOpen ? "true" : "false"
+                );
 
                 if (accountMenu) {
                     accountMenu.classList.remove("open");
@@ -1458,12 +1478,52 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
             if (languageMenu) {
+
                 languageMenu.classList.remove("open");
+
+                if (languageButton) {
+                    languageButton.setAttribute(
+                        "aria-expanded",
+                        "false"
+                    );
+                }
+
             }
 
         }
     );
 
+
+    /* =================================================
+       EMPÊCHER LA FERMETURE DU MENU AU CLIC INTERNE
+    ================================================== */
+
+    if (languageMenu) {
+
+        languageMenu.addEventListener(
+            "click",
+            function (event) {
+
+                event.stopPropagation();
+
+            }
+        );
+
+    }
+
+
+    if (accountMenu) {
+
+        accountMenu.addEventListener(
+            "click",
+            function (event) {
+
+                event.stopPropagation();
+
+            }
+        );
+
+    }
 
 });
 

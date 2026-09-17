@@ -245,7 +245,7 @@ textarea {
 }
 
 /* =========================================================
-   NAVBAR DES CATÉGORIES
+   NAVBAR DES CATï¿½GORIES
 ========================================================= */
 
 .category-navbar {
@@ -364,7 +364,7 @@ textarea {
 }
 
 /* =========================================================
-   SIDEBAR CATÉGORIES
+   SIDEBAR CATï¿½GORIES
 ========================================================= */
 
 .category-sidebar {
@@ -386,7 +386,7 @@ textarea {
 }
 
 /* =========================================================
-   TOUTES LES CATÉGORIES
+   TOUTES LES CATï¿½GORIES
 ========================================================= */
 
 .all-categories-toggle {
@@ -417,7 +417,7 @@ textarea {
 }
 
 /* =========================================================
-   LISTE CATÉGORIES
+   LISTE CATï¿½GORIES
 ========================================================= */
 
 .sidebar-list {
@@ -433,7 +433,7 @@ textarea {
 }
 
 /* =========================================================
-   CATÉGORIE
+   CATï¿½GORIE
 ========================================================= */
 
 .category-toggle {
@@ -481,7 +481,7 @@ textarea {
 }
 
 /* =========================================================
-   ANCIENS LIENS CATÉGORIES
+   ANCIENS LIENS CATï¿½GORIES
 ========================================================= */
 
 .sidebar-category {
@@ -505,7 +505,7 @@ textarea {
 }
 
 /* =========================================================
-   SOUS-CATÉGORIES
+   SOUS-CATï¿½GORIES
 ========================================================= */
 
 .subcategories-list {
@@ -726,7 +726,7 @@ textarea {
 
 /* =========================================================
    INFORMATIONS PRODUIT
-   HAUTEUR UNIFORMISÉE
+   HAUTEUR UNIFORMISï¿½E
 ========================================================= */
 
 .product-info {
@@ -973,7 +973,7 @@ textarea {
 }
 
 /* =========================================================
-   ICÔNE BOUTIQUE
+   ICï¿½NE BOUTIQUE
 ========================================================= */
 
 .boutique-icon {
@@ -1044,7 +1044,7 @@ textarea {
 }
 
 /* =========================================================
-   EN-TÊTE MA BOUTIQUE
+   EN-Tï¿½TE MA BOUTIQUE
 ========================================================= */
 
 .ma-boutique-header {
@@ -1245,7 +1245,7 @@ textarea {
 }
 
 /* =========================================================
-   PAGE DÉTAIL BOUTIQUE
+   PAGE Dï¿½TAIL BOUTIQUE
 ========================================================= */
 
 .boutique-detail-page {
@@ -1275,7 +1275,7 @@ textarea {
 }
 
 /* =========================================================
-   CRÉER UNE BOUTIQUE
+   CRï¿½ER UNE BOUTIQUE
 ========================================================= */
 
 .creer-boutique-page {
@@ -1299,7 +1299,7 @@ textarea {
 }
 
 /* =========================================================
-   HEADER CRÉATION BOUTIQUE
+   HEADER CRï¿½ATION BOUTIQUE
 ========================================================= */
 
 .creer-boutique-header {
@@ -1342,7 +1342,7 @@ textarea {
 }
 
 /* =========================================================
-   CHAMPS CRÉATION BOUTIQUE
+   CHAMPS CRï¿½ATION BOUTIQUE
 ========================================================= */
 
 .creer-boutique-field {
@@ -1402,7 +1402,7 @@ textarea {
 }
 
 /* =========================================================
-   BOUTON CRÉER
+   BOUTON CRï¿½ER
 ========================================================= */
 
 .creer-boutique-card button {
@@ -1794,7 +1794,7 @@ textarea {
 }
 
 /* =========================================================
-   TRÈS PETIT MOBILE
+   TRï¿½S PETIT MOBILE
 ========================================================= */
 
 @media (max-width: 500px) {
@@ -1910,8 +1910,8 @@ textarea {
 }
 
 /* =========================================================
-   TRÈS PETIT ÉCRAN
-   Évite les cartes trop étroites
+   TRï¿½S PETIT ï¿½CRAN
+   ï¿½vite les cartes trop ï¿½troites
 ========================================================= */
 
 @media (max-width: 360px) {
@@ -1963,3 +1963,116 @@ textarea {
     }
 }
 
+
+
+/* =========================================================
+   BOUTON LANGUE FR / AR
+   Correction visibilitÃ© + responsive
+========================================================= */
+
+.language-menu {
+    position: relative !important;
+    display: flex !important;
+    align-items: center !important;
+    flex: 0 0 auto !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    z-index: 9999 !important;
+}
+
+.language-button {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 7px !important;
+    min-width: 78px !important;
+    height: 40px !important;
+    padding: 0 12px !important;
+    border: 1px solid #dfe3e8 !important;
+    border-radius: 10px !important;
+    background: #ffffff !important;
+    color: #172033 !important;
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    line-height: 1 !important;
+    white-space: nowrap !important;
+    cursor: pointer !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: relative !important;
+    z-index: 10000 !important;
+}
+
+.language-button:hover {
+    background: #f7f8fa !important;
+}
+
+.language-dropdown {
+    position: absolute !important;
+    top: calc(100% + 8px) !important;
+    right: 0 !important;
+    min-width: 155px !important;
+    padding: 6px !important;
+    background: #ffffff !important;
+    border: 1px solid #e5e7eb !important;
+    border-radius: 10px !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12) !important;
+    display: none !important;
+    z-index: 10001 !important;
+}
+
+.language-menu.open .language-dropdown {
+    display: block !important;
+}
+
+.language-option {
+    display: flex !important;
+    align-items: center !important;
+    gap: 9px !important;
+    width: 100% !important;
+    padding: 10px 12px !important;
+    border-radius: 7px !important;
+    color: #172033 !important;
+    text-decoration: none !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    white-space: nowrap !important;
+}
+
+.language-option:hover {
+    background: #f3f4f6 !important;
+}
+
+@media (max-width: 768px) {
+
+    .header-actions {
+        gap: 8px !important;
+    }
+
+    .language-menu {
+        display: flex !important;
+        flex: 0 0 auto !important;
+    }
+
+    .language-button {
+        min-width: 68px !important;
+        width: auto !important;
+        height: 36px !important;
+        padding: 0 9px !important;
+        font-size: 12px !important;
+    }
+
+    .language-dropdown {
+        right: 0 !important;
+        min-width: 145px !important;
+    }
+}
+
+@media (max-width: 420px) {
+
+    .language-button {
+        min-width: 62px !important;
+        padding: 0 7px !important;
+        font-size: 11px !important;
+    }
+}
