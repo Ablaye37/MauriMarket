@@ -14,6 +14,8 @@ from app.models.boutique_request import BoutiqueRequest
 from app.models.contact_message import ContactMessage
 from app.models.order import Order
 from app.models.order_item import OrderItem
+from app.translations.fr import TRANSLATIONS as FR
+from app.translations.ar import TRANSLATIONS as AR
 
 
 router = APIRouter()
@@ -223,6 +225,14 @@ async def admin_page(request: Request):
 
         message = request.session.pop("message", None)
 
+        # LANGUE ET TRADUCTIONS
+        lang = request.query_params.get("lang", "fr")
+
+        if lang not in ["fr", "ar"]:
+          lang = "fr"
+
+        translations = FR if lang == "fr" else AR
+
         # --------------------------------------------------------
         # PAGE ADMIN
         # --------------------------------------------------------
@@ -254,7 +264,9 @@ async def admin_page(request: Request):
 
                 "site_visit_count": site_visit_count,
 
-                "message": message
+                "message": message,
+                "lang": lang,
+                "t": translations
             }
         )
 
