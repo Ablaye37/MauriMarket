@@ -224,7 +224,7 @@ async def admin_page(request: Request):
         # --------------------------------------------------------
 
         message = request.session.pop("message", None)
-
+        
         # LANGUE ET TRADUCTIONS
         lang = request.query_params.get("lang", "fr")
 
@@ -243,6 +243,10 @@ async def admin_page(request: Request):
             context={
                 "request": request,
                 "admin": admin,
+                "user": admin,  # compatibilité avec base.html
+                "lang": lang,
+                "t": translations,
+                "panier_count": 0,
 
                 "users": users,
                 "products": products,
@@ -264,9 +268,7 @@ async def admin_page(request: Request):
 
                 "site_visit_count": site_visit_count,
 
-                "message": message,
-                "lang": lang,
-                "t": translations
+                "message": message
             }
         )
 
