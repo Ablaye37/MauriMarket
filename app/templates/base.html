@@ -939,7 +939,7 @@ html[dir="rtl"] .language-check {
 
 
 <body>
-
+{% set t = t|default({}) %}
 {% set current_user_id = request.session.get("user_id") %}
 {% set current_user_name = request.session.get("user_name") %}
 {% set current_lang = lang if lang in ["fr", "ar"] else "fr" %}
